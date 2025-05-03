@@ -1,0 +1,11 @@
+<h2>{{ form().title }}</h2>
+<form
+  (submit)="submitForm(); $event.preventDefault()"
+  class="flex flex-col gap-4"
+>
+  <signal-form-fields [fields]="form().fields" [form]="form()" />
+  <signal-form-error-summary [form]="form()" />
+  <button type="submit" [disabled]="disabled()" class="form-button">
+    {{ submitButtonText() }}
+  </button>
+</form>

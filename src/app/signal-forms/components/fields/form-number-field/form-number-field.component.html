@@ -1,0 +1,10 @@
+<input
+  type="number"
+  class="form-input"
+  [placeholder]="config()?.placeholder"
+  [disabled]="disabled()"
+  [(value)]="value"
+  (input)="handleInput($event)"
+  (change)="handleBlur()"
+  (blur)="handleBlur()"
+/>
