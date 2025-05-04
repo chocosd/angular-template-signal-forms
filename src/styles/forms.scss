@@ -1,50 +1,7 @@
-/* You can add global styles to this file, and also import other style files */
-* {
-  box-sizing: border-box;
-}
-
-html,
-body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  font-family: sans-serif;
-}
-
-.form-error-highlight {
-  outline: 2px solid #f44336;
-  box-shadow: 0 0 4px 2px #ff7a71;
-  animation: shake 0.3s ease-in-out;
-}
-
-@keyframes shake {
-  0% {
-    transform: translateX(0);
-  }
-  25% {
-    transform: translateX(-4px);
-  }
-  50% {
-    transform: translateX(4px);
-  }
-  75% {
-    transform: translateX(-4px);
-  }
-  100% {
-    transform: translateX(0);
-  }
-}
-
 .form-control {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  font-family: "Inter", sans-serif;
-  margin-bottom: 1.5rem;
 
   &.has-error .form-input-wrapper {
     border: 1px solid #f44336;
@@ -58,9 +15,10 @@ body {
 }
 
 .form-label {
-  font-size: 13px;
-  color: #666;
-  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #2b353d;
+  -webkit-font-smoothing: antialiased;
 }
 
 .form-input-wrapper {
@@ -122,11 +80,24 @@ body {
   }
 }
 
+signal-form-fields {
+  gap: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+
+  > signal-form-input-item {
+    width: 100%;
+  }
+}
+
 .form-caption {
   display: flex;
   justify-content: space-between;
   font-size: 12px;
-  margin-top: 4px;
 }
 
 .form-error {

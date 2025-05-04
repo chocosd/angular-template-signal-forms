@@ -1,0 +1,29 @@
+.autocomplete-wrapper {
+  position: relative;
+  input {
+    width: 100%;
+    padding: 0.5rem;
+  }
+
+  .autocomplete-dropdown {
+    position: absolute;
+    z-index: 10;
+    background: white;
+    border: 1px solid #ccc;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    list-style: none;
+    padding: unset;
+    margin: 0;
+
+    li {
+      padding: 0.5rem;
+      cursor: pointer;
+
+      &:hover {
+        background: #f4f4f4;
+      }
+    }
+  }
+}

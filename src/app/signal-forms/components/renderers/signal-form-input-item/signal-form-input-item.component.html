@@ -6,38 +6,47 @@
     [attr.data-form-field]="field().name"
   >
     <label class="form-label">{{ field().label }}</label>
-    <div class="form-input-wrapper">
-      @switch (field().type) {
-        @case (FormFieldType.TEXT) {
-          <app-form-text-field
-            [(touched)]="field().touched"
-            [(dirty)]="field().dirty"
-            [(value)]="field().value"
-            [config]="field().config"
-            [disabled]="isDisabled()"
-          />
-        }
-        @case (FormFieldType.CHECKBOX) {
-          <app-form-checkbox-field
-            [(touched)]="field().touched"
-            [(dirty)]="field().dirty"
-            [(value)]="field().value"
-            [config]="field().config"
-            [disabled]="isDisabled()"
-          />
-        }
-
-        @case (FormFieldType.NUMBER) {
-          <app-form-number-field
-            [(touched)]="field().touched"
-            [(dirty)]="field().dirty"
-            [(value)]="field().value"
-            [config]="field().config"
-            [disabled]="isDisabled()"
-          />
-        }
+    @switch (field().type) {
+      @case (FormFieldType.TEXT) {
+        <app-form-text-field
+          [(touched)]="field().touched"
+          [(dirty)]="field().dirty"
+          [(value)]="field().value"
+          [config]="field().config"
+          [disabled]="isDisabled()"
+        />
       }
-    </div>
+      @case (FormFieldType.CHECKBOX) {
+        <app-form-checkbox-field
+          [(touched)]="field().touched"
+          [(dirty)]="field().dirty"
+          [(value)]="field().value"
+          [config]="field().config"
+          [disabled]="isDisabled()"
+        />
+      }
+
+      @case (FormFieldType.NUMBER) {
+        <app-form-number-field
+          [(touched)]="field().touched"
+          [(dirty)]="field().dirty"
+          [(value)]="field().value"
+          [config]="field().config"
+          [disabled]="isDisabled()"
+        />
+      }
+
+      @case (FormFieldType.AUTOCOMPLETE) {
+        <app-form-autocomplete-field
+          [(touched)]="field().touched"
+          [(dirty)]="field().dirty"
+          [(value)]="field().value"
+          [config]="field().config"
+          [loadOptions]="field().loadOptions"
+          [disabled]="isDisabled()"
+        />
+      }
+    }
 
     <div class="form-caption">
       @if (field().error()) {

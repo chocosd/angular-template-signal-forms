@@ -2,11 +2,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   input,
 } from '@angular/core';
 import {
-  SignalFormContainer,
-  SignalFormField,
+  type SignalFormContainer,
+  type SignalFormField,
 } from '../../../models/signal-form.model';
 import { SignalFormInputItemComponent } from '../signal-form-input-item/signal-form-input-item.component';
 
@@ -28,4 +29,8 @@ export class SignalFormFieldsComponent<TModel> {
       return !(typeof hide === 'function' ? hide(this.form()) : !!hide);
     });
   });
+
+  constructor() {
+    effect(() => console.log(this.fields()));
+  }
 }

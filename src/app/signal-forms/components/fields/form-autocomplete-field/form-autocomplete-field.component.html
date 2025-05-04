@@ -1,0 +1,20 @@
+<div class="autocomplete-wrapper">
+  <input
+    type="text"
+    [value]="value()?.label ?? ''"
+    (input)="search.set($event.target.value)"
+    (focus)="showDropdown.set(true)"
+    (change)="handleBlur()"
+    (blur)="handleBlur()"
+  />
+
+  @if (showDropdown() && options().length) {
+    <ul class="autocomplete-dropdown">
+      @for (option of options(); track option.value) {
+        <li (mousedown)="onSelect(option)">
+          {{ option.label }}
+        </li>
+      }
+    </ul>
+  }
+</div>

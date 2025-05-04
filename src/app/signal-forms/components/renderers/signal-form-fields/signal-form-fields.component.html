@@ -1,3 +1,18 @@
 @for (field of visibleFields(); track field.name) {
-  <signal-form-input-item [field]="field" [form]="form()" />
+  @if (field.fields?.length) {
+    <section
+      class="nested-form-section"
+      [ngClass]="field.config?.view ?? 'stacked'"
+    >
+      <div class="nested-form-title">
+        <h2 class="nested-form-heading">{{ field.heading }}</h2>
+        <h4 class="nested-form-subheading">{{ field.subheading }}</h4>
+      </div>
+      <div class="nested-form-fields">
+        <signal-form-fields [form]="field.form" [fields]="field.fields" />
+      </div>
+    </section>
+  } @else {
+    <signal-form-input-item [field]="field" [form]="form()" />
+  }
 }
