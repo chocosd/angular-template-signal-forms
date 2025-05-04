@@ -1,9 +1,10 @@
 import { Signal, WritableSignal } from '@angular/core';
+import { Observable } from 'rxjs';
 import { FormFieldType } from '../enums/form-field-type.enum';
 import { FormStatus } from '../enums/form-status.enum';
 
 //
-// ========== Shared Types ==========
+// ========== Config Types ==========
 //
 
 export interface BaseFieldConfig {
@@ -12,37 +13,45 @@ export interface BaseFieldConfig {
 }
 
 export interface TextFieldConfig extends BaseFieldConfig {
-  minLength?: number;
-  maxLength?: number;
+  prefix?: string;
+  suffix?: string;
+}
+
+export enum CurrencyType {
+  Cad = 'CAD',
+  Usd = 'USD',
 }
 
 export interface NumberFieldConfig extends BaseFieldConfig {
-  min?: number;
-  max?: number;
+  currency?: CurrencyType;
+  prefix?: string;
+  suffix?: string;
+  precision?: number;
 }
 
 export interface CheckboxFieldConfig {
-  label?: string;
+  layout?: 'inline' | 'stacked';
 }
 
 export interface DateTimeFieldConfig {
   format?: string;
 }
-
-export interface SelectFieldConfig {
-  options: { label: string; value: string | number }[];
-}
-
 export interface AutocompleteFieldConfig {
-  loadOptions: (search: string) => Promise<FormOption[]>;
+  debounceMs?: number;
+  minChars?: number;
 }
-
+export interface SelectFieldConfig {
+  multiselect?: boolean;
+}
 export interface FormOption {
   label: string;
   value: string | number | boolean;
 }
 
-export type ValidatorFn<T> = (value: T) => string | null;
+export type ValidatorFn<T, TModel> = (
+  value: T,
+  form: SignalFormContainer<TModel>,
+) => string | null;
 
 //
 // ========== Config Type Mapping ==========
@@ -75,17 +84,13 @@ export type BuilderField<
   TType extends FormFieldType,
 > = {
   name: TKey;
-  label: string;
-  type: TType;
   config?: ConfigTypeForField<TType>;
-  validators?: ValidatorFn<TModel[TKey]>[];
+  validators?: ValidatorFn<TModel[TKey], TModel>[];
   computedValue?: (form: SignalFormContainer<TModel>) => TModel[TKey];
   hide?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
   disabled?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
-  loadOptions?: TType extends FormFieldType.AUTOCOMPLETE
-    ? (search: string) => Promise<FormOption[]>
-    : never;
-  options?: TType extends FormFieldType.CHECKBOX ? FormOption[] : never;
+  type: TType;
+  label: string;
 };
 
 //
@@ -99,31 +104,59 @@ export type SignalFormFieldBuilderInput<TModel> = {
 type SignalFormFieldBuilderForKey<
   TModel,
   K extends keyof TModel,
-> = TModel[K] extends string
-  ? BuilderField<
-      TModel,
-      K,
-      FormFieldType.TEXT | FormFieldType.PASSWORD | FormFieldType.TEXTAREA
-    >
-  : TModel[K] extends number
-    ? BuilderField<TModel, K, FormFieldType.NUMBER>
-    : TModel[K] extends boolean
-      ? BuilderField<TModel, K, FormFieldType.CHECKBOX>
-      : TModel[K] extends Date
-        ? BuilderField<TModel, K, FormFieldType.DATETIME>
-        : TModel[K] extends string | number
-          ? BuilderField<
-              TModel,
-              K,
-              | FormFieldType.SELECT
-              | FormFieldType.RADIO
-              | FormFieldType.AUTOCOMPLETE
-            >
-          : never;
+> = TModel[K] extends object
+  ? {
+      name: K;
+      heading: string;
+      subheading: string;
+      fields: SignalFormFieldBuilderInput<TModel[K]>[];
+      hide?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
+      disabled?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
+      config?: {
+        view?: 'row' | 'stacked' | 'collapsable';
+      };
+    }
+  : FieldBuilderByType<TModel, K>;
 
-//
-// ========== Runtime Signal Fields ==========
-//
+export type LoadOptionsFn = (
+  search: string,
+) => Observable<FormOption[]> | Promise<FormOption[]>;
+
+type FieldBuilderByType<TModel, K extends keyof TModel> =
+  | (BuilderField<TModel, K, FormFieldType.TEXT> & { type: FormFieldType.TEXT })
+  | (BuilderField<TModel, K, FormFieldType.PASSWORD> & {
+      type: FormFieldType.PASSWORD;
+    })
+  | (BuilderField<TModel, K, FormFieldType.TEXTAREA> & {
+      type: FormFieldType.TEXTAREA;
+    })
+  | (BuilderField<TModel, K, FormFieldType.NUMBER> & {
+      type: FormFieldType.NUMBER;
+    })
+  | (BuilderField<TModel, K, FormFieldType.CHECKBOX> & {
+      type: FormFieldType.CHECKBOX;
+      options: FormOption[];
+    })
+  | (BuilderField<TModel, K, FormFieldType.DATETIME> & {
+      type: FormFieldType.DATETIME;
+    })
+  | (BuilderField<TModel, K, FormFieldType.SELECT> & {
+      type: FormFieldType.SELECT;
+      options: FormOption[];
+    })
+  | (BuilderField<TModel, K, FormFieldType.RADIO> & {
+      type: FormFieldType.RADIO;
+    })
+  | (BuilderField<TModel, K, FormFieldType.AUTOCOMPLETE> & {
+      type: FormFieldType.AUTOCOMPLETE;
+      loadOptions: LoadOptionsFn;
+    });
+
+export type NestedSignalFormFields<TModel, K extends keyof TModel> = {
+  name: K;
+  label: string;
+  fields: SignalFormFieldBuilderInput<TModel[K]>;
+};
 
 export interface BaseSignalFormField<TValue> {
   error: WritableSignal<string | null>;
@@ -144,10 +177,6 @@ export type SignalFormFieldForKey<
   ? BaseSignalFormField<TVal> &
       BuilderField<TModel, K, FormFieldType> & { name: K }
   : never;
-
-//
-// ========== Form Container ==========
-//
 
 export type ErrorMessage<TModel> = { name: keyof TModel; message: string };
 

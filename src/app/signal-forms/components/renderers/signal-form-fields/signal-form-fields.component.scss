@@ -1,0 +1,41 @@
+.nested-form {
+  &-section {
+    border-top: 1px solid #e2efef;
+    border-bottom: 1px solid #e2efef;
+    display: grid;
+    width: 100%;
+    padding: 8px 0;
+  }
+
+  &-title {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 12px;
+  }
+
+  &-heading {
+    margin: 0;
+    text-transform: capitalize;
+    color: #2b353d;
+    font-size: 18px;
+    line-height: 20px;
+  }
+
+  &-subheading {
+    margin: 0;
+    font-weight: 400;
+    color: #828689;
+    font-size: 14px;
+    text-transform: capitalize;
+  }
+
+  &-fields {
+    display: flex;
+    width: 100%;
+
+    & > signal-form-fields {
+      width: 100%;
+    }
+  }
+}

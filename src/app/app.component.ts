@@ -3,11 +3,19 @@ import { RouterOutlet } from '@angular/router';
 import { SignalFormComponent } from './signal-forms/components/renderers/signal-form/signal-form.component';
 import { FormFieldType } from './signal-forms/enums/form-field-type.enum';
 import { FormBuilder } from './signal-forms/helpers/form-builder';
-import { SignalFormContainer } from './signal-forms/models/signal-form.model';
+import {
+  SignalFormContainer,
+  SignalFormFieldBuilderInput,
+} from './signal-forms/models/signal-form.model';
 
 export type Basket = {
   apples: number;
   pears: number;
+  address: {
+    line1: string;
+    postcode: string;
+    country: string;
+  };
   applePrice: number;
   pearPrice: number;
   appleTotal: number;
@@ -18,6 +26,52 @@ export type Basket = {
 
 export const OnlyPositiveValidator = (name: string) => (x: number) =>
   x < 0 ? `${name} only positive prices` : null;
+
+const addressForm: SignalFormFieldBuilderInput<Basket> = {
+  name: 'address',
+  heading: 'address',
+  subheading: 'information about the address',
+  hide: (form) => form.getField('apples').value() > 4,
+  fields: [
+    {
+      name: 'line1',
+      label: 'line 1',
+      type: FormFieldType.TEXT,
+      validators: [
+        (x, form) =>
+          !x.length && form.getField('postcode')?.value().length < 5
+            ? 'invalid address'
+            : null,
+      ],
+    },
+    {
+      name: 'postcode',
+      label: 'postcode',
+      type: FormFieldType.TEXT,
+    },
+    {
+      name: 'country',
+      label: 'Select Country',
+      type: FormFieldType.AUTOCOMPLETE,
+      loadOptions: (search: string) =>
+        fetch(`https://restcountries.com/v3.1/name/${search}`)
+          .then((res) => res.json())
+          .then((results) => {
+            if (!results.length) {
+              return [];
+            }
+            return results.map((country: any) => ({
+              label: country.name.common,
+              value: country.cca2,
+            }));
+          }),
+      config: {
+        debounceMs: 300,
+        minChars: 2,
+      },
+    },
+  ],
+};
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,6 +86,11 @@ export class AppComponent implements OnInit {
 
   public ngOnInit(): void {
     const model = {
+      address: {
+        line1: '46 newtown',
+        postcode: 'sp3 6ny',
+        country: 'russia',
+      },
       apples: 2,
       pears: 2,
       applePrice: 0.5,
@@ -46,12 +105,13 @@ export class AppComponent implements OnInit {
       title: 'Test Form',
       model,
       fields: [
+        addressForm,
         {
           name: 'apples',
           label: 'apples',
           type: FormFieldType.NUMBER,
           config: {},
-          disabled: (form) => form.getField('pears').touched(),
+          validators: [(x) => (x < 0 ? 'only positive value' : null)],
         },
         {
           name: 'applePrice',
@@ -63,9 +123,11 @@ export class AppComponent implements OnInit {
           name: 'appleTotal',
           label: 'Total Apple Price',
           type: FormFieldType.NUMBER,
+          disabled: (form) => !!form.getField('apples').error(),
           computedValue: (form) => {
             const apples = form.getField('apples').value();
             const price = form.getField('applePrice').value();
+
             return apples * price;
           },
           validators: [OnlyPositiveValidator('appleTotal')],
@@ -96,6 +158,7 @@ export class AppComponent implements OnInit {
           name: 'isOrganic',
           label: 'is Organic',
           type: FormFieldType.CHECKBOX,
+          options: [],
         },
         {
           name: 'total',

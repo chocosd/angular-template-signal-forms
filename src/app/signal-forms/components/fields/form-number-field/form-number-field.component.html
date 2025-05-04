@@ -1,10 +1,13 @@
-<input
-  type="number"
-  class="form-input"
-  [placeholder]="config()?.placeholder"
-  [disabled]="disabled()"
-  [(value)]="value"
-  (input)="handleInput($event)"
-  (change)="handleBlur()"
-  (blur)="handleBlur()"
-/>
+<div class="form-input-wrapper">
+  <input
+    type="number"
+    class="form-input"
+    [placeholder]="config()?.placeholder"
+    [disabled]="disabled()"
+    [(value)]="value"
+    (input)="handleInput($event)"
+    (change)="handleBlur()"
+    (blur)="handleBlur()"
+    [step]="config()?.precision ?? 0.01"
+  />
+</div>

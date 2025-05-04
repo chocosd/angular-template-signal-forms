@@ -5,7 +5,6 @@ import {
   input,
   output,
 } from '@angular/core';
-import { Basket } from '../../../../app.component';
 import { SignalFormContainer } from '../../../models/signal-form.model';
 import { SignalFormErrorSummaryComponent } from '../form-field-error-summary/signal-form-error-summary.component';
 import { SignalFormFieldsComponent } from '../signal-form-fields/signal-form-fields.component';
@@ -18,7 +17,7 @@ import { SignalFormFieldsComponent } from '../signal-form-fields/signal-form-fie
   styleUrl: './signal-form.component.scss',
   templateUrl: './signal-form.component.html',
 })
-export class SignalFormComponent<TModel extends Basket> {
+export class SignalFormComponent<TModel> {
   public form = input.required<SignalFormContainer<TModel>>();
   submitButtonText = input<string>('Save');
   onSave = output<TModel>();

@@ -15,6 +15,7 @@ import {
   SignalFormContainer,
   SignalFormField,
 } from '../../../models/signal-form.model';
+import { FormAutocompleteFieldComponent } from '../../fields/form-autocomplete-field/form-autocomplete-field.component';
 import { FormCheckboxFieldComponent } from '../../fields/form-checkbox-field/form-checkbox-field.component';
 import { FormNumberFieldComponent } from '../../fields/form-number-field/form-number-field.component';
 import { FormTextFieldComponent } from '../../fields/form-text-field/form-text-field.component';
@@ -27,6 +28,7 @@ import { FormTextFieldComponent } from '../../fields/form-text-field/form-text-f
     FormNumberFieldComponent,
     FormCheckboxFieldComponent,
     FormTextFieldComponent,
+    FormAutocompleteFieldComponent,
   ],
   templateUrl: './signal-form-input-item.component.html',
   styleUrl: './signal-form-input-item.component.scss',
@@ -85,7 +87,7 @@ export class SignalFormInputItemComponent<TModel> {
 
         const validators = field.validators ?? [];
         for (const validator of validators) {
-          const error = validator(value);
+          const error = validator(value, this.form());
           if (error) {
             field.error.set(error);
             return;
