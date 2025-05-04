@@ -127,9 +127,9 @@ export class SignalFormInputItemComponent<TModel> {
   }
 
   protected isHidden = computed<boolean>(() => {
-    const { hide } = this.field();
+    const { hidden } = this.field();
 
-    return typeof hide === 'function' ? hide(this.form()) : !!hide;
+    return typeof hidden === 'function' ? hidden(this.form()) : !!hidden;
   });
 
   protected isDisabled = computed<boolean>(() => {

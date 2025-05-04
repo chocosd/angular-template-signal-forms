@@ -29,9 +29,9 @@ export const OnlyPositiveValidator = (name: string) => (x: number) =>
 
 const addressForm: SignalFormFieldBuilderInput<Basket> = {
   name: 'address',
-  heading: 'address',
-  subheading: 'information about the address',
-  hide: (form) => form.getField('apples').value() > 4,
+  heading: 'Delivery Address',
+  subheading: 'Where should we send your basket?',
+  hidden: (form) => form.getField('total').value() < 100,
   fields: [
     {
       name: 'line1',
@@ -169,7 +169,16 @@ export class AppComponent implements OnInit {
             const pearTotal = form.getField('pearTotal').value();
             return appleTotal + pearTotal;
           },
-          validators: [OnlyPositiveValidator('total')],
+          validators: [
+            (val, form) =>
+              !(
+                form.getField('applePrice').value() ||
+                form.getField('pearPrice').value()
+              )
+                ? 'must have at least one apple and pear for this order'
+                : null,
+            (val) => (val > 100 ? 'order must be at least 100' : null),
+          ],
         },
       ],
     });

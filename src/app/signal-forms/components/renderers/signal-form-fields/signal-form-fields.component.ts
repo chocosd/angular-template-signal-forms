@@ -25,8 +25,8 @@ export class SignalFormFieldsComponent<TModel> {
 
   protected visibleFields = computed<SignalFormField<TModel>[]>(() => {
     return this.fields().filter((f) => {
-      const hide = f.hide;
-      return !(typeof hide === 'function' ? hide(this.form()) : !!hide);
+      const hidden = f.hidden;
+      return !(typeof hidden === 'function' ? hidden(this.form()) : !!hidden);
     });
   });
 

@@ -87,7 +87,7 @@ export type BuilderField<
   config?: ConfigTypeForField<TType>;
   validators?: ValidatorFn<TModel[TKey], TModel>[];
   computedValue?: (form: SignalFormContainer<TModel>) => TModel[TKey];
-  hide?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
+  hidden?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
   disabled?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
   type: TType;
   label: string;
@@ -110,7 +110,7 @@ type SignalFormFieldBuilderForKey<
       heading: string;
       subheading: string;
       fields: SignalFormFieldBuilderInput<TModel[K]>[];
-      hide?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
+      hidden?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
       disabled?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
       config?: {
         view?: 'row' | 'stacked' | 'collapsable';
