@@ -48,7 +48,7 @@ export interface FormOption {
   value: string | number | boolean;
 }
 
-export type ValidatorFn<T, TModel> = (
+export type SignalValidatorFn<T, TModel> = (
   value: T,
   form: SignalFormContainer<TModel>,
 ) => string | null;
@@ -85,7 +85,7 @@ export type BuilderField<
 > = {
   name: TKey;
   config?: ConfigTypeForField<TType>;
-  validators?: ValidatorFn<TModel[TKey], TModel>[];
+  validators?: SignalValidatorFn<TModel[TKey], TModel>[];
   computedValue?: (form: SignalFormContainer<TModel>) => TModel[TKey];
   hidden?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
   disabled?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
@@ -112,11 +112,13 @@ type SignalFormFieldBuilderForKey<
       fields: SignalFormFieldBuilderInput<TModel[K]>[];
       hidden?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
       disabled?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
-      config?: {
-        view?: 'row' | 'stacked' | 'collapsable';
-      };
+      config?: NestedSignalFormConfig;
     }
   : FieldBuilderByType<TModel, K>;
+
+export type NestedSignalFormConfig = {
+  view?: 'row' | 'stacked' | 'collapsable';
+};
 
 export type LoadOptionsFn = (
   search: string,
@@ -197,7 +199,12 @@ export interface SignalFormContainer<TModel> {
   save(): void;
   value: Signal<TModel>;
   rawValue: Signal<TModel>;
+  config: SignalFormConfig;
 }
+
+export type SignalFormConfig = {
+  view?: 'row' | 'stacked';
+};
 
 export type ElementTypeForField<T extends FormFieldType> = T extends
   | FormFieldType.TEXT

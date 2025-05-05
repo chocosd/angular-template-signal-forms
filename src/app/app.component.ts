@@ -4,9 +4,10 @@ import { SignalFormComponent } from './signal-forms/components/renderers/signal-
 import { FormFieldType } from './signal-forms/enums/form-field-type.enum';
 import { FormBuilder } from './signal-forms/helpers/form-builder';
 import {
-  SignalFormContainer,
-  SignalFormFieldBuilderInput,
+  type SignalFormContainer,
+  type SignalFormFieldBuilderInput,
 } from './signal-forms/models/signal-form.model';
+import { SignalValidators } from './signal-forms/validators/signal-validators';
 
 export type Basket = {
   apples: number;
@@ -71,6 +72,9 @@ const addressForm: SignalFormFieldBuilderInput<Basket> = {
       },
     },
   ],
+  config: {
+    view: 'collapsable',
+  },
 };
 
 @Component({
@@ -91,14 +95,14 @@ export class AppComponent implements OnInit {
         postcode: 'sp3 6ny',
         country: 'russia',
       },
-      apples: 2,
-      pears: 2,
-      applePrice: 0.5,
-      pearPrice: 0.7,
-      appleTotal: 1,
-      pearTotal: 1.4,
+      apples: 20,
+      pears: 80,
+      applePrice: 1,
+      pearPrice: 2,
+      appleTotal: 51,
+      pearTotal: 50,
       isOrganic: false,
-      total: 2.4,
+      total: 101,
     };
 
     this.form = FormBuilder.createForm<Basket>({
@@ -164,23 +168,18 @@ export class AppComponent implements OnInit {
           name: 'total',
           label: 'Total Price',
           type: FormFieldType.NUMBER,
-          computedValue: (form) => {
-            const appleTotal = form.getField('appleTotal').value();
-            const pearTotal = form.getField('pearTotal').value();
-            return appleTotal + pearTotal;
-          },
+          computedValue: (form) =>
+            form.getField('appleTotal').value() +
+            form.getField('pearTotal').value(),
           validators: [
-            (val, form) =>
-              !(
-                form.getField('applePrice').value() ||
-                form.getField('pearPrice').value()
-              )
-                ? 'must have at least one apple and pear for this order'
-                : null,
-            (val) => (val > 100 ? 'order must be at least 100' : null),
+            SignalValidators.hasValue('applePrice'),
+            SignalValidators.hasValue('pearPrice'),
+            SignalValidators.min(100),
           ],
         },
       ],
+      config: {},
+      onSave: (value) => this.save(value),
     });
   }
 

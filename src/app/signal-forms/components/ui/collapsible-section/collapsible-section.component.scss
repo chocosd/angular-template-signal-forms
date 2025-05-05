@@ -1,0 +1,27 @@
+.collapsable-header {
+  display: flex;
+
+  &-content {
+    flex: 1;
+  }
+
+  & .collapsable-button-container {
+    flex: 0;
+  }
+}
+
+.collapsable-button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 12px;
+}
+
+.collapsable-button {
+  cursor: pointer;
+  color: #828689;
+
+  &:hover {
+    color: #00aeff;
+  }
+}
