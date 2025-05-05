@@ -1,12 +1,13 @@
 import { computed, signal, WritableSignal } from '@angular/core';
 import { FormStatus } from '../enums/form-status.enum';
 import {
+  SignalFormConfig,
   type ErrorMessage,
   type SignalFormContainer,
   type SignalFormField,
   type SignalFormFieldBuilderInput,
   type SignalFormFieldForKey,
-  type ValidatorFn,
+  type SignalValidatorFn,
 } from '../models/signal-form.model';
 
 export class FormBuilder {
@@ -14,6 +15,7 @@ export class FormBuilder {
     model: TModel;
     title?: string;
     fields: SignalFormFieldBuilderInput<TModel>[];
+    config?: SignalFormConfig;
     onSave?: (value: TModel) => void;
   }): SignalFormContainer<TModel> {
     const status = signal<FormStatus>(FormStatus.Idle);
@@ -62,6 +64,7 @@ export class FormBuilder {
       validateForm: this.validateForm(fields, form),
       reset: this.resetForm(fields, { ...args.model }),
       getErrors: this.getErrors(fields),
+      config: args.config,
       save: this.save(fields, status, form, args.onSave),
     });
 
@@ -107,6 +110,7 @@ export class FormBuilder {
       const nestedForm = this.createForm({
         model: nestedModel,
         fields: field.fields,
+        config: { view: 'row' },
       });
 
       baseField.form = nestedForm;
@@ -143,7 +147,10 @@ export class FormBuilder {
         field.touched.set(true);
 
         const validators = field.validators ?? [];
-        for (const validator of validators as ValidatorFn<unknown, TModel>[]) {
+        for (const validator of validators as SignalValidatorFn<
+          unknown,
+          TModel
+        >[]) {
           const error = validator(field.value(), form);
           if (error) {
             field.error.set(error);

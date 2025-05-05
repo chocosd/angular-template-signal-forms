@@ -2,17 +2,38 @@
   @if (field.fields?.length) {
     <section
       class="nested-form-section"
-      [ngClass]="field.config?.view ?? 'stacked'"
+      [class]="'form-group-' + (field.config?.view ?? 'stacked')"
     >
-      <div class="nested-form-title">
-        <h2 class="nested-form-heading">{{ field.heading }}</h2>
-        <h4 class="nested-form-subheading">{{ field.subheading }}</h4>
-      </div>
-      <div class="nested-form-fields">
-        <signal-form-fields [form]="field.form" [fields]="field.fields" />
-      </div>
+      @if (field.config?.view === "collapsable") {
+        <collapsible-section
+          [summaryTemplate]="titleTemplate"
+          [bodyTemplate]="fieldsTemplate"
+          [summaryTemplateContext]="{ $implicit: field }"
+          [bodyTemplateContext]="{ $implicit: field }"
+        />
+      } @else {
+        <ng-container
+          *ngTemplateOutlet="titleTemplate; context: { $implicit: field }"
+        />
+        <ng-container
+          *ngTemplateOutlet="fieldsTemplate; context: { $implicit: field }"
+        />
+      }
     </section>
   } @else {
     <signal-form-input-item [field]="field" [form]="form()" />
   }
 }
+
+<ng-template #titleTemplate let-field>
+  <div class="nested-form-title">
+    <h2 class="nested-form-heading">{{ field.heading }}</h2>
+    <h4 class="nested-form-subheading">{{ field.subheading }}</h4>
+  </div>
+</ng-template>
+
+<ng-template #fieldsTemplate let-field>
+  <div class="nested-form-fields">
+    <signal-form-fields [form]="field.form" [fields]="field.fields" />
+  </div>
+</ng-template>

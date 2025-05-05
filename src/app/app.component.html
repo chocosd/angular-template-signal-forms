@@ -1,6 +1,5 @@
 <router-outlet />
 
-@if (form) {
+@if (!!form) {
   <app-signal-form [form]="form" (onSave)="save($event)" />
-  <!-- <app-signal-form-save-button [form]="form" (onSave)="save()" /> -->
 }

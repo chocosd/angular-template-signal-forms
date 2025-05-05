@@ -1,3 +1,13 @@
+:host {
+  &.form-group-row {
+    flex-direction: row;
+
+    & > signal-form-input-item {
+      flex: 1 1;
+    }
+  }
+}
+
 .nested-form {
   &-section {
     border-top: 1px solid #e2efef;
@@ -37,5 +47,39 @@
     & > signal-form-fields {
       width: 100%;
     }
+  }
+}
+
+.form-group-stacked {
+  .nested-form-title {
+    margin-bottom: 1rem;
+  }
+
+  .nested-form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+}
+
+.form-group-row {
+  display: flex;
+  gap: 2rem;
+
+  .nested-form-section {
+    .nested-form-title {
+      flex: 0 0 250px;
+    }
+
+    &:has(> .nested-form-fields .form-group-stacked) .nested-form-title {
+      flex: 1 1 50%;
+    }
+  }
+
+  .nested-form-fields {
+    display: flex;
+    flex-wrap: wrap;
+    flex: 1;
+    gap: 1rem 2rem;
   }
 }

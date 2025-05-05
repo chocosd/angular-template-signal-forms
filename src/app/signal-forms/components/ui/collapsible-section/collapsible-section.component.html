@@ -1,0 +1,34 @@
+<section class="collapsable-header">
+  <div class="collapsable-header-content">
+    @if (summaryTemplate?.(); as summaryTemplate) {
+      <ng-container
+        *ngTemplateOutlet="summaryTemplate; context: summaryTemplateContext?.()"
+      />
+    } @else {
+      <ng-content select="[summary]" />
+    }
+  </div>
+  <aside class="collapsable-button-container">
+    <lucide-icon
+      class="collapsable-button"
+      [img]="shouldShow() ? chevronDown : chevronUp"
+      (click)="toggle()"
+    />
+  </aside>
+</section>
+@if (shouldShow()) {
+  <div
+    [@expandCollapse]="collapsing() ? 'closed' : 'open'"
+    (@expandCollapse.done)="onDone($event)"
+  >
+    <div @growFadeIn>
+      @if (bodyTemplate?.(); as bodyTemplate) {
+        <ng-container
+          *ngTemplateOutlet="bodyTemplate; context: bodyTemplateContext?.()"
+        />
+      } @else {
+        <ng-content select="[body]" />
+      }
+    </div>
+  </div>
+}
