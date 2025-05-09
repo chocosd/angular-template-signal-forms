@@ -3,14 +3,12 @@
   flex-direction: column;
   gap: 4px;
 
-  &.has-error .form-input-wrapper {
-    border: 1px solid #f44336;
-    background-color: #fff6f6;
-  }
+  &.has-error .form-input {
+    border-color: #f44336;
 
-  &.is-success .form-input-wrapper {
-    border: 1px solid #00c292;
-    background-color: #f6fff9;
+    &:focus {
+      outline-color: #f44336;
+    }
   }
 }
 
@@ -23,20 +21,7 @@
 
 .form-input-wrapper {
   position: relative;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 6px 12px;
   display: flex;
-  align-items: center;
-  background-color: #fff;
-  transition:
-    border-color 0.2s,
-    box-shadow 0.2s;
-
-  &:focus-within {
-    border-color: #3f51b5;
-    box-shadow: 0 0 0 1px #3f51b5;
-  }
 
   & > * {
     flex: 1 0 100%;
@@ -45,12 +30,24 @@
 }
 
 .form-input {
-  border: none;
-  outline: none;
-  flex: 1;
-  font-size: 15px;
-  background: transparent;
-  padding: 4px 0;
+  font-size: 1rem;
+  width: 100%;
+  color: #334155;
+  padding-block: 0.5rem;
+  padding-inline: 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  box-shadow:
+    0 0 #0000,
+    0 0 #0000,
+    0 1px 2px 0 rgba(18, 18, 23, 0.05);
+  transition:
+    background 0.2s,
+    color 0.2s,
+    border-color 0.2s,
+    outline-color 0.2s,
+    box-shadow 0.2s;
+  appearance: none;
 
   &.filled {
     font-weight: 500;
@@ -154,4 +151,15 @@ signal-form-fields {
 .form-button:disabled {
   background-color: #b3cdfa;
   cursor: not-allowed;
+}
+
+.form-error-highlight {
+  & .form-input {
+    border-width: 2px;
+    animation: shake 0.3s ease-in-out;
+
+    &:focus {
+      border-width: 3px;
+    }
+  }
 }

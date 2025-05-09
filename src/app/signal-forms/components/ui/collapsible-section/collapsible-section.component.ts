@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -17,7 +17,7 @@ import { expandCollapse, growFadeIn } from '../../../animations/animations';
 @Component({
   selector: 'collapsible-section',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule],
+  imports: [NgTemplateOutlet, LucideAngularModule],
   animations: [expandCollapse, growFadeIn],
   templateUrl: './collapsible-section.component.html',
   styleUrls: ['./collapsible-section.component.scss'],
@@ -51,7 +51,6 @@ export class CollapsibleSectionComponent {
   protected shouldShow = computed(() => !this.collapsed() || this.collapsing());
 
   protected onDone(event: ExpandedAnimationEvent): void {
-    console.log(event);
     if (event.toState === 'closed') {
       this.collapsed.set(true);
       this.collapsing.set(false);

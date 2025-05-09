@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormFieldType } from '../../../enums/form-field-type.enum';
-import { NumberFieldConfig } from '../../../models/signal-form.model';
+import { type NumberFieldConfig } from '../../../models/signal-field-configs.model';
 import { BaseInputDirective } from '../../base/base-input/base-input.directive';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'app-form-number-field',
+  selector: 'signal-form-number-field',
   standalone: true,
   templateUrl: './form-number-field.component.html',
 })

@@ -16,7 +16,18 @@
     "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "ES2022",
-    "module": "ES2022"
+    "module": "ES2022",
+    "baseUrl": "./src",
+    "paths": {
+      "@models/*": ["app/signal-forms/models/*"],
+      "@services/*": ["app/signal-forms/services/*"],
+      "@validators/*": ["app/signal-forms/validators/*"],
+      "@enums/*": ["app/signal-forms/enums/*"],
+      "@renderers/*": ["app/signal-forms/components/renderers/*"],
+      "@fields/*": ["app/signal-forms/components/fields/*"],
+      "@base/*": ["app/signal-forms/components/base/*"],
+      "@ui/*": ["app/signal-forms/components/ui/*"]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

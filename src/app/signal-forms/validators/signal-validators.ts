@@ -1,6 +1,6 @@
 import {
-  SignalFormContainer,
-  SignalValidatorFn,
+  type SignalFormContainer,
+  type SignalValidatorFn,
 } from '../models/signal-form.model';
 
 export class SignalValidators {

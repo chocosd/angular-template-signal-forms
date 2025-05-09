@@ -3,6 +3,7 @@
     <section
       class="nested-form-section"
       [class]="'form-group-' + (field.config?.view ?? 'stacked')"
+      [style.gridArea]="field.name"
     >
       @if (field.config?.view === "collapsable") {
         <collapsible-section

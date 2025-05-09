@@ -1,0 +1,29 @@
+<div
+  class="file-upload-dropzone"
+  [class.dragging]="isDragging()"
+  (drop)="onDrop($event)"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave()"
+  (click)="openFileDialog(fileInput)"
+>
+  <div class="upload-icon">☁️</div>
+  <div class="upload-text">
+    {{ config()?.uploadText || "Click or drag a file to upload" }}
+  </div>
+  @if (value()) {
+    <div class="uploaded-file">{{ value()?.name }}</div>
+  }
+  <input
+    #fileInput
+    [attr.name]="name()"
+    type="file"
+    [disabled]="disabled()"
+    [accept]="config()?.accept?.join(',')"
+    (change)="onFileChange($event)"
+  />
+  @if (uploadProgress() !== null) {
+    <div class="progress-bar">
+      <div class="progress" [style.width.%]="uploadProgress()"></div>
+    </div>
+  }
+</div>

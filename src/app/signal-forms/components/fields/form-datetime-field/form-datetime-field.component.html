@@ -1,1 +1,9 @@
-<p>form-datetime-field works!</p>
+<input
+  [attr.name]="name()"
+  class="form-input"
+  type="datetime-local"
+  [value]="formattedValue()"
+  [disabled]="disabled()"
+  (input)="handleInput($event)"
+  (blur)="handleBlur()"
+/>

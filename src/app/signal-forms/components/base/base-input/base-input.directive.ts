@@ -1,6 +1,14 @@
-import { Directive, effect, input, model, signal } from '@angular/core';
+import {
+  Directive,
+  effect,
+  ElementRef,
+  inject,
+  input,
+  model,
+  signal,
+} from '@angular/core';
 import { FormFieldType } from '../../../enums/form-field-type.enum';
-import { ElementTypeForField } from '../../../models/signal-form.model';
+import { type ElementTypeForField } from '../../../models/signal-form.model';
 
 @Directive()
 export abstract class BaseInputDirective<
@@ -8,18 +16,20 @@ export abstract class BaseInputDirective<
   TValue,
   TFormConfig,
 > {
-  public label = input<string>('');
   public hint = input<string>('');
-  public error = input<string | null>();
   public disabled = input<boolean>(false);
   public config = input<TFormConfig | undefined>();
   public type = input<TFieldType>();
   public value = model.required<TValue | null>();
+  public error = model<string | null>();
   public touched = model.required<boolean>();
   public dirty = model.required<boolean>();
+  public name = input.required<string>();
 
   private initialValue = signal<TValue | null>(null);
   private hasCapturedInitial = signal(false);
+
+  private readonly elementRef = inject(ElementRef);
 
   constructor() {
     effect(() => {
@@ -52,6 +62,7 @@ export abstract class BaseInputDirective<
   }
 
   protected extractValue(element: ElementTypeForField<TFieldType>): TValue {
+    console.log(this.value(), element);
     if (element instanceof HTMLInputElement) {
       if (this.isCheckboxFieldType()) {
         return element.checked as TValue;

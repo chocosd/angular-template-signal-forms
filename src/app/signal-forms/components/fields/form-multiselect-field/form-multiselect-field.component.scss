@@ -1,0 +1,36 @@
+.multi-select-wrapper {
+  border: 1px solid #ccc;
+  padding: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  cursor: pointer;
+  min-height: 40px;
+
+  .chip {
+    background: #e0f7fa;
+    border-radius: 16px;
+    padding: 2px 8px;
+    margin: 2px;
+    display: flex;
+    align-items: center;
+
+    &-list {
+      width: 100%;
+      flex: 0 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .remove-btn {
+      border: none;
+      background: none;
+      margin-left: 4px;
+      cursor: pointer;
+    }
+  }
+
+  .placeholder {
+    opacity: 0.5;
+    margin: 4px;
+  }
+}

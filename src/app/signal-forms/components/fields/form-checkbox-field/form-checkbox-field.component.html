@@ -1,17 +1,12 @@
-<div class="flex flex-col gap-1">
-  <label class="flex items-center space-x-2">
-    <input
-      type="checkbox"
-      class="checkbox"
-      [disabled]="disabled()"
-      [checked]="value()"
-      (change)="handleInput($event)"
-      (blur)="handleBlur()"
-    />
-    <span>{{ label() }}</span>
-  </label>
-
-  @if (error()) {
-    <span class="text-sm text-red-500">{{ error() }}</span>
-  }
-</div>
+<label class="form-checkbox-wrapper">
+  <input
+    type="checkbox"
+    [attr.name]="name()"
+    class="checkbox"
+    [disabled]="disabled()"
+    [checked]="value()"
+    (change)="handleInput($event)"
+    (blur)="handleBlur()"
+  />
+  <span class="form-checkbox-label">{{ label() }}</span>
+</label>

@@ -1,0 +1,11 @@
+<div class="chip-option-list" [attr.name]="name()">
+  @for (option of options(); track option.value) {
+    <div
+      class="chip-option"
+      [class.selected]="isSelected(option)"
+      (click)="toggleOption(option)"
+    >
+      {{ option.label }}
+    </div>
+  }
+</div>

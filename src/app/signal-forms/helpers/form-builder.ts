@@ -1,21 +1,21 @@
 import { computed, signal, WritableSignal } from '@angular/core';
-import { FormStatus } from '../enums/form-status.enum';
+import { FormStatus } from '@enums/form-status.enum';
 import {
-  SignalFormConfig,
   type ErrorMessage,
+  type SignalFormConfig,
   type SignalFormContainer,
   type SignalFormField,
   type SignalFormFieldBuilderInput,
   type SignalFormFieldForKey,
   type SignalValidatorFn,
-} from '../models/signal-form.model';
+} from '@models/signal-form.model';
 
 export class FormBuilder {
   static createForm<TModel>(args: {
     model: TModel;
     title?: string;
     fields: SignalFormFieldBuilderInput<TModel>[];
-    config?: SignalFormConfig;
+    config?: SignalFormConfig<TModel>;
     onSave?: (value: TModel) => void;
   }): SignalFormContainer<TModel> {
     const status = signal<FormStatus>(FormStatus.Idle);
@@ -43,13 +43,11 @@ export class FormBuilder {
             return acc;
           }
 
-          if ('form' in field && field.form) {
-            (acc[field.name] as keyof TModel) = (
-              field.form as SignalFormContainer<keyof TModel>
-            ).getValue();
-          } else {
-            (acc[field.name] as keyof TModel as unknown) = field.value();
+          if (!isDisabled) {
+            (acc[field.name as keyof TModel] as unknown) =
+              this.getFieldOutputValue(field);
           }
+
           return acc;
         }, {} as TModel);
       }),
@@ -81,6 +79,19 @@ export class FormBuilder {
     });
   }
 
+  private static getFieldOutputValue<TModel>(
+    field: SignalFormField<TModel>,
+  ): unknown {
+    if ('form' in field && field.form) {
+      return (
+        field.form as SignalFormContainer<TModel[keyof TModel]>
+      ).getValue();
+    }
+
+    //TODO: Tighten typing here for autocomplete
+    return field.value();
+  }
+
   private static anyDirty<TModel>(fields: SignalFormField<TModel>[]) {
     return computed(() => {
       return fields.some((field) =>
@@ -95,9 +106,13 @@ export class FormBuilder {
     field: SignalFormFieldBuilderInput<TModel>,
     model: TModel,
   ): SignalFormField<TModel> {
+    const rawValue = model[field.name as keyof TModel];
+
+    const valueSignal = signal<TModel[keyof TModel]>(rawValue);
+
     const baseField: any = {
       ...field,
-      value: signal(model[field.name as keyof TModel]),
+      value: valueSignal,
       error: signal<string | null>(null),
       touched: signal<boolean>(false),
       dirty: signal<boolean>(false),
@@ -110,8 +125,10 @@ export class FormBuilder {
       const nestedForm = this.createForm({
         model: nestedModel,
         fields: field.fields,
-        config: { view: 'row' },
+        config: field.config ?? { view: 'row', layout: 'flex' },
       });
+
+      console.log(nestedForm);
 
       baseField.form = nestedForm;
       baseField.fields = nestedForm.fields;

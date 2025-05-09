@@ -1,0 +1,36 @@
+<div class="color-field-wrapper">
+  @if (isSwatchOnly()) {
+    <label class="color-swatch">
+      <input
+        type="color"
+        [attr.name]="name()"
+        [value]="currentColor()"
+        [disabled]="disabled()"
+        (input)="onColorInputChange($event)"
+        (blur)="handleBlur()"
+      />
+      <span class="swatch-display" [style.background]="currentColor()"></span>
+    </label>
+  } @else {
+    <div class="color-picker-full">
+      <input
+        type="color"
+        [attr.name]="name()"
+        class="color-input"
+        [value]="currentColor()"
+        [disabled]="disabled()"
+        (input)="onColorInputChange($event)"
+        (blur)="handleBlur()"
+      />
+
+      <input
+        type="text"
+        class="hex-input"
+        [value]="inputValue()"
+        [disabled]="disabled()"
+        (input)="onTextInputChange($event.target.value)"
+        (blur)="handleBlur()"
+      />
+    </div>
+  }
+</div>

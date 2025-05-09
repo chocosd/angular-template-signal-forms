@@ -8,4 +8,12 @@ export enum FormFieldType {
   NUMBER = 'number',
   CHECKBOX = 'checkbox',
   DATETIME = 'datetime',
+  COLOR = 'color',
+  SWITCH = 'switch',
+  SLIDER = 'slider',
+  FILE = 'file',
+  RATING = 'rating',
+  MASKED = 'masked',
+  MULTISELECT = 'multiselect',
+  CHIPLIST = 'chiplist',
 }

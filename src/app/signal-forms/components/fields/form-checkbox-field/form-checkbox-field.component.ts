@@ -1,12 +1,13 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { FormFieldType } from '../../../enums/form-field-type.enum';
-import { CheckboxFieldConfig } from '../../../models/signal-form.model';
+import { type CheckboxFieldConfig } from '../../../models/signal-field-configs.model';
 import { BaseInputDirective } from '../../base/base-input/base-input.directive';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'app-form-checkbox-field',
+  selector: 'signal-form-checkbox-field',
   standalone: true,
+  styleUrl: './form-checkbox-field.component.scss',
   templateUrl: './form-checkbox-field.component.html',
 })
 export class FormCheckboxFieldComponent extends BaseInputDirective<
@@ -14,6 +15,8 @@ export class FormCheckboxFieldComponent extends BaseInputDirective<
   boolean,
   CheckboxFieldConfig
 > {
+  public label = input<string>('');
+
   protected override extractValue(element: HTMLInputElement): boolean {
     return element.checked;
   }
