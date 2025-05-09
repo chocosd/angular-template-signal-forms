@@ -2,12 +2,13 @@
   <input
     type="number"
     class="form-input"
+    [attr.name]="name()"
     [placeholder]="config()?.placeholder"
     [disabled]="disabled()"
+    [step]="config()?.precision ?? 1"
     [(value)]="value"
     (input)="handleInput($event)"
     (change)="handleBlur()"
     (blur)="handleBlur()"
-    [step]="config()?.precision ?? 0.01"
   />
 </div>

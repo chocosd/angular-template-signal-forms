@@ -10,7 +10,7 @@ export interface TextFieldConfig {
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'app-form-text-field',
+  selector: 'signal-form-text-field',
   standalone: true,
   templateUrl: 'form-text-field.component.html',
 })

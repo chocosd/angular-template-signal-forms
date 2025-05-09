@@ -1,1 +1,12 @@
-<p>form-select-field works!</p>
+<div
+  class="form-select-wrapper"
+  tabindex="0"
+  [attr.name]="name()"
+  (click)="toggleDropdown()"
+  (keydown.enter)="toggleDropdown()"
+>
+  <div class="form-select-display">
+    {{ displayValue() || (config()?.placeholder ?? "Select an option") }}
+  </div>
+  <div class="form-select-arrow">▾</div>
+</div>

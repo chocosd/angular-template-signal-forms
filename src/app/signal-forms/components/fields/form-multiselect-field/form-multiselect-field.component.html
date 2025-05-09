@@ -1,0 +1,24 @@
+<div
+  class="multi-select-wrapper"
+  #multiselectWrapper
+  tabindex="0"
+  [attr.name]="name()"
+  (keydown.enter)="toggleDropdown()"
+>
+  <div class="chip-list" (click)="toggleDropdown()">
+    @for (item of value() ?? []; track item.value) {
+      <div class="chip">
+        {{ item.label }}
+        <button type="button" class="remove-btn" (click)="removeChip(item)">
+          ×
+        </button>
+      </div>
+    }
+  </div>
+
+  @if (!value()?.length && config()?.placeholder) {
+    <div class="placeholder">
+      {{ config()?.placeholder }}
+    </div>
+  }
+</div>

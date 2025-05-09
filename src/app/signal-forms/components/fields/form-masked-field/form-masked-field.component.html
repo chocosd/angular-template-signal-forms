@@ -1,0 +1,14 @@
+<div class="form-input-wrapper">
+  <input
+    #maskedInput
+    [attr.name]="name()"
+    type="text"
+    class="form-input"
+    [placeholder]="config()?.placeholder"
+    [disabled]="disabled()"
+    [value]="value()"
+    (keydown)="onKeyDown($event)"
+    (input)="onInput($event)"
+    (blur)="handleBlur()"
+  />
+</div>

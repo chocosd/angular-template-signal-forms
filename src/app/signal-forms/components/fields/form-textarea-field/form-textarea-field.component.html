@@ -1,1 +1,12 @@
-<p>form-textarea-field works!</p>
+<div class="form-input-wrapper">
+  <textarea
+    class="form-input"
+    [attr.name]="name()"
+    [placeholder]="config()?.placeholder"
+    [disabled]="disabled()"
+    [(value)]="value"
+    (input)="handleInput($event)"
+    (change)="handleBlur()"
+    (blur)="handleBlur()"
+  ></textarea>
+</div>

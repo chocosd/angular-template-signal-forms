@@ -1,29 +1,28 @@
-.autocomplete-wrapper {
-  position: relative;
-  input {
-    width: 100%;
+.autocomplete-dropdown {
+  position: absolute;
+  z-index: 10;
+  background: white;
+  border: 1px solid #ccc;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  list-style: none;
+  padding: unset;
+  margin: 0;
+  top: 38px;
+  flex-direction: column;
+
+  li {
     padding: 0.5rem;
-  }
+    cursor: pointer;
 
-  .autocomplete-dropdown {
-    position: absolute;
-    z-index: 10;
-    background: white;
-    border: 1px solid #ccc;
-    width: 100%;
-    max-height: 200px;
-    overflow-y: auto;
-    list-style: none;
-    padding: unset;
-    margin: 0;
-
-    li {
-      padding: 0.5rem;
-      cursor: pointer;
-
-      &:hover {
-        background: #f4f4f4;
-      }
+    &:hover {
+      background: #f4f4f4;
     }
   }
+}
+
+.dropdown-open {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 }

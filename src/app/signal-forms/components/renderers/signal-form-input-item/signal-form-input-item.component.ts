@@ -4,32 +4,60 @@ import {
   computed,
   effect,
   ElementRef,
+  HostBinding,
   Injector,
   input,
+  Optional,
   Renderer2,
   signal,
   WritableSignal,
 } from '@angular/core';
+import { FormColorFieldComponent } from '@fields/form-color-field/form-color-field.component';
+import { FormFileFieldComponent } from '@fields/form-file-field/form-file-field.component';
+import { FormMaskedFieldComponent } from '@fields/form-masked-field/form-masked-field.component';
+import { FormRatingFieldComponent } from '@fields/form-rating-field/form-rating-field.component';
+import { FormSliderFieldComponent } from '@fields/form-slider-field/form-slider-field.component';
+import { FormSwitchFieldComponent } from '@fields/form-switch-field/form-switch-field.component';
 import { FormFieldType } from '../../../enums/form-field-type.enum';
 import {
-  SignalFormContainer,
-  SignalFormField,
+  type SignalFormContainer,
+  type SignalFormField,
 } from '../../../models/signal-form.model';
+import { SignalFormHostDirective } from '../../base/host-directive/signal-form-host.directive';
 import { FormAutocompleteFieldComponent } from '../../fields/form-autocomplete-field/form-autocomplete-field.component';
 import { FormCheckboxFieldComponent } from '../../fields/form-checkbox-field/form-checkbox-field.component';
+import { FormDatetimeFieldComponent } from '../../fields/form-datetime-field/form-datetime-field.component';
+import { FormMultiselectFieldComponent } from '../../fields/form-multiselect-field/form-multiselect-field.component';
 import { FormNumberFieldComponent } from '../../fields/form-number-field/form-number-field.component';
+import { FormPasswordFieldComponent } from '../../fields/form-password-field/form-password-field.component';
+import { FormRadioFieldComponent } from '../../fields/form-radio-field/form-radio-field.component';
+import { FormSelectFieldComponent } from '../../fields/form-select-field/form-select-field.component';
 import { FormTextFieldComponent } from '../../fields/form-text-field/form-text-field.component';
+import { FormTextareaFieldComponent } from '../../fields/form-textarea-field/form-textarea-field.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   selector: 'signal-form-input-item',
   imports: [
-    FormNumberFieldComponent,
-    FormCheckboxFieldComponent,
-    FormTextFieldComponent,
     FormAutocompleteFieldComponent,
+    FormCheckboxFieldComponent,
+    FormDatetimeFieldComponent,
+    FormFileFieldComponent,
+    FormMultiselectFieldComponent,
+    FormNumberFieldComponent,
+    FormPasswordFieldComponent,
+    FormRadioFieldComponent,
+    FormSelectFieldComponent,
+    FormTextFieldComponent,
+    FormTextareaFieldComponent,
+    FormColorFieldComponent,
+    FormMaskedFieldComponent,
+    FormRatingFieldComponent,
+    FormSliderFieldComponent,
+    FormSwitchFieldComponent,
   ],
+  hostDirectives: [SignalFormHostDirective],
   templateUrl: './signal-form-input-item.component.html',
   styleUrl: './signal-form-input-item.component.scss',
 })
@@ -41,10 +69,17 @@ export class SignalFormInputItemComponent<TModel> {
 
   private initialized = signal(false);
 
+  @HostBinding('style.gridArea')
+  get gridArea(): string | null {
+    return this.field()?.name?.toString() ?? null;
+  }
+
   constructor(
-    private renderer: Renderer2,
-    private host: ElementRef,
-    private injector: Injector,
+    private readonly renderer: Renderer2,
+    private readonly host: ElementRef,
+    private readonly injector: Injector,
+    @Optional()
+    private readonly signalFormHostDirective: SignalFormHostDirective,
   ) {
     this.initializeComputedValueEffect();
     this.watchComputedValueEffect();
@@ -115,7 +150,6 @@ export class SignalFormInputItemComponent<TModel> {
         input.focus?.();
 
         this.renderer.addClass(el, 'form-error-highlight');
-        console.log(el);
 
         setTimeout(() => {
           this.renderer.removeClass(el, 'form-error-highlight');

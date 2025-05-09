@@ -3,28 +3,34 @@ import {
   Component,
   DestroyRef,
   effect,
+  ElementRef,
   inject,
   Injector,
   input,
+  Optional,
   signal,
+  viewChild,
+  ViewContainerRef,
 } from '@angular/core';
 
+import { NgClass } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { BaseInputDirective } from '@base/base-input/base-input.directive';
+import { SignalFormHostDirective } from '@base/host-directive/signal-form-host.directive';
+import { FormFieldType } from '@enums/form-field-type.enum';
+import { type AutocompleteFieldConfig } from '@models/signal-field-configs.model';
+import { type FormOption, type LoadOptionsFn } from '@models/signal-form.model';
+import { FormDropdownService } from '@services/form-dropdown.service';
 import { from, isObservable } from 'rxjs';
-import { FormFieldType } from '../../../enums/form-field-type.enum';
-import {
-  AutocompleteFieldConfig,
-  FormOption,
-  LoadOptionsFn,
-} from '../../../models/signal-form.model';
-import { BaseInputDirective } from '../../base/base-input/base-input.directive';
 
 @Component({
-  selector: 'app-form-autocomplete-field',
+  selector: 'signal-form-autocomplete-field',
   standalone: true,
+  imports: [NgClass],
   templateUrl: './form-autocomplete-field.component.html',
   styleUrl: './form-autocomplete-field.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  hostDirectives: [SignalFormHostDirective],
 })
 export class FormAutocompleteFieldComponent extends BaseInputDirective<
   FormFieldType.AUTOCOMPLETE,
@@ -32,6 +38,9 @@ export class FormAutocompleteFieldComponent extends BaseInputDirective<
   AutocompleteFieldConfig
 > {
   public loadOptions = input.required<LoadOptionsFn>();
+  public inputRef = viewChild<ElementRef<HTMLElement>>(
+    'autocompleteInputWrapper',
+  );
 
   protected search = signal('');
   protected options = signal<FormOption[]>([]);
@@ -40,9 +49,49 @@ export class FormAutocompleteFieldComponent extends BaseInputDirective<
   private destroyRef = inject(DestroyRef);
   private injector = inject(Injector);
 
-  constructor() {
+  private readonly dropdownService = inject(FormDropdownService);
+
+  constructor(
+    @Optional()
+    private readonly signalFormHostDirective: SignalFormHostDirective,
+  ) {
     super();
     this.searchQueryChangeEffect();
+    this.optionsOverlayEffect();
+  }
+
+  private get hostViewContainerRef(): ViewContainerRef | null {
+    return this.signalFormHostDirective?.viewContainerRef ?? null;
+  }
+
+  private optionsOverlayEffect(): void {
+    effect(
+      () => {
+        if (
+          !this.showDropdown() ||
+          !this.options().length ||
+          !this.inputRef()
+        ) {
+          return;
+        }
+
+        this.dropdownService.openDropdown<FormOption>({
+          options: this.options(),
+          reference: this.inputRef()!.nativeElement,
+          viewContainerRef: this.hostViewContainerRef!,
+          onSelect: (option) => {
+            if (option) {
+              this.setValue(option);
+            }
+            this.touched.set(true);
+            this.showDropdown.set(false);
+            this.dropdownService.destroyDropdown();
+          },
+          multiselect: false,
+        });
+      },
+      { injector: this.injector },
+    );
   }
 
   public onSelect(option: FormOption) {

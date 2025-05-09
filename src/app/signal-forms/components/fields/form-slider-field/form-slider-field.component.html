@@ -1,0 +1,12 @@
+<input
+  type="range"
+  class="form-slider"
+  [attr.name]="name()"
+  [min]="config()?.min"
+  [max]="config()?.max"
+  [step]="config()?.step ?? 1"
+  [value]="value()"
+  [disabled]="disabled()"
+  (input)="handleInput($event)"
+  (blur)="handleBlur()"
+/>

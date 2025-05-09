@@ -1,1 +1,16 @@
-<p>form-radio-field works!</p>
+<div class="form-radio-group">
+  @for (option of options(); track option.value) {
+    <label class="form-radio-option">
+      <input
+        type="radio"
+        [attr.name]="'form-radio-' + name() + '-' + option.value"
+        [value]="option.value"
+        [checked]="value() === option.value"
+        [disabled]="disabled()"
+        (input)="handleInput($event)"
+        (blur)="handleBlur()"
+      />
+      {{ option.label }}
+    </label>
+  }
+</div>

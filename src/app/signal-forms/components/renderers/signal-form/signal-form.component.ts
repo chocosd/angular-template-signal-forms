@@ -5,7 +5,8 @@ import {
   input,
   output,
 } from '@angular/core';
-import { SignalFormContainer } from '../../../models/signal-form.model';
+import { type SignalFormContainer } from '../../../models/signal-form.model';
+import { SignalFormHostDirective } from '../../base/host-directive/signal-form-host.directive';
 import { SignalFormErrorSummaryComponent } from '../form-field-error-summary/signal-form-error-summary.component';
 import { SignalFormFieldsComponent } from '../signal-form-fields/signal-form-fields.component';
 
@@ -16,6 +17,7 @@ import { SignalFormFieldsComponent } from '../signal-form-fields/signal-form-fie
   standalone: true,
   styleUrl: './signal-form.component.scss',
   templateUrl: './signal-form.component.html',
+  hostDirectives: [SignalFormHostDirective],
 })
 export class SignalFormComponent<TModel> {
   public form = input.required<SignalFormContainer<TModel>>();

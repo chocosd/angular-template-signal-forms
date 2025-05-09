@@ -1,0 +1,20 @@
+.chip-option-list {
+  display: flex;
+  flex: 0 auto;
+  gap: 0.5rem;
+
+  .chip-option {
+    padding: 4px 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background-color: #f5f5f5;
+    cursor: pointer;
+    font-size: 0.875rem;
+
+    &.selected {
+      background-color: #00acc1;
+      color: white;
+      border-color: transparent;
+    }
+  }
+}

@@ -1,0 +1,10 @@
+<div class="rating-stars" [attr.name]="name()">
+  @for (star of stars(); track $index) {
+    <span
+      class="star"
+      [class.filled]="value() >= star"
+      (click)="setRating(star)"
+      >★</span
+    >
+  }
+</div>

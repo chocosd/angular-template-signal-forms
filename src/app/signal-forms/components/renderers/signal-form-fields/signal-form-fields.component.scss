@@ -6,6 +6,12 @@
       flex: 1 1;
     }
   }
+
+  &.grid {
+    display: grid;
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .nested-form {

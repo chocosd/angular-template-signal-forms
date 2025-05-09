@@ -5,7 +5,7 @@ import {
   input,
   signal,
 } from '@angular/core';
-import { SignalFormContainer } from '../../../models/signal-form.model';
+import { type SignalFormContainer } from '../../../models/signal-form.model';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

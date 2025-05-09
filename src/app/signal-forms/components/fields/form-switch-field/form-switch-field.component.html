@@ -1,0 +1,12 @@
+<label class="switch-wrapper">
+  <input
+    type="checkbox"
+    class="switch-input"
+    [attr.name]="name()"
+    [checked]="value()"
+    [disabled]="disabled()"
+    (input)="handleInput($event)"
+    (blur)="handleBlur()"
+  />
+  <span class="switch-slider"></span>
+</label>
