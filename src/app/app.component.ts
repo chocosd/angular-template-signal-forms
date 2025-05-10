@@ -22,42 +22,42 @@ const pokemonList: FormOption<{ name: string; typings: string[] }>[] = [
     label: 'Bulbasaur',
     value: {
       name: 'Bulbasaur',
-      typings: ['Grass', 'Poison'],
+      typings: ['grass', 'poison'],
     },
   },
   {
     label: 'Ivysaur',
     value: {
       name: 'Ivysaur',
-      typings: ['Grass', 'Poison'],
+      typings: ['grass', 'poison'],
     },
   },
   {
     label: 'Venusaur',
     value: {
       name: 'Venusaur',
-      typings: ['Grass', 'Poison'],
+      typings: ['grass', 'poison'],
     },
   },
   {
     label: 'Charmander',
     value: {
       name: 'Charmander',
-      typings: ['Fire'],
+      typings: ['fire'],
     },
   },
   {
     label: 'Charmeleon',
     value: {
       name: 'Charmeleon',
-      typings: ['Fire'],
+      typings: ['fire'],
     },
   },
   {
     label: 'Charizard',
     value: {
       name: 'Charizard',
-      typings: ['Fire', 'Flying'],
+      typings: ['fire', 'Flying'],
     },
   },
   {
@@ -106,21 +106,21 @@ const pokemonList: FormOption<{ name: string; typings: string[] }>[] = [
     label: 'Weedle',
     value: {
       name: 'Weedle',
-      typings: ['Bug', 'Poison'],
+      typings: ['Bug', 'poison'],
     },
   },
   {
     label: 'Kakuna',
     value: {
       name: 'Kakuna',
-      typings: ['Bug', 'Poison'],
+      typings: ['Bug', 'poison'],
     },
   },
   {
     label: 'Beedrill',
     value: {
       name: 'Beedrill',
-      typings: ['Bug', 'Poison'],
+      typings: ['Bug', 'poison'],
     },
   },
   {
@@ -176,14 +176,14 @@ const pokemonList: FormOption<{ name: string; typings: string[] }>[] = [
     label: 'Ekans',
     value: {
       name: 'Ekans',
-      typings: ['Poison'],
+      typings: ['poison'],
     },
   },
   {
     label: 'Arbok',
     value: {
       name: 'Arbok',
-      typings: ['Poison'],
+      typings: ['poison'],
     },
   },
   {
@@ -218,42 +218,42 @@ const pokemonList: FormOption<{ name: string; typings: string[] }>[] = [
     label: 'Nidoran♀',
     value: {
       name: 'Nidoran♀',
-      typings: ['Poison'],
+      typings: ['poison'],
     },
   },
   {
     label: 'Nidorina',
     value: {
       name: 'Nidorina',
-      typings: ['Poison'],
+      typings: ['poison'],
     },
   },
   {
     label: 'Nidoqueen',
     value: {
       name: 'Nidoqueen',
-      typings: ['Poison', 'Ground'],
+      typings: ['poison', 'Ground'],
     },
   },
   {
     label: 'Nidoran♂',
     value: {
       name: 'Nidoran♂',
-      typings: ['Poison'],
+      typings: ['poison'],
     },
   },
   {
     label: 'Nidorino',
     value: {
       name: 'Nidorino',
-      typings: ['Poison'],
+      typings: ['poison'],
     },
   },
   {
     label: 'Nidoking',
     value: {
       name: 'Nidoking',
-      typings: ['Poison', 'Ground'],
+      typings: ['poison', 'Ground'],
     },
   },
   {
@@ -274,14 +274,14 @@ const pokemonList: FormOption<{ name: string; typings: string[] }>[] = [
     label: 'Vulpix',
     value: {
       name: 'Vulpix',
-      typings: ['Fire'],
+      typings: ['fire'],
     },
   },
   {
     label: 'Ninetales',
     value: {
       name: 'Ninetales',
-      typings: ['Fire'],
+      typings: ['fire'],
     },
   },
   {
@@ -302,63 +302,63 @@ const pokemonList: FormOption<{ name: string; typings: string[] }>[] = [
     label: 'Zubat',
     value: {
       name: 'Zubat',
-      typings: ['Poison', 'Flying'],
+      typings: ['poison', 'Flying'],
     },
   },
   {
     label: 'Golbat',
     value: {
       name: 'Golbat',
-      typings: ['Poison', 'Flying'],
+      typings: ['poison', 'Flying'],
     },
   },
   {
     label: 'Oddish',
     value: {
       name: 'Oddish',
-      typings: ['Grass', 'Poison'],
+      typings: ['grass', 'poison'],
     },
   },
   {
     label: 'Gloom',
     value: {
       name: 'Gloom',
-      typings: ['Grass', 'Poison'],
+      typings: ['grass', 'poison'],
     },
   },
   {
     label: 'Vileplume',
     value: {
       name: 'Vileplume',
-      typings: ['Grass', 'Poison'],
+      typings: ['grass', 'poison'],
     },
   },
   {
     label: 'Paras',
     value: {
       name: 'Paras',
-      typings: ['Bug', 'Grass'],
+      typings: ['Bug', 'grass'],
     },
   },
   {
     label: 'Parasect',
     value: {
       name: 'Parasect',
-      typings: ['Bug', 'Grass'],
+      typings: ['Bug', 'grass'],
     },
   },
   {
     label: 'Venonat',
     value: {
       name: 'Venonat',
-      typings: ['Bug', 'Poison'],
+      typings: ['Bug', 'poison'],
     },
   },
   {
     label: 'Venomoth',
     value: {
       name: 'Venomoth',
-      typings: ['Bug', 'Poison'],
+      typings: ['Bug', 'poison'],
     },
   },
   {
@@ -421,14 +421,14 @@ const pokemonList: FormOption<{ name: string; typings: string[] }>[] = [
     label: 'Growlithe',
     value: {
       name: 'Growlithe',
-      typings: ['Fire'],
+      typings: ['fire'],
     },
   },
   {
     label: 'Arcanine',
     value: {
       name: 'Arcanine',
-      typings: ['Fire'],
+      typings: ['fire'],
     },
   },
   {
@@ -498,35 +498,35 @@ const pokemonList: FormOption<{ name: string; typings: string[] }>[] = [
     label: 'Bellsprout',
     value: {
       name: 'Bellsprout',
-      typings: ['Grass', 'Poison'],
+      typings: ['grass', 'poison'],
     },
   },
   {
     label: 'Weepinbell',
     value: {
       name: 'Weepinbell',
-      typings: ['Grass', 'Poison'],
+      typings: ['grass', 'poison'],
     },
   },
   {
     label: 'Victreebel',
     value: {
       name: 'Victreebel',
-      typings: ['Grass', 'Poison'],
+      typings: ['grass', 'poison'],
     },
   },
   {
     label: 'Tentacool',
     value: {
       name: 'Tentacool',
-      typings: ['Water', 'Poison'],
+      typings: ['Water', 'poison'],
     },
   },
   {
     label: 'Tentacruel',
     value: {
       name: 'Tentacruel',
-      typings: ['Water', 'Poison'],
+      typings: ['Water', 'poison'],
     },
   },
   {
@@ -554,14 +554,14 @@ const pokemonList: FormOption<{ name: string; typings: string[] }>[] = [
     label: 'Ponyta',
     value: {
       name: 'Ponyta',
-      typings: ['Fire'],
+      typings: ['fire'],
     },
   },
   {
     label: 'Rapidash',
     value: {
       name: 'Rapidash',
-      typings: ['Fire'],
+      typings: ['fire'],
     },
   },
   {
@@ -631,14 +631,14 @@ const pokemonList: FormOption<{ name: string; typings: string[] }>[] = [
     label: 'Grimer',
     value: {
       name: 'Grimer',
-      typings: ['Poison'],
+      typings: ['poison'],
     },
   },
   {
     label: 'Muk',
     value: {
       name: 'Muk',
-      typings: ['Poison'],
+      typings: ['poison'],
     },
   },
   {
@@ -659,21 +659,21 @@ const pokemonList: FormOption<{ name: string; typings: string[] }>[] = [
     label: 'Gastly',
     value: {
       name: 'Gastly',
-      typings: ['Ghost', 'Poison'],
+      typings: ['Ghost', 'poison'],
     },
   },
   {
     label: 'Haunter',
     value: {
       name: 'Haunter',
-      typings: ['Ghost', 'Poison'],
+      typings: ['Ghost', 'poison'],
     },
   },
   {
     label: 'Gengar',
     value: {
       name: 'Gengar',
-      typings: ['Ghost', 'Poison'],
+      typings: ['Ghost', 'poison'],
     },
   },
   {
@@ -729,14 +729,14 @@ const pokemonList: FormOption<{ name: string; typings: string[] }>[] = [
     label: 'Exeggcute',
     value: {
       name: 'Exeggcute',
-      typings: ['Grass', 'Psychic'],
+      typings: ['grass', 'Psychic'],
     },
   },
   {
     label: 'Exeggutor',
     value: {
       name: 'Exeggutor',
-      typings: ['Grass', 'Psychic'],
+      typings: ['grass', 'Psychic'],
     },
   },
   {
@@ -778,14 +778,14 @@ const pokemonList: FormOption<{ name: string; typings: string[] }>[] = [
     label: 'Koffing',
     value: {
       name: 'Koffing',
-      typings: ['Poison'],
+      typings: ['poison'],
     },
   },
   {
     label: 'Weezing',
     value: {
       name: 'Weezing',
-      typings: ['Poison'],
+      typings: ['poison'],
     },
   },
   {
@@ -813,7 +813,7 @@ const pokemonList: FormOption<{ name: string; typings: string[] }>[] = [
     label: 'Tangela',
     value: {
       name: 'Tangela',
-      typings: ['Grass'],
+      typings: ['grass'],
     },
   },
   {
@@ -897,7 +897,7 @@ const pokemonList: FormOption<{ name: string; typings: string[] }>[] = [
     label: 'Magmar',
     value: {
       name: 'Magmar',
-      typings: ['Fire'],
+      typings: ['fire'],
     },
   },
   {
@@ -967,7 +967,7 @@ const pokemonList: FormOption<{ name: string; typings: string[] }>[] = [
     label: 'Flareon',
     value: {
       name: 'Flareon',
-      typings: ['Fire'],
+      typings: ['fire'],
     },
   },
   {
@@ -1037,7 +1037,7 @@ const pokemonList: FormOption<{ name: string; typings: string[] }>[] = [
     label: 'Moltres',
     value: {
       name: 'Moltres',
-      typings: ['Fire', 'Flying'],
+      typings: ['fire', 'Flying'],
     },
   },
   {
@@ -1075,7 +1075,7 @@ const pokemonList: FormOption<{ name: string; typings: string[] }>[] = [
       typings: ['Psychic'],
     },
   },
-];
+] as const;
 
 export type Basket = {
   apples: number;
@@ -1189,6 +1189,9 @@ export class AppComponent implements OnInit {
           name: 'postcode',
           label: 'postcode',
           type: FormFieldType.TEXT,
+          validators: [
+            (val, form) => (!val.length ? 'postcode is required' : null),
+          ],
         },
         {
           name: 'country',
@@ -1218,7 +1221,7 @@ export class AppComponent implements OnInit {
               value: 'normal',
             },
             {
-              label: 'Fire',
+              label: 'fire',
               value: 'fire',
             },
             {
@@ -1226,7 +1229,7 @@ export class AppComponent implements OnInit {
               value: 'water',
             },
             {
-              label: 'Grass',
+              label: 'grass',
               value: 'grass',
             },
             {
@@ -1242,7 +1245,7 @@ export class AppComponent implements OnInit {
               value: 'fighting',
             },
             {
-              label: 'Poison',
+              label: 'poison',
               value: 'poison',
             },
             {
@@ -1292,6 +1295,28 @@ export class AppComponent implements OnInit {
           label: 'Favourite Pokemon',
           type: FormFieldType.SELECT,
           options: pokemonList,
+          dynamicOptions: (form, options) => {
+            const selectedTypes = form
+              .getField('favouritePokemonTypes')
+              .value() as FormOption[];
+
+            if (!Array.isArray(selectedTypes) || selectedTypes.length === 0) {
+              return options;
+            }
+
+            const selectedTypeValues = selectedTypes.map((type) =>
+              String(type.value).toLowerCase(),
+            );
+
+            return (options as typeof pokemonList).filter((opt) => {
+              const types = opt.value.typings.map((t: string) =>
+                t.toLowerCase(),
+              );
+              return selectedTypeValues.every((selected) =>
+                types.includes(selected),
+              );
+            });
+          },
         },
         {
           name: 'instructions',
@@ -1381,10 +1406,7 @@ export class AppComponent implements OnInit {
             placeholderChar: '_',
             hint: 'Enter a 10-digit phone number',
           },
-          validators: [
-            (val) => (!val ? 'this is required' : null),
-            // SignalValidators.minLength(14) // full mask length
-          ],
+          validators: [(val) => (!val ? 'this is required' : null)],
         },
         {
           name: 'beastMode',
@@ -1508,5 +1530,6 @@ export class AppComponent implements OnInit {
     console.log(e);
     console.log('raw value', this.form.rawValue());
     console.log('value', this.form.value());
+    console.log(this.form.getErrors());
   }
 }

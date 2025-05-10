@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormFieldType } from '../../../enums/form-field-type.enum';
 import { type RadioFieldConfig } from '../../../models/signal-field-configs.model';
 import { type FormOption } from '../../../models/signal-form.model';
@@ -15,6 +15,4 @@ export class FormRadioFieldComponent extends BaseInputDirective<
   FormFieldType.RADIO,
   FormOption,
   RadioFieldConfig
-> {
-  public options = input.required<FormOption[]>();
-}
+> {}

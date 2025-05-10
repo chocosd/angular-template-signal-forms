@@ -67,6 +67,24 @@ export class SignalFormInputItemComponent<TModel> {
 
   protected readonly FormFieldType = FormFieldType;
 
+  protected filteredOptions = computed(() => {
+    const field = this.field();
+    const form = this.form();
+
+    if (!('options' in field)) {
+      return [];
+    }
+
+    const options = (field as any).options();
+    const dynamicOptionsFn = (field as any).dynamicOptions;
+
+    if (typeof dynamicOptionsFn !== 'function') {
+      return options;
+    }
+
+    return dynamicOptionsFn(form, options, field.value());
+  });
+
   private initialized = signal(false);
 
   @HostBinding('style.gridArea')
@@ -82,10 +100,13 @@ export class SignalFormInputItemComponent<TModel> {
     private readonly signalFormHostDirective: SignalFormHostDirective,
   ) {
     this.initializeComputedValueEffect();
+    this.initializeFormOptionsEffect();
     this.watchComputedValueEffect();
     this.validationEffect();
     this.focusEffect();
   }
+
+  private initializeFormOptionsEffect(): void {}
 
   private initializeComputedValueEffect(): void {
     effect(

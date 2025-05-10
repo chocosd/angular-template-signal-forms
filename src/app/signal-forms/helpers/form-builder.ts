@@ -1,4 +1,4 @@
-import { computed, signal, WritableSignal } from '@angular/core';
+import { computed, isSignal, signal, WritableSignal } from '@angular/core';
 import { FormStatus } from '@enums/form-status.enum';
 import {
   type ErrorMessage,
@@ -119,6 +119,14 @@ export class FormBuilder {
       focus: signal<boolean>(false),
     };
 
+    if ('options' in field && Array.isArray(field.options)) {
+      const optionsSignal = isSignal(field.options)
+        ? field.options
+        : signal(field.options);
+
+      baseField.options = optionsSignal;
+    }
+
     if ('fields' in field && Array.isArray(field.fields)) {
       const nestedModel = model[field.name as keyof TModel];
 
@@ -161,9 +169,17 @@ export class FormBuilder {
       let valid = true;
 
       for (const field of fields) {
-        field.touched.set(true);
+        if ('form' in field && field.form) {
+          const nestedValid = (
+            field.form as SignalFormContainer<TModel[keyof TModel]>
+          ).validateForm();
+          valid = valid && nestedValid;
+          continue;
+        }
 
+        field.touched.set(true);
         const validators = field.validators ?? [];
+
         for (const validator of validators as SignalValidatorFn<
           unknown,
           TModel
@@ -189,8 +205,14 @@ export class FormBuilder {
   ): () => void {
     return () => {
       for (const field of fields) {
+        if ('form' in field && field.form) {
+          (field.form as SignalFormContainer<TModel[keyof TModel]>).reset();
+          continue;
+        }
+
         const initialValue = initialModel[field.name as keyof TModel];
         (field.value as WritableSignal<unknown>).set(initialValue);
+
         field.touched.set(false);
         field.dirty.set(false);
         field.error.set(null);
@@ -230,12 +252,27 @@ export class FormBuilder {
   }
 
   private static getErrors<TModel>(fields: SignalFormField<TModel>[]) {
-    return (): ErrorMessage<TModel>[] =>
-      fields
-        .filter((field) => field.error())
-        .map((field) => ({
-          name: field.name,
-          message: field.error() ?? '',
-        }));
+    return (): ErrorMessage<TModel>[] => {
+      const errors: ErrorMessage<TModel>[] = [];
+
+      for (const field of fields) {
+        if ('form' in field && field.form) {
+          const nestedErrors = (
+            field.form as SignalFormContainer<TModel[keyof TModel]>
+          ).getErrors() as ErrorMessage<TModel>[];
+          errors.push(...nestedErrors);
+          continue;
+        }
+
+        if (field.error()) {
+          errors.push({
+            name: field.name,
+            message: field.error() ?? '',
+          });
+        }
+      }
+
+      return errors;
+    };
   }
 }
