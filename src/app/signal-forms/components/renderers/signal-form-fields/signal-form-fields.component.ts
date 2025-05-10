@@ -5,9 +5,6 @@ import {
   computed,
   HostBinding,
   input,
-  Optional,
-  Self,
-  ViewContainerRef,
 } from '@angular/core';
 import {
   GridSignalFormConfig,
@@ -84,8 +81,4 @@ export class SignalFormFieldsComponent<TModel> {
   public get hostClass(): string {
     return this.formLayoutClass();
   }
-
-  constructor(
-    @Optional() @Self() private readonly viewContainerRef: ViewContainerRef,
-  ) {}
 }

@@ -5,7 +5,6 @@ import {
   effect,
   ElementRef,
   inject,
-  Injector,
   input,
   Optional,
   signal,
@@ -43,11 +42,10 @@ export class FormAutocompleteFieldComponent extends BaseInputDirective<
   );
 
   protected search = signal('');
-  protected options = signal<FormOption[]>([]);
+  protected loadedOptions = signal<FormOption[]>([]);
   protected showDropdown = signal(false);
 
   private destroyRef = inject(DestroyRef);
-  private injector = inject(Injector);
 
   private readonly dropdownService = inject(FormDropdownService);
 
@@ -108,13 +106,13 @@ export class FormAutocompleteFieldComponent extends BaseInputDirective<
           this.config()?.minChars &&
           query.length < (this.config()?.minChars ?? 0)
         ) {
-          this.options.set([]);
+          this.loadedOptions.set([]);
           return;
         }
 
         const loader = this.loadOptions();
         if (!loader || !query) {
-          this.options.set([]);
+          this.loadedOptions.set([]);
           return;
         }
 
@@ -125,7 +123,7 @@ export class FormAutocompleteFieldComponent extends BaseInputDirective<
 
         const timeout = setTimeout(() => {
           debounced$.subscribe((result) => {
-            this.options.set(result);
+            this.loadedOptions.set(result);
             this.showDropdown.set(true);
           });
         }, this.config()?.debounceMs ?? 300);

@@ -4,8 +4,6 @@ import {
   Component,
   effect,
   inject,
-  Injector,
-  input,
   signal,
 } from '@angular/core';
 import { MultiSelectFieldConfig } from 'app/signal-forms/models/signal-field-configs.model';
@@ -29,12 +27,10 @@ export class FormMultiselectFieldComponent extends BaseInputDirective<
   FormOption[],
   MultiSelectFieldConfig
 > {
-  public options = input<FormOption[]>([]);
   protected showDropdown = signal(false);
 
   private readonly dropdownService = inject(FormDropdownService);
   private readonly host = inject(SignalFormHostDirective);
-  private readonly injector = inject(Injector);
 
   constructor() {
     super();

@@ -36,6 +36,12 @@ export type BuilderField<
 // ========== BuilderInput Inference ==========
 //
 
+export type DynamicOptions<TModel, K extends keyof TModel> = (
+  form: SignalFormContainer<TModel>,
+  options: FormOption[],
+  currentValue: TModel[K],
+) => FormOption[];
+
 type IsPlainObject<T> = T extends object
   ? T extends Date | unknown[] | Function
     ? false
@@ -113,6 +119,7 @@ export type SelectSignalFormField<
 > = BuilderField<TModel, K, TType> & {
   type: TType;
   options: FormOption[];
+  dynamicOptions?: DynamicOptions<TModel, K>;
   computedOptions?: (form: SignalFormContainer<TModel>) => FormOption[];
 };
 
@@ -123,6 +130,7 @@ export type RadioSignalFormField<
 > = BuilderField<TModel, K, TType> & {
   type: TType;
   options: FormOption[];
+  dynamicOptions?: DynamicOptions<TModel, K>;
 };
 
 export type AutocompleteSignalFormField<
@@ -211,6 +219,7 @@ export interface CheckboxSignalFormField<
 > extends BuilderField<TModel, K, TType> {
   type: TType;
   options: FormOption[];
+  dynamicOptions?: DynamicOptions<TModel, K>;
 }
 export interface DateTimeSignalFormField<
   TModel,
@@ -226,6 +235,7 @@ export interface MultiSelectSignalFormField<
 > extends BuilderField<TModel, K, TType> {
   type: TType;
   options: FormOption[];
+  dynamicOptions?: DynamicOptions<TModel, K>;
 }
 
 export interface ChipListSignalFormField<
@@ -235,6 +245,7 @@ export interface ChipListSignalFormField<
 > extends BuilderField<TModel, K, TType> {
   type: TType;
   options: FormOption[];
+  dynamicOptions?: DynamicOptions<TModel, K>;
 }
 
 export type NestedSignalFormFields<TModel, K extends keyof TModel> = {

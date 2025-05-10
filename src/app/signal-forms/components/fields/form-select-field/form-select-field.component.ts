@@ -4,8 +4,6 @@ import {
   Component,
   effect,
   inject,
-  Injector,
-  input,
   signal,
 } from '@angular/core';
 import { BaseInputDirective } from '@base/base-input/base-input.directive';
@@ -29,12 +27,10 @@ export class FormSelectFieldComponent extends BaseInputDirective<
   FormOption | null,
   SelectFieldConfig
 > {
-  public options = input<FormOption[]>([]);
   protected showDropdown = signal(false);
 
   private readonly dropdownService = inject(FormDropdownService);
   private readonly host = inject(SignalFormHostDirective);
-  private readonly injector = inject(Injector);
 
   constructor() {
     super();

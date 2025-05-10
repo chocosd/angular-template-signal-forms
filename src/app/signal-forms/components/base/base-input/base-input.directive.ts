@@ -1,14 +1,18 @@
 import {
   Directive,
   effect,
-  ElementRef,
   inject,
+  Injector,
   input,
   model,
   signal,
 } from '@angular/core';
-import { FormFieldType } from '../../../enums/form-field-type.enum';
-import { type ElementTypeForField } from '../../../models/signal-form.model';
+import { FormFieldType } from '@enums/form-field-type.enum';
+import {
+  DynamicOptions,
+  FormOption,
+  type ElementTypeForField,
+} from '@models/signal-form.model';
 
 @Directive()
 export abstract class BaseInputDirective<
@@ -25,19 +29,30 @@ export abstract class BaseInputDirective<
   public touched = model.required<boolean>();
   public dirty = model.required<boolean>();
   public name = input.required<string>();
+  public options = input<FormOption[]>([]);
+  public dynamicOptionsFn = input<DynamicOptions<object, keyof object>>();
 
   private initialValue = signal<TValue | null>(null);
   private hasCapturedInitial = signal(false);
 
-  private readonly elementRef = inject(ElementRef);
+  protected readonly injector = inject(Injector);
 
   constructor() {
-    effect(() => {
-      if (!this.hasCapturedInitial() && this.value()) {
-        this.initialValue.set(this.value());
-        this.hasCapturedInitial.set(true);
-      }
-    });
+    this.captureInitialValuesEffect();
+  }
+
+  private captureInitialValuesEffect(): void {
+    effect(
+      () => {
+        if (!this.hasCapturedInitial() && this.value()) {
+          this.initialValue.set(this.value());
+          this.hasCapturedInitial.set(true);
+        }
+      },
+      {
+        injector: this.injector,
+      },
+    );
   }
 
   public setValue(val: TValue): void {
@@ -62,7 +77,6 @@ export abstract class BaseInputDirective<
   }
 
   protected extractValue(element: ElementTypeForField<TFieldType>): TValue {
-    console.log(this.value(), element);
     if (element instanceof HTMLInputElement) {
       if (this.isCheckboxFieldType()) {
         return element.checked as TValue;
