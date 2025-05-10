@@ -1,0 +1,36 @@
+.form-checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  &.checkbox-group-inline {
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    .checkbox-group-option {
+      margin-right: 1.5rem;
+    }
+  }
+
+  .checkbox-group-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 14px;
+    cursor: pointer;
+
+    .checkbox {
+      width: 16px;
+      height: 16px;
+      accent-color: #007acc;
+    }
+
+    .label-text {
+      color: #2b353d;
+    }
+
+    &:has(.checkbox:disabled) {
+      opacity: 0.5;
+    }
+  }
+}

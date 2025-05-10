@@ -19,7 +19,8 @@ export interface NumberFieldConfig extends BaseFieldConfig {
   suffix?: string;
   precision?: number;
 }
-export interface CheckboxFieldConfig extends BaseFieldConfig {
+export interface CheckboxFieldConfig extends BaseFieldConfig {}
+export interface CheckboxGroupFieldConfig extends BaseFieldConfig {
   layout?: 'inline' | 'stacked';
 }
 export interface DateTimeFieldConfig extends BaseFieldConfig {
@@ -81,22 +82,24 @@ export type ConfigTypeForField<T extends FormFieldType> =
                 ? NumberFieldConfig
                 : T extends FormFieldType.CHECKBOX
                   ? CheckboxFieldConfig
-                  : T extends FormFieldType.DATETIME
-                    ? DateTimeFieldConfig
-                    : T extends FormFieldType.COLOR
-                      ? ColorFieldConfig
-                      : T extends FormFieldType.SWITCH
-                        ? SwitchFieldConfig
-                        : T extends FormFieldType.SLIDER
-                          ? SliderFieldConfig
-                          : T extends FormFieldType.FILE
-                            ? FileFieldConfig
-                            : T extends FormFieldType.RATING
-                              ? RatingFieldConfig
-                              : T extends FormFieldType.MASKED
-                                ? MaskedFieldConfig
-                                : T extends FormFieldType.MULTISELECT
-                                  ? MultiSelectFieldConfig
-                                  : T extends FormFieldType.CHIPLIST
-                                    ? ChipListFieldConfig
-                                    : never;
+                  : T extends FormFieldType.CHECKBOX_GROUP
+                    ? CheckboxGroupFieldConfig
+                    : T extends FormFieldType.DATETIME
+                      ? DateTimeFieldConfig
+                      : T extends FormFieldType.COLOR
+                        ? ColorFieldConfig
+                        : T extends FormFieldType.SWITCH
+                          ? SwitchFieldConfig
+                          : T extends FormFieldType.SLIDER
+                            ? SliderFieldConfig
+                            : T extends FormFieldType.FILE
+                              ? FileFieldConfig
+                              : T extends FormFieldType.RATING
+                                ? RatingFieldConfig
+                                : T extends FormFieldType.MASKED
+                                  ? MaskedFieldConfig
+                                  : T extends FormFieldType.MULTISELECT
+                                    ? MultiSelectFieldConfig
+                                    : T extends FormFieldType.CHIPLIST
+                                      ? ChipListFieldConfig
+                                      : never;

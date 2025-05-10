@@ -1,28 +1,45 @@
 <div
   class="file-upload-dropzone"
+  role="button"
+  tabindex="0"
   [class.dragging]="isDragging()"
+  [attr.aria-describedby]="ariaDescribedBy()"
+  [attr.aria-invalid]="error() ? 'true' : 'false'"
   (drop)="onDrop($event)"
   (dragover)="onDragOver($event)"
   (dragleave)="onDragLeave()"
   (click)="openFileDialog(fileInput)"
+  (keydown.enter)="openFileDialog(fileInput)"
+  (keydown.space)="openFileDialog(fileInput); $event.preventDefault()"
 >
-  <div class="upload-icon">☁️</div>
+  <div class="upload-icon" aria-hidden="true">☁️</div>
   <div class="upload-text">
     {{ config()?.uploadText || "Click or drag a file to upload" }}
   </div>
+
   @if (value()) {
     <div class="uploaded-file">{{ value()?.name }}</div>
   }
+
   <input
     #fileInput
-    [attr.name]="name()"
+    class="sr-only"
     type="file"
-    [disabled]="disabled()"
+    [attr.name]="name()"
+    [id]="name()"
     [accept]="config()?.accept?.join(',')"
+    [disabled]="disabled()"
     (change)="onFileChange($event)"
   />
+
   @if (uploadProgress() !== null) {
-    <div class="progress-bar">
+    <div
+      class="progress-bar"
+      role="progressbar"
+      [attr.aria-valuenow]="uploadProgress()"
+      aria-valuemin="0"
+      aria-valuemax="100"
+    >
       <div class="progress" [style.width.%]="uploadProgress()"></div>
     </div>
   }

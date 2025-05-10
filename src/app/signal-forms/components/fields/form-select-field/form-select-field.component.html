@@ -1,8 +1,14 @@
 <div
   class="form-select-wrapper"
-  tabindex="0"
+  role="combobox"
   [attr.name]="name()"
+  [attr.id]="name()"
+  [attr.aria-expanded]="showDropdown()"
+  [attr.aria-describedby]="ariaDescribedBy()"
+  [attr.aria-invalid]="error() ? 'true' : 'false'"
+  [attr.aria-owns]="listboxId"
   (click)="toggleDropdown()"
+  tabindex="0"
   (keydown.enter)="toggleDropdown()"
 >
   <div class="form-select-display">

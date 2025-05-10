@@ -1,10 +1,25 @@
-<div class="rating-stars" [attr.name]="name()">
-  @for (star of stars(); track $index) {
-    <span
-      class="star"
-      [class.filled]="value() >= star"
-      (click)="setRating(star)"
-      >★</span
-    >
-  }
+<div
+  class="form-rating"
+  role="radiogroup"
+  [attr.name]="name()"
+  [attr.aria-describedby]="ariaDescribedBy()"
+  [attr.aria-invalid]="error() ? 'true' : 'false'"
+>
+  <div class="rating-stars">
+    @for (index of stars(); track index) {
+      <button
+        class="star"
+        type="button"
+        role="radio"
+        [attr.aria-checked]="value() === index + 1"
+        [attr.aria-label]="'Rate ' + (index + 1) + ' star'"
+        [class.filled]="value() >= index + 1"
+        [disabled]="disabled()"
+        (click)="setValue(index + 1)"
+        (blur)="handleBlur()"
+      >
+        ★
+      </button>
+    }
+  </div>
 </div>

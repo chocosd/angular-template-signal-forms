@@ -12,6 +12,18 @@
   }
 }
 
+fieldset {
+  outline: none;
+  box-shadow:
+    0 0 rgba(0, 0, 0, 0),
+    0 0 rgba(0, 0, 0, 0),
+    0 1px 2px 0 rgba(18, 18, 23, 0.05);
+  border: 1px solid #cbd5e1;
+  appearance: none;
+  border-radius: 6px;
+  padding-block: 0.5rem;
+}
+
 .form-label {
   font-size: 12px;
   font-weight: 500;

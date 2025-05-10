@@ -1,22 +1,33 @@
 <div class="color-field-wrapper">
   @if (isSwatchOnly()) {
-    <label class="color-swatch">
+    <label class="color-swatch" [attr.for]="name()">
       <input
         type="color"
+        class="sr-only"
         [attr.name]="name()"
+        [id]="name()"
+        [attr.aria-describedby]="ariaDescribedBy()"
+        [attr.aria-invalid]="error() ? 'true' : 'false'"
         [value]="currentColor()"
         [disabled]="disabled()"
         (input)="onColorInputChange($event)"
         (blur)="handleBlur()"
       />
-      <span class="swatch-display" [style.background]="currentColor()"></span>
+      <span
+        class="swatch-display"
+        [style.background]="currentColor()"
+        aria-hidden="true"
+      ></span>
     </label>
   } @else {
     <div class="color-picker-full">
       <input
         type="color"
-        [attr.name]="name()"
         class="color-input"
+        [attr.name]="name()"
+        [id]="name() + '-picker'"
+        [attr.aria-describedby]="ariaDescribedBy()"
+        [attr.aria-invalid]="error() ? 'true' : 'false'"
         [value]="currentColor()"
         [disabled]="disabled()"
         (input)="onColorInputChange($event)"
@@ -27,6 +38,7 @@
         type="text"
         class="hex-input"
         [value]="inputValue()"
+        [attr.aria-label]="'Hex color code for ' + name()"
         [disabled]="disabled()"
         (input)="onTextInputChange($event.target.value)"
         (blur)="handleBlur()"

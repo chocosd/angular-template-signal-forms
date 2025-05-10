@@ -12,6 +12,8 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
+import { FormCheckboxGroupFieldComponent } from '@fields/form-checkbox-group-field/form-checkbox-group-field.component';
+import { FormChipListFieldComponent } from '@fields/form-chip-list-field/form-chip-list-field.component';
 import { FormColorFieldComponent } from '@fields/form-color-field/form-color-field.component';
 import { FormFileFieldComponent } from '@fields/form-file-field/form-file-field.component';
 import { FormMaskedFieldComponent } from '@fields/form-masked-field/form-masked-field.component';
@@ -53,9 +55,11 @@ import { FormTextareaFieldComponent } from '../../fields/form-textarea-field/for
     FormTextareaFieldComponent,
     FormColorFieldComponent,
     FormMaskedFieldComponent,
+    FormChipListFieldComponent,
     FormRatingFieldComponent,
     FormSliderFieldComponent,
     FormSwitchFieldComponent,
+    FormCheckboxGroupFieldComponent,
   ],
   hostDirectives: [SignalFormHostDirective],
   templateUrl: './signal-form-input-item.component.html',

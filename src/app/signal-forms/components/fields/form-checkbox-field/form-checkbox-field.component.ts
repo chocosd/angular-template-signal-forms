@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { FormFieldType } from '../../../enums/form-field-type.enum';
-import { type CheckboxFieldConfig } from '../../../models/signal-field-configs.model';
 import { BaseInputDirective } from '../../base/base-input/base-input.directive';
 
 @Component({
@@ -12,8 +11,7 @@ import { BaseInputDirective } from '../../base/base-input/base-input.directive';
 })
 export class FormCheckboxFieldComponent extends BaseInputDirective<
   FormFieldType.CHECKBOX,
-  boolean,
-  CheckboxFieldConfig
+  boolean
 > {
   public label = input<string>('');
 

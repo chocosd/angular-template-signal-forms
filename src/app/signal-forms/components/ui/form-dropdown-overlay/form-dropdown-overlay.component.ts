@@ -30,6 +30,7 @@ export class FormDropdownOverlayComponent implements OnInit {
   public multiselect = input<boolean>(false);
   public triggerElement = input<HTMLElement>();
   public initialSelection = input<FormOption[] | FormOption>();
+  public ariaListboxId = input.required<string>();
 
   public select = output<FormOption | FormOption[] | null>();
   public close = output<void>();

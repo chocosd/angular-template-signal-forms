@@ -1,6 +1,8 @@
 import { computed, isSignal, signal, WritableSignal } from '@angular/core';
+import { FormFieldType } from '@enums/form-field-type.enum';
 import { FormStatus } from '@enums/form-status.enum';
 import {
+  CheckboxGroupSignalFormField,
   type DeepPartial,
   type ErrorMessage,
   type SignalFormConfig,
@@ -85,6 +87,30 @@ export class FormBuilder {
   private static getFieldOutputValue<TModel>(
     field: SignalFormField<TModel>,
   ): unknown {
+    if (field.type === FormFieldType.CHECKBOX_GROUP) {
+      const val = field.value();
+      const valueType =
+        (
+          field as unknown as CheckboxGroupSignalFormField<
+            TModel,
+            keyof TModel,
+            FormFieldType.CHECKBOX_GROUP
+          >
+        ).valueType ?? 'array';
+
+      if (valueType === 'map') {
+        return val;
+      }
+
+      if (typeof val === 'object' && val !== null && !Array.isArray(val)) {
+        return Object.entries(val)
+          .filter(([, checked]) => checked)
+          .map(([key]) => key);
+      }
+
+      return val;
+    }
+
     if ('form' in field && field.form) {
       return (
         field.form as SignalFormContainer<TModel[keyof TModel]>
@@ -138,8 +164,6 @@ export class FormBuilder {
         fields: field.fields,
         config: field.config ?? { view: 'row', layout: 'flex' },
       });
-
-      console.log(nestedForm);
 
       baseField.form = nestedForm;
       baseField.fields = nestedForm.fields;
@@ -245,8 +269,12 @@ export class FormBuilder {
         status.set(FormStatus.Success);
 
         for (const field of fields) {
-          field.touched.set(false);
-          field.dirty.set(false);
+          if ('form' in field && field.form) {
+            (field.form as SignalFormContainer<TModel[keyof TModel]>).save();
+          } else {
+            field.touched.set(false);
+            field.dirty.set(false);
+          }
         }
       } catch {
         status.set(FormStatus.Error);

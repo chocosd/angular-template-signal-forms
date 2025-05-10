@@ -1,15 +1,27 @@
 <div
   class="multi-select-wrapper"
   #multiselectWrapper
-  tabindex="0"
+  role="combobox"
   [attr.name]="name()"
+  [id]="name()"
+  [attr.aria-describedby]="ariaDescribedBy()"
+  [attr.aria-invalid]="error() ? 'true' : 'false'"
+  [attr.aria-expanded]="showDropdown()"
+  [attr.aria-multiselectable]="true"
+  [attr.aria-owns]="listboxId()"
+  tabindex="0"
   (keydown.enter)="toggleDropdown()"
 >
   <div class="chip-list" (click)="toggleDropdown()">
     @for (item of value() ?? []; track item.value) {
       <div class="chip">
         {{ item.label }}
-        <button type="button" class="remove-btn" (click)="removeChip(item)">
+        <button
+          type="button"
+          class="remove-btn"
+          (click)="removeChip(item)"
+          aria-label="Remove {{ item.label }}"
+        >
           ×
         </button>
       </div>

@@ -6,7 +6,9 @@
     [attr.data-form-field]="field().name"
   >
     @if (field().type !== FormFieldType.CHECKBOX) {
-      <label class="form-label">{{ field().label }}</label>
+      <label class="form-label" [for]="field().name">
+        {{ field().label }}
+      </label>
     }
     @switch (field().type) {
       @case (FormFieldType.TEXT) {
@@ -41,6 +43,21 @@
           [name]="field().name"
           [config]="field().config"
           [disabled]="isDisabled()"
+        />
+      }
+
+      @case (FormFieldType.CHECKBOX_GROUP) {
+        <signal-form-checkbox-group-field
+          [(touched)]="field().touched"
+          [(dirty)]="field().dirty"
+          [(value)]="field().value"
+          [(error)]="field().error"
+          [label]="field().label"
+          [name]="field().name"
+          [config]="field().config"
+          [disabled]="isDisabled()"
+          [valueType]="field().valueType"
+          [options]="filteredOptions()"
         />
       }
 
@@ -132,6 +149,19 @@
         />
       }
 
+      @case (FormFieldType.CHIPLIST) {
+        <signal-form-chip-list-field
+          [(touched)]="field().touched"
+          [(dirty)]="field().dirty"
+          [(value)]="field().value"
+          [(error)]="field().error"
+          [config]="field().config"
+          [disabled]="isDisabled()"
+          [name]="field().name"
+          [options]="filteredOptions()"
+        />
+      }
+
       @case (FormFieldType.FILE) {
         <signal-form-file-field
           [(touched)]="field().touched"
@@ -202,11 +232,11 @@
 
     <div class="form-caption">
       @if (field().error()) {
-        <span class="form-error">
+        <span class="form-error" role="alert" [id]="'error-' + field().name">
           {{ field().error() }}
         </span>
       } @else if (field().config?.hint) {
-        <span class="form-hint">
+        <span class="form-hint" role="alert" [id]="'hint-' + field().name">
           {{ field().config.hint }}
         </span>
       }

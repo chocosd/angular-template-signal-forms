@@ -7,6 +7,7 @@ export enum FormFieldType {
   AUTOCOMPLETE = 'autocomplete',
   NUMBER = 'number',
   CHECKBOX = 'checkbox',
+  CHECKBOX_GROUP = 'checkbox-group',
   DATETIME = 'datetime',
   COLOR = 'color',
   SWITCH = 'switch',

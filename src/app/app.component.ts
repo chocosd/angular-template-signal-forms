@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  effect,
   inject,
   OnInit,
 } from '@angular/core';
@@ -1098,6 +1099,7 @@ export type Basket = {
     brightness: number;
     rating: number;
     phoneNumber: number | null;
+    features: string[];
   };
   applePrice: number;
   pearPrice: number;
@@ -1129,6 +1131,10 @@ export class AppComponent implements OnInit {
   public form!: SignalFormContainer<Basket>;
   public readonly testApiService = inject(TestApiService);
 
+  constructor() {
+    effect(() => console.log('the form status', this.form.status()));
+  }
+
   public ngOnInit(): void {
     const model: Basket = {
       address: {
@@ -1157,6 +1163,7 @@ export class AppComponent implements OnInit {
         brightness: 5,
         rating: 3,
         phoneNumber: null,
+        features: [],
       },
       apples: 20,
       pears: 80,
@@ -1409,6 +1416,16 @@ export class AppComponent implements OnInit {
           validators: [(val) => (!val ? 'this is required' : null)],
         },
         {
+          name: 'features',
+          label: 'Enable Features',
+          type: FormFieldType.CHIPLIST,
+          options: [
+            { label: 'Feature A', value: 'featureA' },
+            { label: 'Feature B', value: 'featureB' },
+            { label: 'Feature C', value: 'featureC' },
+          ],
+        },
+        {
           name: 'beastMode',
           label: 'Beast Mode',
           type: FormFieldType.SWITCH,
@@ -1433,7 +1450,8 @@ export class AppComponent implements OnInit {
           ['profilePicture', 'profilePicture', '.'],
           ['profilePicture', 'profilePicture', 'bannerColor'],
           ['profilePicture', 'profilePicture', '.'],
-          ['brightness', 'phoneNumber', 'rating'],
+          ['features', 'phoneNumber', 'phoneNumber'],
+          ['features', 'rating', 'brightness'],
         ],
       },
     };

@@ -20,6 +20,7 @@ export class FormDropdownService {
   public openDropdown<TVal>(config: {
     options: FormOption[];
     reference: HTMLElement;
+    ariaListboxId: string;
     viewContainerRef: ViewContainerRef;
     onSelect: (option: TVal) => void;
     onClose?: () => void;
@@ -41,6 +42,7 @@ export class FormDropdownService {
     this.dropdownRef.setInput('options', config.options);
     this.dropdownRef.setInput('triggerElement', config.reference);
     this.dropdownRef.setInput('multiselect', config.multiselect);
+    this.dropdownRef.setInput('ariaListboxId', config.ariaListboxId);
     this.dropdownRef.setInput('initialSelection', config.initialSelection);
 
     instance.select.subscribe((option) => {
