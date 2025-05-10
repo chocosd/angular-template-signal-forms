@@ -1,6 +1,7 @@
 import { computed, isSignal, signal, WritableSignal } from '@angular/core';
 import { FormStatus } from '@enums/form-status.enum';
 import {
+  type DeepPartial,
   type ErrorMessage,
   type SignalFormConfig,
   type SignalFormContainer,
@@ -63,6 +64,8 @@ export class FormBuilder {
       reset: this.resetForm(fields, { ...args.model }),
       getErrors: this.getErrors(fields),
       config: args.config,
+      patchValue: this.patchForm(fields),
+      setValue: this.setFormValue(fields),
       save: this.save(fields, status, form, args.onSave),
     });
 
@@ -273,6 +276,48 @@ export class FormBuilder {
       }
 
       return errors;
+    };
+  }
+
+  private static setFormValue<TModel>(
+    fields: SignalFormField<TModel>[],
+  ): (value: TModel) => void {
+    return (value: TModel) => {
+      for (const field of fields) {
+        const fieldName = field.name as keyof TModel;
+        const newValue = value[fieldName];
+
+        if ('form' in field && field.form && typeof newValue === 'object') {
+          (field.form as SignalFormContainer<TModel[keyof TModel]>).setValue(
+            newValue,
+          );
+        } else {
+          field.value.set(newValue);
+          field.dirty.set(true);
+        }
+      }
+    };
+  }
+
+  private static patchForm<TModel>(
+    fields: SignalFormField<TModel>[],
+  ): (patch: DeepPartial<TModel>) => void {
+    return (patch: DeepPartial<TModel>) => {
+      for (const field of fields) {
+        const fieldName = field.name as keyof TModel;
+        const newValue = patch[fieldName] as DeepPartial<TModel[keyof TModel]>;
+
+        if (newValue === undefined) continue;
+
+        if ('form' in field && field.form && typeof newValue === 'object') {
+          (field.form as SignalFormContainer<TModel[keyof TModel]>).patchValue(
+            newValue,
+          );
+        } else {
+          field.value.set(newValue);
+          field.dirty.set(true);
+        }
+      }
     };
   }
 }

@@ -1417,6 +1417,7 @@ export class AppComponent implements OnInit {
           name: 'brightness',
           label: 'Brightness',
           type: FormFieldType.SLIDER,
+          disabled: true,
         },
         {
           name: 'rating',
@@ -1522,6 +1523,18 @@ export class AppComponent implements OnInit {
           ['isOrganic', 'isOrganic', 'isOrganic'],
           ['total', 'total', 'total'],
         ],
+      },
+    });
+  }
+
+  protected updateForm() {
+    this.form.patchValue({
+      apples: 50,
+      pears: 50,
+      about: {
+        beastMode: true,
+        brightness: 100,
+        bannerColor: '#00aeff',
       },
     });
   }

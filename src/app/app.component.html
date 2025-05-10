@@ -1,5 +1,6 @@
 <router-outlet />
 
 @if (!!form) {
+  <button type="button" (click)="updateForm()">update the form</button>
   <app-signal-form [form]="form" (onSave)="save($event)" />
 }

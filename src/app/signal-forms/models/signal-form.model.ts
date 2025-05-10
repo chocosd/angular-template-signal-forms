@@ -276,6 +276,14 @@ export type SignalFormFieldForKey<
 
 export type ErrorMessage<TModel> = { name: keyof TModel; message: string };
 
+export type DeepPartial<T> = {
+  [K in keyof T]?: T[K] extends object
+    ? T[K] extends Array<infer U>
+      ? Array<DeepPartial<U>>
+      : DeepPartial<T[K]>
+    : T[K];
+};
+
 export interface SignalFormContainer<TModel> {
   title?: string;
   status: WritableSignal<FormStatus>;
@@ -294,6 +302,8 @@ export interface SignalFormContainer<TModel> {
   value: Signal<TModel>;
   rawValue: Signal<TModel>;
   config: SignalFormConfig<TModel>;
+  patchValue: (partialModel: DeepPartial<TModel>) => void;
+  setValue: (model: TModel) => void;
 }
 
 export type ElementTypeForField<T extends FormFieldType> = T extends
