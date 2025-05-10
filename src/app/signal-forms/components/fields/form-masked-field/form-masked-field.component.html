@@ -1,10 +1,14 @@
 <div class="form-input-wrapper">
   <input
     #maskedInput
-    [attr.name]="name()"
-    type="text"
     class="form-input"
+    type="text"
+    [attr.name]="name()"
+    [id]="name()"
     [placeholder]="config()?.placeholder"
+    [attr.inputmode]="config()?.numericOnly ? 'numeric' : null"
+    [attr.aria-describedby]="ariaDescribedBy()"
+    [attr.aria-invalid]="error() ? 'true' : 'false'"
     [disabled]="disabled()"
     [value]="value()"
     (keydown)="onKeyDown($event)"

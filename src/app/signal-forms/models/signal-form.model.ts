@@ -99,6 +99,7 @@ export type FieldBuilderByType<TModel, K extends keyof TModel> =
   | TextareaSignalFormField<TModel, K, FormFieldType.TEXTAREA>
   | NumberSignalFormField<TModel, K, FormFieldType.NUMBER>
   | CheckboxSignalFormField<TModel, K, FormFieldType.CHECKBOX>
+  | CheckboxGroupSignalFormField<TModel, K, FormFieldType.CHECKBOX_GROUP>
   | DateTimeSignalFormField<TModel, K, FormFieldType.DATETIME>
   | SelectSignalFormField<TModel, K, FormFieldType.SELECT>
   | RadioSignalFormField<TModel, K, FormFieldType.RADIO>
@@ -141,6 +142,17 @@ export type AutocompleteSignalFormField<
   type: TType;
   loadOptions: LoadOptionsFn;
 };
+
+export interface CheckboxGroupSignalFormField<
+  TModel,
+  K extends keyof TModel,
+  TType extends FormFieldType.CHECKBOX_GROUP,
+> extends BuilderField<TModel, K, TType> {
+  type: TType;
+  options: FormOption[];
+  dynamicOptions?: DynamicOptions<TModel, K>;
+  valueType?: 'array' | 'map';
+}
 
 export interface ColorSignalFormField<
   TModel,

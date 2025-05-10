@@ -1,4 +1,5 @@
 import {
+  computed,
   Directive,
   effect,
   inject,
@@ -8,6 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { FormFieldType } from '@enums/form-field-type.enum';
+import { ConfigTypeForField } from '@models/signal-field-configs.model';
 import {
   DynamicOptions,
   FormOption,
@@ -18,28 +20,40 @@ import {
 export abstract class BaseInputDirective<
   TFieldType extends FormFieldType,
   TValue,
-  TFormConfig,
+  OptionsVal = TValue,
 > {
   public hint = input<string>('');
   public disabled = input<boolean>(false);
-  public config = input<TFormConfig | undefined>();
+  public config = input<ConfigTypeForField<TFieldType> | undefined>();
   public type = input<TFieldType>();
   public value = model.required<TValue | null>();
   public error = model<string | null>();
   public touched = model.required<boolean>();
   public dirty = model.required<boolean>();
   public name = input.required<string>();
-  public options = input<FormOption[]>([]);
+  public options = input<FormOption<OptionsVal>[]>([]);
   public dynamicOptionsFn = input<DynamicOptions<object, keyof object>>();
 
   private initialValue = signal<TValue | null>(null);
   private hasCapturedInitial = signal(false);
 
   protected readonly injector = inject(Injector);
+  protected readonly listboxId = computed(
+    () => `dropdown-listbox-${this.name()}`,
+  );
 
   constructor() {
     this.captureInitialValuesEffect();
   }
+
+  protected ariaDescribedBy = computed(() =>
+    [
+      this.error() ? 'error-' + this.name() : null,
+      this.config()?.hint ? 'hint-' + this.name() : null,
+    ]
+      .filter(Boolean)
+      .join(' '),
+  );
 
   private captureInitialValuesEffect(): void {
     effect(

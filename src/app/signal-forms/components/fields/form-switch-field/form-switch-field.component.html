@@ -1,12 +1,17 @@
 <label class="switch-wrapper">
   <input
     type="checkbox"
+    role="switch"
     class="switch-input"
     [attr.name]="name()"
     [checked]="value()"
+    [id]="name()"
+    [attr.aria-checked]="value()"
+    [attr.aria-describedby]="ariaDescribedBy()"
+    [attr.aria-invalid]="error() ? 'true' : 'false'"
     [disabled]="disabled()"
-    (input)="handleInput($event)"
+    (change)="handleInput($event)"
     (blur)="handleBlur()"
   />
-  <span class="switch-slider"></span>
+  <span class="switch-slider" aria-hidden="true"></span>
 </label>

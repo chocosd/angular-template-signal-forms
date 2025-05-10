@@ -1,24 +1,24 @@
 <fieldset
-  class="form-radio-group"
-  role="radiogroup"
-  [attr.name]="name()"
+  class="form-checkbox-group"
+  [ngClass]="layoutClass()"
   [attr.aria-describedby]="ariaDescribedBy()"
   [attr.aria-invalid]="error() ? 'true' : 'false'"
 >
   <legend class="sr-only">{{ name() }}</legend>
 
   @for (option of options(); track option.value) {
-    <label class="form-radio-option">
+    <label class="checkbox-group-option">
       <input
-        type="radio"
-        [name]="name()"
+        type="checkbox"
+        class="checkbox"
+        [name]="groupName"
         [value]="option.value"
-        [checked]="value() === option.value"
+        [checked]="isChecked(option)"
         [disabled]="disabled()"
-        (change)="handleInput($event)"
+        (change)="toggleOption(option)"
         (blur)="handleBlur()"
       />
-      {{ option.label }}
+      <span class="label-text">{{ option.label }}</span>
     </label>
   }
 </fieldset>

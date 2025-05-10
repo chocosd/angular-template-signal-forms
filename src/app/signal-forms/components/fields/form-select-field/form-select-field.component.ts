@@ -46,6 +46,7 @@ export class FormSelectFieldComponent extends BaseInputDirective<
           options: this.options(),
           reference: this.host.viewContainerRef.element.nativeElement,
           viewContainerRef: this.host.viewContainerRef,
+          ariaListboxId: this.listboxId(),
           multiselect: false,
           initialSelection: this.value(),
           onSelect: (selected) => {

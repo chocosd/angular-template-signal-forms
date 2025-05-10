@@ -2,7 +2,10 @@
   <input
     type="number"
     class="form-input"
+    [attr.aria-describedby]="ariaDescribedBy()"
+    [attr.aria-invalid]="error() ? 'true' : 'false'"
     [attr.name]="name()"
+    [id]="name()"
     [placeholder]="config()?.placeholder"
     [disabled]="disabled()"
     [step]="config()?.precision ?? 1"

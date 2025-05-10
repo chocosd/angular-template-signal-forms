@@ -1,9 +1,19 @@
-<div class="chip-option-list" [attr.name]="name()">
+<div
+  class="chip-option-list"
+  role="group"
+  [attr.aria-labelledby]="name() + '-label'"
+>
   @for (option of options(); track option.value) {
     <div
       class="chip-option"
+      role="checkbox"
+      tabindex="0"
+      [attr.aria-checked]="isSelected(option)"
+      [attr.aria-label]="option.label"
       [class.selected]="isSelected(option)"
       (click)="toggleOption(option)"
+      (keydown.enter)="toggleOption(option)"
+      (keydown.space)="toggleOption(option); $event.preventDefault()"
     >
       {{ option.label }}
     </div>

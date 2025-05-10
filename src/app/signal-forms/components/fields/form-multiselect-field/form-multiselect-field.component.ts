@@ -51,6 +51,7 @@ export class FormMultiselectFieldComponent extends BaseInputDirective<
           reference,
           viewContainerRef: this.host.viewContainerRef,
           multiselect: true,
+          ariaListboxId: this.listboxId(),
           initialSelection: this.value(),
           onSelect: (selected) => {
             if (Array.isArray(selected)) {

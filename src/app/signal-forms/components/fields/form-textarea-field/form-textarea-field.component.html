@@ -2,11 +2,14 @@
   <textarea
     class="form-input"
     [attr.name]="name()"
+    [id]="name()"
     [placeholder]="config()?.placeholder"
+    [attr.aria-describedby]="ariaDescribedBy()"
+    [attr.aria-invalid]="error() ? 'true' : 'false'"
     [disabled]="disabled()"
-    [(value)]="value"
     (input)="handleInput($event)"
-    (change)="handleBlur()"
     (blur)="handleBlur()"
-  ></textarea>
+  >
+    {{ value() }}
+  </textarea>
 </div>

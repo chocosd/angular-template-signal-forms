@@ -1,8 +1,11 @@
-<label class="form-checkbox-wrapper">
+<label class="form-checkbox-wrapper" [attr.for]="name()">
   <input
-    type="checkbox"
-    [attr.name]="name()"
     class="checkbox"
+    type="checkbox"
+    [id]="name()"
+    [attr.name]="name()"
+    [attr.aria-describedby]="ariaDescribedBy()"
+    [attr.aria-invalid]="error() ? 'true' : 'false'"
     [disabled]="disabled()"
     [checked]="value()"
     (change)="handleInput($event)"

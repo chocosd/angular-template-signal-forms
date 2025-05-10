@@ -2,8 +2,11 @@
   <input
     type="text"
     class="form-input"
-    [placeholder]="config()?.placeholder"
+    [attr.aria-describedby]="ariaDescribedBy()"
+    [attr.aria-invalid]="error() ? 'true' : 'false'"
     [attr.name]="name()"
+    [id]="name()"
+    [placeholder]="config()?.placeholder"
     [disabled]="disabled()"
     [(value)]="value"
     (input)="handleInput($event)"

@@ -45,8 +45,7 @@ export class FormAutocompleteFieldComponent extends BaseInputDirective<
   protected loadedOptions = signal<FormOption[]>([]);
   protected showDropdown = signal(false);
 
-  private destroyRef = inject(DestroyRef);
-
+  private readonly destroyRef = inject(DestroyRef);
   private readonly dropdownService = inject(FormDropdownService);
 
   constructor(
@@ -75,6 +74,7 @@ export class FormAutocompleteFieldComponent extends BaseInputDirective<
 
         this.dropdownService.openDropdown<FormOption>({
           options: this.options(),
+          ariaListboxId: this.listboxId(),
           reference: this.inputRef()!.nativeElement,
           viewContainerRef: this.hostViewContainerRef!,
           onSelect: (option) => {
