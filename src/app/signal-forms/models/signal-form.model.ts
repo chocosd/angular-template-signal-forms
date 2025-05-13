@@ -42,30 +42,49 @@ export type DynamicOptions<TModel, K extends keyof TModel> = (
   currentValue: TModel[K],
 ) => FormOption[];
 
+// type IsPlainObject<T> = T extends object
+//   ? T extends Date | unknown[] | Function
+//     ? false
+//     : T extends FormOption
+//       ? false
+//       : true
+//   : false;
+
 type IsPlainObject<T> = T extends object
-  ? T extends Date | unknown[] | Function
+  ? T extends (...args: any[]) => any
     ? false
-    : T extends FormOption
+    : T extends any[]
       ? false
-      : true
+      : T extends Date
+        ? false
+        : T extends FormOption
+          ? false
+          : true
   : false;
+
+type IsArrayOfPlainObjects<T> =
+  T extends Array<infer U> ? IsPlainObject<U> : false;
 
 export type SignalFormFieldBuilderInput<TModel> = {
   [K in keyof TModel]: SignalFormFieldBuilderForKey<TModel, K>;
 }[keyof TModel];
 
 type SignalFormFieldBuilderForKey<TModel, K extends keyof TModel> =
-  IsPlainObject<TModel[K]> extends true
-    ? {
-        name: K;
-        heading: string;
-        subheading: string;
-        fields: SignalFormFieldBuilderInput<TModel[K]>[];
-        hidden?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
-        disabled?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
-        config?: SignalFormConfig<TModel[K]>;
-      }
-    : FieldBuilderByType<TModel, K>;
+  IsArrayOfPlainObjects<TModel[K]> extends true
+    ? RepeatableGroupBuilderField<TModel, K>
+    : IsPlainObject<TModel[K]> extends true
+      ? NestedGroupBuilderField<TModel, K>
+      : FieldBuilderByType<TModel, K>;
+
+export type NestedGroupBuilderField<TModel, K extends keyof TModel> = {
+  name: K;
+  heading: string;
+  subheading: string;
+  fields: SignalFormFieldBuilderInput<TModel[K]>[];
+  hidden?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
+  disabled?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
+  config?: SignalFormConfig<TModel[K]>;
+};
 
 export type SignalFormConfig<TModel> =
   | GridSignalFormConfig<TModel>
@@ -143,6 +162,29 @@ export type AutocompleteSignalFormField<
   loadOptions: LoadOptionsFn;
 };
 
+export type ItemOf<T> = T extends Array<infer U> ? U : never;
+
+export type RepeatableGroupBuilderField<TModel, K extends keyof TModel> = {
+  name: K;
+  heading: string;
+  subheading?: string;
+  type: FormFieldType.REPEATABLE_GROUP;
+  fields: SignalFormFieldBuilderInput<ItemOf<TModel[K]>>[];
+  hidden?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
+  disabled?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
+  config?: SignalFormConfig<ItemOf<TModel[K]>>;
+  minItems?: number;
+  maxItems?: number;
+};
+
+export type RepeatableGroupSignalFormField<
+  TModel,
+  K extends keyof TModel,
+> = RepeatableGroupBuilderField<TModel, K> & {
+  repeatableForms: WritableSignal<SignalFormContainer<ItemOf<TModel[K]>>[]>;
+  addItem: (initial?: ItemOf<TModel[K]>) => void;
+  removeItem: (index: number) => void;
+};
 export interface CheckboxGroupSignalFormField<
   TModel,
   K extends keyof TModel,

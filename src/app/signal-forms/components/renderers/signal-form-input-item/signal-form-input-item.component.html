@@ -3,10 +3,10 @@
     class="form-control"
     [class.has-error]="field().error()"
     [class.is-success]="!field().error() && field().value()"
-    [attr.data-form-field]="field().name"
+    [attr.data-form-field]="name()"
   >
     @if (field().type !== FormFieldType.CHECKBOX) {
-      <label class="form-label" [for]="field().name">
+      <label class="form-label" [for]="name()">
         {{ field().label }}
       </label>
     }
@@ -17,7 +17,7 @@
           [(dirty)]="field().dirty"
           [(value)]="field().value"
           [(error)]="field().error"
-          [name]="field().name"
+          [name]="name()"
           [config]="field().config"
           [disabled]="isDisabled()"
         />
@@ -28,7 +28,7 @@
           [(dirty)]="field().dirty"
           [(value)]="field().value"
           [(error)]="field().error"
-          [name]="field().name"
+          [name]="name()"
           [config]="field().config"
           [disabled]="isDisabled()"
         />
@@ -40,7 +40,7 @@
           [(value)]="field().value"
           [(error)]="field().error"
           [label]="field().label"
-          [name]="field().name"
+          [name]="name()"
           [config]="field().config"
           [disabled]="isDisabled()"
         />
@@ -53,7 +53,7 @@
           [(value)]="field().value"
           [(error)]="field().error"
           [label]="field().label"
-          [name]="field().name"
+          [name]="name()"
           [config]="field().config"
           [disabled]="isDisabled()"
           [valueType]="field().valueType"
@@ -68,7 +68,7 @@
           [(value)]="field().value"
           [(error)]="field().error"
           [config]="field().config"
-          [name]="field().name"
+          [name]="name()"
           [disabled]="isDisabled()"
         />
       }
@@ -80,7 +80,7 @@
           [(value)]="field().value"
           [(error)]="field().error"
           [config]="field().config"
-          [name]="field().name"
+          [name]="name()"
           [loadOptions]="field().loadOptions"
           [disabled]="isDisabled()"
         />
@@ -93,7 +93,7 @@
           [(value)]="field().value"
           [(error)]="field().error"
           [config]="field().config"
-          [name]="field().name"
+          [name]="name()"
           [disabled]="isDisabled()"
         />
       }
@@ -106,7 +106,7 @@
           [(error)]="field().error"
           [config]="field().config"
           [disabled]="isDisabled()"
-          [name]="field().name"
+          [name]="name()"
           [options]="filteredOptions()"
         />
       }
@@ -118,7 +118,7 @@
           [(value)]="field().value"
           [(error)]="field().error"
           [config]="field().config"
-          [name]="field().name"
+          [name]="name()"
           [disabled]="isDisabled()"
           [options]="filteredOptions()"
         />
@@ -131,7 +131,7 @@
           [(value)]="field().value"
           [(error)]="field().error"
           [config]="field().config"
-          [name]="field().name"
+          [name]="name()"
           [disabled]="isDisabled()"
         />
       }
@@ -144,7 +144,7 @@
           [(error)]="field().error"
           [config]="field().config"
           [disabled]="isDisabled()"
-          [name]="field().name"
+          [name]="name()"
           [options]="filteredOptions()"
         />
       }
@@ -157,7 +157,7 @@
           [(error)]="field().error"
           [config]="field().config"
           [disabled]="isDisabled()"
-          [name]="field().name"
+          [name]="name()"
           [options]="filteredOptions()"
         />
       }
@@ -169,7 +169,7 @@
           [(value)]="field().value"
           [(error)]="field().error"
           [config]="field().config"
-          [name]="field().name"
+          [name]="name()"
           [disabled]="isDisabled()"
         />
       }
@@ -180,7 +180,7 @@
           [(value)]="field().value"
           [(error)]="field().error"
           [config]="field().config"
-          [name]="field().name"
+          [name]="name()"
           [disabled]="isDisabled()"
         />
       }
@@ -191,7 +191,7 @@
           [(value)]="field().value"
           [(error)]="field().error"
           [config]="field().config"
-          [name]="field().name"
+          [name]="name()"
           [disabled]="isDisabled()"
         />
       }
@@ -202,7 +202,7 @@
           [(value)]="field().value"
           [(error)]="field().error"
           [config]="field().config"
-          [name]="field().name"
+          [name]="name()"
           [disabled]="isDisabled()"
         />
       }
@@ -213,7 +213,7 @@
           [(value)]="field().value"
           [(error)]="field().error"
           [config]="field().config"
-          [name]="field().name"
+          [name]="name()"
           [disabled]="isDisabled()"
         />
       }
@@ -224,7 +224,7 @@
           [(value)]="field().value"
           [(error)]="field().error"
           [config]="field().config"
-          [name]="field().name"
+          [name]="name()"
           [disabled]="isDisabled()"
         />
       }
@@ -232,11 +232,11 @@
 
     <div class="form-caption">
       @if (field().error()) {
-        <span class="form-error" role="alert" [id]="'error-' + field().name">
+        <span class="form-error" role="alert" [id]="'error-' + name()">
           {{ field().error() }}
         </span>
       } @else if (field().config?.hint) {
-        <span class="form-hint" role="alert" [id]="'hint-' + field().name">
+        <span class="form-hint" role="alert" [id]="'hint-' + name()">
           {{ field().config.hint }}
         </span>
       }

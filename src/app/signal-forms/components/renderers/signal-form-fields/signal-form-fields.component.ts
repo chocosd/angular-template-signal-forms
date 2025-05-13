@@ -6,6 +6,8 @@ import {
   HostBinding,
   input,
 } from '@angular/core';
+import { FormFieldType } from '@enums/form-field-type.enum';
+import { FormRepeatableFieldComponent } from '@fields/signal-form-repeatable-field/form-repeatable-field.component';
 import {
   GridSignalFormConfig,
   SignalFormConfig,
@@ -23,6 +25,7 @@ import { SignalFormInputItemComponent } from '../signal-form-input-item/signal-f
     SignalFormInputItemComponent,
     NgTemplateOutlet,
     CollapsibleSectionComponent,
+    FormRepeatableFieldComponent,
   ],
   standalone: true,
   templateUrl: './signal-form-fields.component.html',
@@ -36,6 +39,9 @@ import { SignalFormInputItemComponent } from '../signal-form-input-item/signal-f
 export class SignalFormFieldsComponent<TModel> {
   public fields = input.required<SignalFormField<TModel>[]>();
   public form = input.required<SignalFormContainer<TModel>>();
+  public index = input<number | null>(null);
+
+  protected readonly formFieldType = FormFieldType;
 
   protected visibleFields = computed<SignalFormField<TModel>[] | undefined>(
     () => {

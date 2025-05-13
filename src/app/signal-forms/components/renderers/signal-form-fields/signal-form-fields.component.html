@@ -1,28 +1,49 @@
-@for (field of visibleFields(); track field.name) {
-  @if (field.fields?.length) {
-    <section
-      class="nested-form-section"
-      [class]="'form-group-' + (field.config?.view ?? 'stacked')"
+@for (field of visibleFields?.(); track field.name) {
+  @if (field.type === formFieldType.REPEATABLE_GROUP) {
+    <signal-form-repeatable-field
+      [repeatableForms]="field.repeatableForms()"
+      [fields]="field.fields"
+      [heading]="field.heading"
       [style.gridArea]="field.name"
-    >
-      @if (field.config?.view === "collapsable") {
-        <collapsible-section
-          [summaryTemplate]="titleTemplate"
-          [bodyTemplate]="fieldsTemplate"
-          [summaryTemplateContext]="{ $implicit: field }"
-          [bodyTemplateContext]="{ $implicit: field }"
-        />
-      } @else {
-        <ng-container
-          *ngTemplateOutlet="titleTemplate; context: { $implicit: field }"
-        />
-        <ng-container
-          *ngTemplateOutlet="fieldsTemplate; context: { $implicit: field }"
-        />
-      }
-    </section>
+      (addItem)="field.addItem()"
+      (removeItem)="field.removeItem($event)"
+    />
   } @else {
-    <signal-form-input-item [field]="field" [form]="form()" />
+    @if (field.fields?.length) {
+      <section
+        class="nested-form-section"
+        [class]="'form-group-' + (field.config?.view ?? 'stacked')"
+        [style.gridArea]="field.name"
+      >
+        @if (field.config?.view === "collapsable") {
+          <collapsible-section
+            [summaryTemplate]="titleTemplate"
+            [bodyTemplate]="fieldsTemplate"
+            [summaryTemplateContext]="{ $implicit: field, i: index() }"
+            [bodyTemplateContext]="{ $implicit: field, i: index() }"
+          />
+        } @else {
+          <ng-container
+            *ngTemplateOutlet="
+              titleTemplate;
+              context: { $implicit: field, i: index() }
+            "
+          />
+          <ng-container
+            *ngTemplateOutlet="
+              fieldsTemplate;
+              context: { $implicit: field, i: index() }
+            "
+          />
+        }
+      </section>
+    } @else {
+      <signal-form-input-item
+        [field]="field"
+        [form]="form()"
+        [index]="index()"
+      />
+    }
   }
 }
 
@@ -33,8 +54,12 @@
   </div>
 </ng-template>
 
-<ng-template #fieldsTemplate let-field>
+<ng-template #fieldsTemplate let-field let-i="i">
   <div class="nested-form-fields">
-    <signal-form-fields [form]="field.form" [fields]="field.fields" />
+    <signal-form-fields
+      [form]="field.form"
+      [fields]="field.fields"
+      [index]="i"
+    />
   </div>
 </ng-template>

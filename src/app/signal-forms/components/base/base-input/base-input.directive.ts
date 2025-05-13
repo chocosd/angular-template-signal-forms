@@ -26,9 +26,9 @@ export abstract class BaseInputDirective<
   public disabled = input<boolean>(false);
   public config = input<ConfigTypeForField<TFieldType> | undefined>();
   public type = input<TFieldType>();
-  public value = model.required<TValue | null>();
   public error = model<string | null>();
   public touched = model.required<boolean>();
+  public value = model.required<TValue | null>();
   public dirty = model.required<boolean>();
   public name = input.required<string>();
   public options = input<FormOption<OptionsVal>[]>([]);
@@ -88,6 +88,7 @@ export abstract class BaseInputDirective<
 
     const isDirty = !this.isEqual(extractedValue, this.initialValue()!);
     this.dirty.set(isDirty);
+    this.touched.set(true);
   }
 
   protected extractValue(element: ElementTypeForField<TFieldType>): TValue {

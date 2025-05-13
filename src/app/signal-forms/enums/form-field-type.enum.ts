@@ -17,4 +17,5 @@ export enum FormFieldType {
   MASKED = 'masked',
   MULTISELECT = 'multiselect',
   CHIPLIST = 'chiplist',
+  REPEATABLE_GROUP = 'repeatable-group',
 }

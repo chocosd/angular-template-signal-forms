@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  effect,
   inject,
   OnInit,
 } from '@angular/core';
@@ -1095,6 +1094,7 @@ export type Basket = {
   about: {
     profilePicture: File | null;
     bannerColor: string | null;
+    contacts: { email: string; phone: number; name: string }[];
     beastMode: boolean;
     brightness: number;
     rating: number;
@@ -1131,10 +1131,6 @@ export class AppComponent implements OnInit {
   public form!: SignalFormContainer<Basket>;
   public readonly testApiService = inject(TestApiService);
 
-  constructor() {
-    effect(() => console.log('the form status', this.form.status()));
-  }
-
   public ngOnInit(): void {
     const model: Basket = {
       address: {
@@ -1159,6 +1155,11 @@ export class AppComponent implements OnInit {
       about: {
         profilePicture: null,
         bannerColor: null,
+        contacts: [
+          { email: 'hello@testtest.co.uk', phone: 7777777777, name: 'Steven' },
+          { email: 'john@testtest.co.uk', phone: 7777077077, name: 'John' },
+          { email: 'jane@testtest.co.uk', phone: 3247077079, name: 'Jane' },
+        ],
         beastMode: false,
         brightness: 5,
         rating: 3,
@@ -1397,6 +1398,28 @@ export class AppComponent implements OnInit {
           },
         },
         {
+          name: 'contacts',
+          type: FormFieldType.REPEATABLE_GROUP,
+          heading: 'Contact Info',
+          fields: [
+            {
+              name: 'email',
+              type: FormFieldType.TEXT,
+              label: 'Email',
+            },
+            {
+              name: 'phone',
+              type: FormFieldType.TEXT,
+              label: 'Phone',
+            },
+            {
+              name: 'name',
+              type: FormFieldType.TEXT,
+              label: 'Name',
+            },
+          ],
+        },
+        {
           name: 'bannerColor',
           label: 'Banner Color',
           type: FormFieldType.COLOR,
@@ -1452,6 +1475,7 @@ export class AppComponent implements OnInit {
           ['profilePicture', 'profilePicture', '.'],
           ['features', 'phoneNumber', 'phoneNumber'],
           ['features', 'rating', 'brightness'],
+          ['contacts', 'contacts', 'contacts'],
         ],
       },
     };
@@ -1559,8 +1583,6 @@ export class AppComponent implements OnInit {
 
   protected save(e: Basket) {
     console.log(e);
-    console.log('raw value', this.form.rawValue());
     console.log('value', this.form.value());
-    console.log(this.form.getErrors());
   }
 }

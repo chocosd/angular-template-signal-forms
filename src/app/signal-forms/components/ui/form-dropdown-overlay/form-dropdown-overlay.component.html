@@ -12,7 +12,11 @@
     >
       {{ option.label }}
       @if (isSelected(option) && multiselect()) {
-        <lucide-icon class="selected-icon" [img]="checkIcon" />
+        @if (focusedIndex() === $index) {
+          <lucide-icon class="selected-icon" [img]="clearIcon" />
+        } @else {
+          <lucide-icon class="selected-icon" [img]="checkIcon" />
+        }
       }
     </li>
   }

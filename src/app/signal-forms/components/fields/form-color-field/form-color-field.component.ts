@@ -34,7 +34,6 @@ export class FormColorFieldComponent extends BaseInputDirective<
 
     effect(() => {
       if (!CSS.supports('color', this.inputValue())) {
-        console.log(this.inputValue());
         this.error.set('unsupported Color value!');
       }
     });
