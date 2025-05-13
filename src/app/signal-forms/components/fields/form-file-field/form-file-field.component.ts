@@ -30,8 +30,6 @@ export class FormFileFieldComponent extends BaseInputDirective<
   );
 
   public onFileChange(event: File): void {
-    console.log(event);
-
     const file = (event as any).target.files?.[0];
     if (!file) {
       return;

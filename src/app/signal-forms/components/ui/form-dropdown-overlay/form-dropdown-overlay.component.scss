@@ -15,6 +15,10 @@
 
     &.focused {
       background-color: #e0f0ff;
+
+      &.selected {
+        background-color: #e0b4b4;
+      }
     }
 
     &:hover {

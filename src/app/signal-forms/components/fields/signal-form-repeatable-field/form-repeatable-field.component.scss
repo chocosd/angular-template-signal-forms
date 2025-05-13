@@ -1,0 +1,30 @@
+.repeatable-form-group {
+  padding-bottom: 1rem;
+  border-top: 1px solid #e2efef;
+  border-bottom: 1px solid #e2efef;
+}
+
+.repeatable-forms-row-container {
+  display: flex;
+  gap: 8px;
+}
+
+.repeatable-forms-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.repeatable-forms-actions-container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+
+  & .row-action {
+    cursor: pointer;
+    margin-top: 16px;
+  }
+}

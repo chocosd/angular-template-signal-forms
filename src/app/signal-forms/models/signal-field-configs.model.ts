@@ -61,6 +61,9 @@ export interface ColorFieldConfig extends BaseFieldConfig {
 }
 export interface SwitchFieldConfig extends BaseFieldConfig {}
 export interface ChipListFieldConfig extends BaseFieldConfig {}
+export interface RepeatableGroupFieldConfig extends BaseFieldConfig {
+  view?: 'inline' | 'stacked';
+}
 
 //
 // ========== Config Type Mapping ==========
@@ -102,4 +105,6 @@ export type ConfigTypeForField<T extends FormFieldType> =
                                     ? MultiSelectFieldConfig
                                     : T extends FormFieldType.CHIPLIST
                                       ? ChipListFieldConfig
-                                      : never;
+                                      : T extends FormFieldType.REPEATABLE_GROUP
+                                        ? RepeatableGroupFieldConfig
+                                        : never;

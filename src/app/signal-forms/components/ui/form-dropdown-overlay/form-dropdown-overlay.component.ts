@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   effect,
@@ -14,7 +13,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { type FormOption } from '@models/signal-form.model';
-import { CheckIcon, LucideAngularModule } from 'lucide-angular';
+import { CircleCheck, CircleX, LucideAngularModule } from 'lucide-angular';
 import { fromEvent, tap } from 'rxjs';
 
 @Component({
@@ -23,7 +22,7 @@ import { fromEvent, tap } from 'rxjs';
   imports: [LucideAngularModule],
   templateUrl: './form-dropdown-overlay.component.html',
   styleUrl: './form-dropdown-overlay.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormDropdownOverlayComponent implements OnInit {
   public options = input.required<FormOption[]>();
@@ -40,7 +39,8 @@ export class FormDropdownOverlayComponent implements OnInit {
   protected focusedIndex = signal<number>(-1);
   protected selectedOptions = signal<FormOption[]>([]);
 
-  protected readonly checkIcon = CheckIcon;
+  protected readonly checkIcon = CircleCheck;
+  protected readonly clearIcon = CircleX;
 
   constructor(
     private readonly renderer: Renderer2,

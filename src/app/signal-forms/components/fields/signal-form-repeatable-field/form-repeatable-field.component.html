@@ -1,0 +1,44 @@
+<section class="repeatable-form-group">
+  <h3 class="form-group-heading">{{ heading() }}</h3>
+
+  @for (groupForm of repeatableForms(); track $index; let i = $index) {
+    <section class="repeatable-forms-row-container">
+      <section class="repeatable-forms-row">
+        @for (field of groupForm.fields; track $index; let j = $index) {
+          <signal-form-input-item
+            [field]="field"
+            [form]="groupForm"
+            [index]="i"
+          />
+        }
+      </section>
+      <aside class="repeatable-forms-actions-container">
+        <lucide-icon
+          class="row-action"
+          [img]="minus"
+          [size]="16"
+          (click)="removeItem.emit(i)"
+          (keydown.enter)="removeItem.emit(i)"
+          tabindex="0"
+        />
+        <lucide-icon
+          class="row-action"
+          [img]="plus"
+          [size]="16"
+          (click)="addItem.emit()"
+          (keydown.enter)="addItem.emit()"
+          tabindex="0"
+        />
+      </aside>
+    </section>
+  } @empty {
+    <lucide-icon
+      class="row-action"
+      [img]="plus"
+      [size]="16"
+      (click)="addItem.emit()"
+      (keydown.enter)="addItem.emit()"
+      tabindex="0"
+    />
+  }
+</section>

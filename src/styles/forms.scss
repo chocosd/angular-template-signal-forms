@@ -10,6 +10,13 @@
       outline-color: #f44336;
     }
   }
+
+  input:focus + .form-label,
+  input:not(:placeholder-shown) + .form-label {
+    top: 0;
+    font-size: 0.75rem;
+    color: #3b82f6;
+  }
 }
 
 fieldset {
@@ -27,7 +34,7 @@ fieldset {
 .form-label {
   font-size: 12px;
   font-weight: 500;
-  color: #2b353d;
+  color: #64748b;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -47,19 +54,19 @@ fieldset {
   color: #334155;
   padding-block: 0.5rem;
   padding-inline: 0.75rem;
-  border: 1px solid #cbd5e1;
+  border: 1px solid #d1d5db;
   border-radius: 6px;
   box-shadow:
     0 0 #0000,
     0 0 #0000,
     0 1px 2px 0 rgba(18, 18, 23, 0.05);
-  transition:
-    background 0.2s,
-    color 0.2s,
-    border-color 0.2s,
-    outline-color 0.2s,
-    box-shadow 0.2s;
   appearance: none;
+  transition: all 0.2s ease-in-out;
+
+  &:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  }
 
   &.filled {
     font-weight: 500;

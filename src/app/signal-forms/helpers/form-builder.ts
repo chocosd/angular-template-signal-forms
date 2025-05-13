@@ -2,7 +2,7 @@ import { computed, isSignal, signal, WritableSignal } from '@angular/core';
 import { FormFieldType } from '@enums/form-field-type.enum';
 import { FormStatus } from '@enums/form-status.enum';
 import {
-  CheckboxGroupSignalFormField,
+  type CheckboxGroupSignalFormField,
   type DeepPartial,
   type ErrorMessage,
   type SignalFormConfig,
@@ -11,6 +11,9 @@ import {
   type SignalFormFieldBuilderInput,
   type SignalFormFieldForKey,
   type SignalValidatorFn,
+  ItemOf,
+  RepeatableGroupBuilderField,
+  RepeatableGroupSignalFormField,
 } from '@models/signal-form.model';
 
 export class FormBuilder {
@@ -76,17 +79,43 @@ export class FormBuilder {
 
   private static anyTouched<TModel>(fields: SignalFormField<TModel>[]) {
     return computed(() => {
-      return fields.some((field) =>
-        'form' in field && field.form
-          ? (field.form as SignalFormContainer<TModel>).anyTouched()
-          : field.touched(),
-      );
+      return fields.some((field) => {
+        if ('form' in field && field.form) {
+          return (field.form as SignalFormContainer<TModel>).anyTouched();
+        }
+
+        if ('repeatableForms' in field) {
+          const forms = (
+            field as unknown as RepeatableGroupSignalFormField<
+              TModel,
+              keyof TModel
+            >
+          ).repeatableForms();
+
+          if (Array.isArray(forms)) {
+            return forms.some((form) => form.anyTouched());
+          }
+        }
+
+        return field.touched();
+      });
     });
   }
 
   private static getFieldOutputValue<TModel>(
     field: SignalFormField<TModel>,
   ): unknown {
+    if (
+      field.type === FormFieldType.REPEATABLE_GROUP &&
+      'repeatableForms' in field
+    ) {
+      return (
+        field as unknown as RepeatableGroupSignalFormField<TModel, keyof TModel>
+      )
+        .repeatableForms()
+        .map((form) => form.getValue());
+    }
+
     if (field.type === FormFieldType.CHECKBOX_GROUP) {
       const val = field.value();
       const valueType =
@@ -123,11 +152,28 @@ export class FormBuilder {
 
   private static anyDirty<TModel>(fields: SignalFormField<TModel>[]) {
     return computed(() => {
-      return fields.some((field) =>
-        'form' in field && field.form
-          ? (field.form as SignalFormContainer<TModel>).anyDirty()
-          : field.dirty(),
-      );
+      return fields.some((field) => {
+        if ('form' in field && field.form) {
+          return (field.form as SignalFormContainer<TModel>).anyDirty();
+        }
+
+        const repeatableFields =
+          field as unknown as RepeatableGroupSignalFormField<
+            TModel,
+            keyof TModel
+          >;
+
+        if (
+          'repeatableForms' in field &&
+          Array.isArray(repeatableFields.repeatableForms?.())
+        ) {
+          return repeatableFields
+            .repeatableForms()
+            .some((form) => form.anyDirty());
+        }
+
+        return field.dirty();
+      });
     });
   }
 
@@ -136,33 +182,81 @@ export class FormBuilder {
     model: TModel,
   ): SignalFormField<TModel> {
     const rawValue = model[field.name as keyof TModel];
-
-    const valueSignal = signal<TModel[keyof TModel]>(rawValue);
-
     const baseField: any = {
       ...field,
-      value: valueSignal,
       error: signal<string | null>(null),
       touched: signal<boolean>(false),
       dirty: signal<boolean>(false),
       focus: signal<boolean>(false),
     };
 
-    if ('options' in field && Array.isArray(field.options)) {
-      const optionsSignal = isSignal(field.options)
-        ? field.options
-        : signal(field.options);
+    // 📦 Repeatable Group Handling
+    if (
+      (field as RepeatableGroupBuilderField<TModel, keyof TModel>).type ===
+      FormFieldType.REPEATABLE_GROUP
+    ) {
+      const items = Array.isArray(rawValue) ? rawValue : [];
 
-      baseField.options = optionsSignal;
+      const repeatableForms = signal(
+        items.map((item, index) =>
+          this.createForm({
+            model: item,
+            fields: (field as RepeatableGroupBuilderField<TModel, keyof TModel>)
+              .fields,
+            config: (field.config as
+              | SignalFormConfig<ItemOf<TModel[keyof TModel]>>
+              | undefined) ?? { view: 'row', layout: 'flex' },
+          }),
+        ),
+      );
+
+      baseField.repeatableForms = repeatableForms;
+
+      baseField.addItem = (initial = {}) => {
+        const newForm = this.createForm({
+          model: initial as ItemOf<TModel[keyof TModel]>,
+          fields: (field as RepeatableGroupBuilderField<TModel, keyof TModel>)
+            .fields,
+          config: (field.config as
+            | SignalFormConfig<ItemOf<TModel[keyof TModel]>>
+            | undefined) ?? { view: 'row', layout: 'flex' },
+        });
+
+        repeatableForms.update((forms) => [...forms, newForm]);
+      };
+
+      baseField.removeItem = (index: number) =>
+        repeatableForms.update((forms) => forms.filter((_, i) => i !== index));
+
+      // 🔁 Compute current values of repeatable group
+      baseField.value = computed(() =>
+        repeatableForms().map((form) => form.getValue()),
+      );
+      return baseField;
     }
 
+    const valueSignal = signal<TModel[keyof TModel]>(rawValue);
+    baseField.value = valueSignal;
+
+    // 🧠 Attach options as signal if present
+    if ('options' in field && Array.isArray(field.options)) {
+      baseField.options = isSignal(field.options)
+        ? field.options
+        : signal(field.options);
+    }
+
+    // 🧱 Nested Form Group
     if ('fields' in field && Array.isArray(field.fields)) {
-      const nestedModel = model[field.name as keyof TModel];
+      const nestedModel = rawValue;
 
       const nestedForm = this.createForm({
-        model: nestedModel,
-        fields: field.fields,
-        config: field.config ?? { view: 'row', layout: 'flex' },
+        model: nestedModel as ItemOf<TModel[keyof TModel]>,
+        fields: field.fields as SignalFormFieldBuilderInput<
+          ItemOf<TModel[keyof TModel]>
+        >[],
+        config: (field.config as SignalFormConfig<
+          ItemOf<TModel[keyof TModel]>
+        >) ?? { view: 'row', layout: 'flex' },
       });
 
       baseField.form = nestedForm;
@@ -201,6 +295,22 @@ export class FormBuilder {
             field.form as SignalFormContainer<TModel[keyof TModel]>
           ).validateForm();
           valid = valid && nestedValid;
+          continue;
+        }
+
+        const repeatableField =
+          field as unknown as RepeatableGroupSignalFormField<
+            TModel,
+            keyof TModel
+          >;
+
+        if (
+          'repeatableForms' in field &&
+          Array.isArray(repeatableField.repeatableForms?.())
+        ) {
+          const nestedForms = repeatableField.repeatableForms();
+          const allValid = nestedForms.every((form) => form.validateForm());
+          valid = valid && allValid;
           continue;
         }
 
