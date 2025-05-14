@@ -3,21 +3,24 @@
   [ngClass]="showDropdown() ? 'dropdown-open' : ''"
   #autocompleteInputWrapper
 >
-  <input
-    class="form-input"
-    type="text"
-    role="combobox"
-    aria-autocomplete="list"
-    [attr.aria-expanded]="showDropdown()"
-    [attr.aria-controls]="listboxId()"
-    [attr.aria-describedby]="ariaDescribedBy()"
-    [attr.aria-invalid]="error() ? 'true' : 'false'"
-    [attr.name]="name()"
-    [id]="name()"
-    [value]="value()?.label ?? ''"
-    (input)="search.set($event.target.value)"
-    (focus)="showDropdown.set(true)"
-    (change)="handleBlur()"
-    (blur)="handleBlur()"
-  />
+  <div class="form-input-icon-wrapper" tabindex="0">
+    <lucide-icon class="search-icon icon" [img]="searchIcon" [size]="12" />
+    <input
+      type="text"
+      class="form-input"
+      role="combobox"
+      aria-autocomplete="list"
+      [attr.aria-expanded]="showDropdown()"
+      [attr.aria-controls]="listboxId()"
+      [attr.aria-describedby]="ariaDescribedBy()"
+      [attr.aria-invalid]="error() ? 'true' : 'false'"
+      [attr.name]="name()"
+      [id]="name()"
+      [value]="value()?.label ?? ''"
+      (input)="search.set($event.target.value)"
+      (focus)="showDropdown.set(true)"
+      (change)="handleBlur()"
+      (blur)="handleBlur()"
+    />
+  </div>
 </div>

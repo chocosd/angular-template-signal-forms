@@ -11,6 +11,7 @@
   margin: 0;
   top: 38px;
   flex-direction: column;
+  transition: all 0.2s;
 
   li {
     padding: 0.5rem;
@@ -23,6 +24,8 @@
 }
 
 .dropdown-open {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
+  & .form-input {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
 }

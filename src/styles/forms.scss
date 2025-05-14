@@ -63,6 +63,21 @@ fieldset {
   appearance: none;
   transition: all 0.2s ease-in-out;
 
+  &-icon-wrapper {
+    position: relative;
+
+    & > .icon {
+      position: absolute;
+      left: 10px;
+      top: 9px;
+      color: #8996a9;
+    }
+
+    & > .form-input {
+      padding-inline-start: 28px;
+    }
+  }
+
   &:focus {
     border-color: #3b82f6;
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);

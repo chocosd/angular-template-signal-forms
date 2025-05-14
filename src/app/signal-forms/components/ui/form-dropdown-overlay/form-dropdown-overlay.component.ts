@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   effect,
@@ -22,7 +23,7 @@ import { fromEvent, tap } from 'rxjs';
   imports: [LucideAngularModule],
   templateUrl: './form-dropdown-overlay.component.html',
   styleUrl: './form-dropdown-overlay.component.scss',
-  // changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormDropdownOverlayComponent implements OnInit {
   public options = input.required<FormOption[]>();
@@ -146,6 +147,7 @@ export class FormDropdownOverlayComponent implements OnInit {
 
         const clickedInsideOverlay =
           this.elementRef.nativeElement.contains(target);
+
         const clickedOnTrigger = this.triggerElement()?.contains(target);
 
         if (!clickedInsideOverlay && !clickedOnTrigger) {

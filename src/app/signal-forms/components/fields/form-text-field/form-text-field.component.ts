@@ -16,6 +16,5 @@ export interface TextFieldConfig {
 })
 export class FormTextFieldComponent extends BaseInputDirective<
   FormFieldType.TEXT,
-  string,
-  TextFieldConfig
+  string
 > {}

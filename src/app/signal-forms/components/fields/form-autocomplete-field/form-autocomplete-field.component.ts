@@ -20,12 +20,13 @@ import { FormFieldType } from '@enums/form-field-type.enum';
 import { type AutocompleteFieldConfig } from '@models/signal-field-configs.model';
 import { type FormOption, type LoadOptionsFn } from '@models/signal-form.model';
 import { FormDropdownService } from '@services/form-dropdown.service';
+import { LucideAngularModule, SearchIcon } from 'lucide-angular';
 import { from, isObservable } from 'rxjs';
 
 @Component({
   selector: 'signal-form-autocomplete-field',
   standalone: true,
-  imports: [NgClass],
+  imports: [NgClass, LucideAngularModule],
   templateUrl: './form-autocomplete-field.component.html',
   styleUrl: './form-autocomplete-field.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -45,8 +46,14 @@ export class FormAutocompleteFieldComponent extends BaseInputDirective<
   protected loadedOptions = signal<FormOption[]>([]);
   protected showDropdown = signal(false);
 
+  protected readonly searchIcon = SearchIcon;
+
   private readonly destroyRef = inject(DestroyRef);
   private readonly dropdownService = inject(FormDropdownService);
+
+  private get hostViewContainerRef(): ViewContainerRef | null {
+    return this.signalFormHostDirective?.viewContainerRef ?? null;
+  }
 
   constructor(
     @Optional()
@@ -57,23 +64,19 @@ export class FormAutocompleteFieldComponent extends BaseInputDirective<
     this.optionsOverlayEffect();
   }
 
-  private get hostViewContainerRef(): ViewContainerRef | null {
-    return this.signalFormHostDirective?.viewContainerRef ?? null;
-  }
-
   private optionsOverlayEffect(): void {
     effect(
       () => {
         if (
           !this.showDropdown() ||
-          !this.options().length ||
+          !this.loadedOptions().length ||
           !this.inputRef()
         ) {
           return;
         }
 
         this.dropdownService.openDropdown<FormOption>({
-          options: this.options(),
+          options: this.loadedOptions(),
           ariaListboxId: this.listboxId(),
           reference: this.inputRef()!.nativeElement,
           viewContainerRef: this.hostViewContainerRef!,
@@ -84,6 +87,9 @@ export class FormAutocompleteFieldComponent extends BaseInputDirective<
             this.touched.set(true);
             this.showDropdown.set(false);
             this.dropdownService.destroyDropdown();
+          },
+          onClose: () => {
+            this.showDropdown.set(false);
           },
           multiselect: false,
         });

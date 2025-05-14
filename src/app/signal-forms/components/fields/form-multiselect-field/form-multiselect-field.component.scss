@@ -1,5 +1,6 @@
 .multi-select-wrapper {
   border: 1px solid #ccc;
+  border-radius: 6px;
   padding: 4px;
   display: flex;
   flex-wrap: wrap;
@@ -8,7 +9,7 @@
 
   .chip {
     background: #e0f7fa;
-    border-radius: 16px;
+    border-radius: 6px;
     padding: 2px 8px;
     margin: 2px;
     display: flex;
