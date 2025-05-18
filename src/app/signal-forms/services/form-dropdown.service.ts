@@ -5,8 +5,8 @@ import {
   Injector,
   ViewContainerRef,
 } from '@angular/core';
-import { FormDropdownOverlayComponent } from '../components/ui/form-dropdown-overlay/form-dropdown-overlay.component';
-import { type FormOption } from '../models/signal-form.model';
+import { type FormOption } from '@models/signal-form.model';
+import { FormDropdownOverlayComponent } from '@ui/form-dropdown-overlay/form-dropdown-overlay.component';
 
 @Injectable({ providedIn: 'root' })
 export class FormDropdownService {

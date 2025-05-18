@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Country } from 'app/examples/models/example.model';
 import { Observable } from 'rxjs';
-import { Country } from '../../app.component';
 
 @Injectable({ providedIn: 'root' })
 export class TestApiService {

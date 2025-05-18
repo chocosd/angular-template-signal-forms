@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
+import { BaseInputDirective } from '@base/base-input/base-input.directive';
+import { FormFieldType } from '@enums/form-field-type.enum';
+import { DateTimeFieldConfig } from '@models/signal-field-configs.model';
 import { DateTime } from 'luxon';
-import { FormFieldType } from '../../../enums/form-field-type.enum';
-import { DateTimeFieldConfig } from '../../../models/signal-field-configs.model';
-import { BaseInputDirective } from '../../base/base-input/base-input.directive';
 
 @Component({
   selector: 'signal-form-datetime-field',

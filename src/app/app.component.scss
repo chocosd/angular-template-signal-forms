@@ -6,4 +6,13 @@
   align-items: center;
   padding: 1rem;
   background-color: #f2f3f9;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-button-rows {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
 }

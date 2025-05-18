@@ -4,6 +4,8 @@
     class="form-input"
     [attr.aria-describedby]="ariaDescribedBy()"
     [attr.aria-invalid]="error() ? 'true' : 'false'"
+    [required]="isRequired()"
+    [attr.aria-required]="isRequired()"
     [attr.name]="name()"
     [id]="name()"
     [placeholder]="config()?.placeholder"

@@ -1,20 +1,27 @@
 import {
   type SignalFormContainer,
   type SignalValidatorFn,
-} from '../models/signal-form.model';
+} from '@models/signal-form.model';
+import { MetaValidatorFn, withMeta } from '../helpers/with-meta';
 
 export class SignalValidators {
-  static required<TModel, K extends keyof TModel>(
-    msg = 'This field is required.',
-  ): SignalValidatorFn<K, TModel> {
-    return (val) => (val == null || val === '' ? msg : null);
+  static required<TModel, K extends keyof TModel = any>(
+    msg?: string,
+  ): MetaValidatorFn<TModel[K], TModel> {
+    const message = msg ?? 'This field is required.';
+
+    return withMeta((val) => (val == null || val === '' ? message : null), {
+      required: true,
+      type: 'required',
+    });
   }
 
-  static min<T extends number, TModel>(
+  static min<T extends number | null, TModel>(
     min: number,
     msg?: string,
   ): SignalValidatorFn<T, TModel> {
-    return (val) => (val < min ? (msg ?? `Must be at least ${min}`) : null);
+    return (val) =>
+      !!val && val < min ? (msg ?? `Must be at least ${min}`) : null;
   }
 
   static max<T extends number, TModel>(

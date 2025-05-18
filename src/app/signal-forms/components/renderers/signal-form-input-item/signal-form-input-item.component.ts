@@ -35,6 +35,7 @@ import {
   type SignalFormContainer,
   type SignalFormField,
 } from '@models/signal-form.model';
+import { isRequired } from 'app/signal-forms/helpers/is-required';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -114,6 +115,10 @@ export class SignalFormInputItemComponent<TModel> {
     this.watchComputedValueEffect();
     this.validationEffect();
     this.focusEffect();
+  }
+
+  protected isRequired(): boolean {
+    return isRequired({ validators: this.field().validators });
   }
 
   private initializeFormOptionsEffect(): void {}

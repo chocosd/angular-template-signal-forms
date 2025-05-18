@@ -1,7 +1,7 @@
 @if (currentError()) {
   <div class="form-error-summary">
     <button type="button" (click)="focusPrevious()">&#x25C0;</button>
-    <span>{{ currentError()?.message }}</span>
+    <span>{{ currentError()?.message ?? currentError() }}</span>
     <button type="button" (click)="focusNext()">&#x25B6;</button>
   </div>
 }

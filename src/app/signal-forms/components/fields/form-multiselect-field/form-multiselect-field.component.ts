@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -6,17 +5,17 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { MultiSelectFieldConfig } from 'app/signal-forms/models/signal-field-configs.model';
-import { FormFieldType } from '../../../enums/form-field-type.enum';
-import { FormOption } from '../../../models/signal-form.model';
-import { FormDropdownService } from '../../../services/form-dropdown.service';
-import { BaseInputDirective } from '../../base/base-input/base-input.directive';
-import { SignalFormHostDirective } from '../../base/host-directive/signal-form-host.directive';
+import { BaseInputDirective } from '@base/base-input/base-input.directive';
+import { SignalFormHostDirective } from '@base/host-directive/signal-form-host.directive';
+import { FormFieldType } from '@enums/form-field-type.enum';
+import { type MultiSelectFieldConfig } from '@models/signal-field-configs.model';
+import { type FormOption } from '@models/signal-form.model';
+import { FormDropdownService } from '@services/form-dropdown.service';
 
 @Component({
   selector: 'signal-form-multiselect-field',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './form-multiselect-field.component.html',
   styleUrl: './form-multiselect-field.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

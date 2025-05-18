@@ -1,0 +1,15 @@
+@if (!!fieldsA && !!fieldsB) {
+  <signal-form-fields [fields]="fieldsA.fields" [form]="fieldsA" />
+  <section class="example-content">
+    <h2 class="example-content-header">
+      A Break from the form to some other content
+    </h2>
+    <p class="example-content-body">
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Ratione sequi
+      totam voluptate ex quibusdam repudiandae consectetur pariatur tempora
+      expedita eius.
+    </p>
+  </section>
+  <signal-form-fields [fields]="fieldsB.fields" [form]="fieldsB" />
+  <signal-form-save-button [form]="fieldsA" (onSave)="fieldsA.onSave($event)" />
+}

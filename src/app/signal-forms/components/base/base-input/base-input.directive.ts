@@ -11,10 +11,12 @@ import {
 import { FormFieldType } from '@enums/form-field-type.enum';
 import { ConfigTypeForField } from '@models/signal-field-configs.model';
 import {
-  DynamicOptions,
-  FormOption,
+  SignalValidator,
+  type DynamicOptions,
   type ElementTypeForField,
+  type FormOption,
 } from '@models/signal-form.model';
+import { MetaValidatorFn } from 'app/signal-forms/helpers/with-meta';
 
 @Directive()
 export abstract class BaseInputDirective<
@@ -33,6 +35,7 @@ export abstract class BaseInputDirective<
   public name = input.required<string>();
   public options = input<FormOption<OptionsVal>[]>([]);
   public dynamicOptionsFn = input<DynamicOptions<object, keyof object>>();
+  public validators = input([] as SignalValidator<object, keyof object>[]);
 
   private initialValue = signal<TValue | null>(null);
   private hasCapturedInitial = signal(false);
@@ -40,6 +43,16 @@ export abstract class BaseInputDirective<
   protected readonly injector = inject(Injector);
   protected readonly listboxId = computed(
     () => `dropdown-listbox-${this.name()}`,
+  );
+  // protected readonly placeholder = computed(() => {
+  //   this.config()?.placeholder ?? defaultPlaceholderMap.get()
+  // });
+
+  protected isRequired = computed(() =>
+    (this.validators() ?? []).some(
+      (validator) =>
+        (validator as MetaValidatorFn<TValue, unknown>).__meta?.required,
+    ),
   );
 
   constructor() {

@@ -6,16 +6,16 @@ import {
   HostBinding,
   input,
 } from '@angular/core';
+import { SignalFormHostDirective } from '@base/host-directive/signal-form-host.directive';
 import { FormFieldType } from '@enums/form-field-type.enum';
 import { FormRepeatableFieldComponent } from '@fields/signal-form-repeatable-field/form-repeatable-field.component';
 import {
-  GridSignalFormConfig,
-  SignalFormConfig,
+  type GridSignalFormConfig,
+  type SignalFormConfig,
   type SignalFormContainer,
   type SignalFormField,
-} from '../../../models/signal-form.model';
-import { SignalFormHostDirective } from '../../base/host-directive/signal-form-host.directive';
-import { CollapsibleSectionComponent } from '../../ui/collapsible-section/collapsible-section.component';
+} from '@models/signal-form.model';
+import { CollapsibleSectionComponent } from '@ui/collapsible-section/collapsible-section.component';
 import { SignalFormInputItemComponent } from '../signal-form-input-item/signal-form-input-item.component';
 
 @Component({
@@ -57,13 +57,17 @@ export class SignalFormFieldsComponent<TModel> {
   private isGridAreaConfig(
     config: SignalFormConfig<TModel>,
   ): config is GridSignalFormConfig<TModel> {
+    if (!config) {
+      return false;
+    }
+
     return config?.layout === 'grid-area' || 'gridArea' in config;
   }
 
   protected gridTemplateAreas = computed(() => {
     const config = this.form().config;
 
-    if (!config || !this.isGridAreaConfig(config)) {
+    if (!this.isGridAreaConfig(config)) {
       return null;
     }
 

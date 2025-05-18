@@ -4,9 +4,9 @@ import {
   computed,
   effect,
 } from '@angular/core';
-import { ColorFieldConfig } from '@models/signal-field-configs.model';
-import { FormFieldType } from '../../../enums/form-field-type.enum';
-import { BaseInputDirective } from '../../base/base-input/base-input.directive';
+import { BaseInputDirective } from '@base/base-input/base-input.directive';
+import { FormFieldType } from '@enums/form-field-type.enum';
+import { type ColorFieldConfig } from '@models/signal-field-configs.model';
 
 @Component({
   selector: 'signal-form-color-field',
