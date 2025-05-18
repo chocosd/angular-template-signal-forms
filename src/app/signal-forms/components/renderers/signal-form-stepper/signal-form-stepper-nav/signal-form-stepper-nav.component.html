@@ -1,0 +1,31 @@
+<div class="stepper-nav-ui">
+  <div class="stepper-track">
+    @for (step of steps(); track $index) {
+      <div class="stepper-node">
+        <button
+          class="step-circle"
+          [class.completed]="isStepComplete()[$index]"
+          [class.error]="doesStepHaveErrors()[$index]"
+          [class.active]="$index === currentStep()"
+          (click)="currentStep.set($index)"
+        >
+          @if (isStepComplete()[$index]) {
+            ✓
+          } @else {
+            {{ $index + 1 }}
+          }
+        </button>
+
+        @if ($index < steps().length - 1) {
+          @for (stepsStatus of requiredPerStepMap?.()[$index](); track $index) {
+            <div
+              class="step-line"
+              [class.filled]="isStepComplete()[$index]"
+              [ngClass]="stepsStatus"
+            ></div>
+          }
+        }
+      </div>
+    }
+  </div>
+</div>

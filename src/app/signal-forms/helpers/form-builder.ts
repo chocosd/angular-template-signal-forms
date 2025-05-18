@@ -2,18 +2,20 @@ import { computed, isSignal, signal, WritableSignal } from '@angular/core';
 import { FormFieldType } from '@enums/form-field-type.enum';
 import { FormStatus } from '@enums/form-status.enum';
 import {
+  SignalSteppedFormConfig,
+  SignalSteppedFormContainer,
   type CheckboxGroupSignalFormField,
   type DeepPartial,
   type ErrorMessage,
+  type ItemOf,
+  type RepeatableGroupBuilderField,
+  type RepeatableGroupSignalFormField,
   type SignalFormConfig,
   type SignalFormContainer,
   type SignalFormField,
   type SignalFormFieldBuilderInput,
   type SignalFormFieldForKey,
   type SignalValidatorFn,
-  ItemOf,
-  RepeatableGroupBuilderField,
-  RepeatableGroupSignalFormField,
 } from '@models/signal-form.model';
 
 export class FormBuilder {
@@ -456,6 +458,95 @@ export class FormBuilder {
           field.dirty.set(true);
         }
       }
+    };
+  }
+
+  static createSteppedForm<TModel>(args: {
+    model: TModel;
+    steps: {
+      fields: SignalFormFieldBuilderInput<TModel>[];
+      config?: SignalFormConfig<TModel>;
+      title?: string;
+      description?: string;
+    }[];
+    onSave?: (value: TModel) => void;
+    config?: SignalSteppedFormConfig<TModel>;
+  }): SignalSteppedFormContainer<TModel> {
+    const currentStep = signal(0);
+    const status = signal<FormStatus>(FormStatus.Idle);
+
+    const steps: SignalFormContainer<TModel>[] = args.steps.map((step) =>
+      FormBuilder.createForm({
+        model: args.model,
+        fields: step.fields,
+        config: step.config,
+      }),
+    );
+
+    const value = computed(() =>
+      steps.reduce(
+        (acc, step) => ({ ...acc, ...step.getValue() }),
+        {} as TModel,
+      ),
+    );
+
+    const validateStep = () => steps[currentStep()].validateForm();
+    const isValidStep = () =>
+      steps[currentStep()].fields.every((f) => !f.error());
+    const validateAll = () => steps.every((step) => step.validateForm());
+
+    const getErrors = (): ErrorMessage<TModel>[] =>
+      steps.flatMap((step) =>
+        step.getErrors().map(({ name, message }: ErrorMessage<TModel>) => ({
+          name,
+          message,
+        })),
+      );
+
+    const getField = <K extends keyof TModel>(
+      key: K,
+    ): SignalFormFieldForKey<TModel, K> => {
+      const allFields = steps.flatMap((step) => step.fields);
+      return allFields.find(
+        (f) => f.name === key,
+      ) as unknown as SignalFormFieldForKey<TModel, K>;
+    };
+
+    const reset = () => steps.forEach((step) => step.reset());
+
+    const save = () => {
+      if (!validateAll()) {
+        status.set(FormStatus.Error);
+        return;
+      }
+
+      status.set(FormStatus.Submitting);
+
+      try {
+        args.onSave?.(value());
+        status.set(FormStatus.Success);
+      } catch {
+        status.set(FormStatus.Error);
+      }
+    };
+
+    return {
+      steps,
+      currentStep,
+      value,
+      getValue: () => value(),
+      validateStep,
+      validateAll,
+      isValidStep,
+      getErrors,
+      getField,
+      reset,
+      save,
+      status,
+      config: {
+        ...args.config,
+        canSkipIncompleteSteps: args.config?.canSkipIncompleteSteps ?? false,
+      },
     };
   }
 }

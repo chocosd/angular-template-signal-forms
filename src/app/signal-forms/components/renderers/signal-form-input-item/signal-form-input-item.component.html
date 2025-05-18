@@ -4,242 +4,270 @@
     [class.has-error]="field().error()"
     [class.is-success]="!field().error() && field().value()"
     [attr.data-form-field]="name()"
+    #formControl
   >
-    @if (field().type !== FormFieldType.CHECKBOX) {
-      <label class="form-label" [for]="name()">
-        {{ field().label }}
-      </label>
+    @defer (on viewport(formControl)) {
+      @if (field().type !== FormFieldType.CHECKBOX) {
+        <label class="form-label" [for]="name()">
+          {{ field().label }}
+          @if (isRequired()) {
+            <span class="required-asterisk">*</span>
+          }
+        </label>
+      }
+      @switch (field().type) {
+        @case (FormFieldType.TEXT) {
+          <signal-form-text-field
+            [(touched)]="field().touched"
+            [(dirty)]="field().dirty"
+            [(value)]="field().value"
+            [(error)]="field().error"
+            [name]="name()"
+            [config]="field().config"
+            [disabled]="isDisabled()"
+            [validators]="field().validators"
+          />
+        }
+        @case (FormFieldType.PASSWORD) {
+          <signal-form-password-field
+            [(touched)]="field().touched"
+            [(dirty)]="field().dirty"
+            [(value)]="field().value"
+            [(error)]="field().error"
+            [name]="name()"
+            [config]="field().config"
+            [disabled]="isDisabled()"
+            [validators]="field().validators"
+          />
+        }
+        @case (FormFieldType.CHECKBOX) {
+          <signal-form-checkbox-field
+            [(touched)]="field().touched"
+            [(dirty)]="field().dirty"
+            [(value)]="field().value"
+            [(error)]="field().error"
+            [label]="field().label"
+            [name]="name()"
+            [config]="field().config"
+            [disabled]="isDisabled()"
+            [validators]="field().validators"
+          />
+        }
+
+        @case (FormFieldType.CHECKBOX_GROUP) {
+          <signal-form-checkbox-group-field
+            [(touched)]="field().touched"
+            [(dirty)]="field().dirty"
+            [(value)]="field().value"
+            [(error)]="field().error"
+            [label]="field().label"
+            [name]="name()"
+            [config]="field().config"
+            [disabled]="isDisabled()"
+            [valueType]="field().valueType"
+            [options]="filteredOptions()"
+            [validators]="field().validators"
+          />
+        }
+
+        @case (FormFieldType.NUMBER) {
+          <signal-form-number-field
+            [(touched)]="field().touched"
+            [(dirty)]="field().dirty"
+            [(value)]="field().value"
+            [(error)]="field().error"
+            [config]="field().config"
+            [name]="name()"
+            [disabled]="isDisabled()"
+            [validators]="field().validators"
+          />
+        }
+
+        @case (FormFieldType.AUTOCOMPLETE) {
+          <signal-form-autocomplete-field
+            [(touched)]="field().touched"
+            [(dirty)]="field().dirty"
+            [(value)]="field().value"
+            [(error)]="field().error"
+            [config]="field().config"
+            [name]="name()"
+            [loadOptions]="field().loadOptions"
+            [disabled]="isDisabled()"
+            [validators]="field().validators"
+          />
+        }
+
+        @case (FormFieldType.TEXTAREA) {
+          <signal-form-textarea-field
+            [(touched)]="field().touched"
+            [(dirty)]="field().dirty"
+            [(value)]="field().value"
+            [(error)]="field().error"
+            [config]="field().config"
+            [name]="name()"
+            [disabled]="isDisabled()"
+            [validators]="field().validators"
+          />
+        }
+
+        @case (FormFieldType.SELECT) {
+          <signal-form-select-field
+            [(touched)]="field().touched"
+            [(dirty)]="field().dirty"
+            [(value)]="field().value"
+            [(error)]="field().error"
+            [config]="field().config"
+            [disabled]="isDisabled()"
+            [name]="name()"
+            [options]="filteredOptions()"
+            [validators]="field().validators"
+          />
+        }
+
+        @case (FormFieldType.RADIO) {
+          <signal-form-radio-field
+            [(touched)]="field().touched"
+            [(dirty)]="field().dirty"
+            [(value)]="field().value"
+            [(error)]="field().error"
+            [config]="field().config"
+            [name]="name()"
+            [disabled]="isDisabled()"
+            [options]="filteredOptions()"
+            [validators]="field().validators"
+          />
+        }
+
+        @case (FormFieldType.DATETIME) {
+          <signal-form-datetime-field
+            [(touched)]="field().touched"
+            [(dirty)]="field().dirty"
+            [(value)]="field().value"
+            [(error)]="field().error"
+            [config]="field().config"
+            [name]="name()"
+            [disabled]="isDisabled()"
+            [validators]="field().validators"
+          />
+        }
+
+        @case (FormFieldType.MULTISELECT) {
+          <signal-form-multiselect-field
+            [(touched)]="field().touched"
+            [(dirty)]="field().dirty"
+            [(value)]="field().value"
+            [(error)]="field().error"
+            [config]="field().config"
+            [disabled]="isDisabled()"
+            [name]="name()"
+            [options]="filteredOptions()"
+            [validators]="field().validators"
+          />
+        }
+
+        @case (FormFieldType.CHIPLIST) {
+          <signal-form-chip-list-field
+            [(touched)]="field().touched"
+            [(dirty)]="field().dirty"
+            [(value)]="field().value"
+            [(error)]="field().error"
+            [config]="field().config"
+            [disabled]="isDisabled()"
+            [name]="name()"
+            [options]="filteredOptions()"
+            [validators]="field().validators"
+          />
+        }
+
+        @case (FormFieldType.FILE) {
+          <signal-form-file-field
+            [(touched)]="field().touched"
+            [(dirty)]="field().dirty"
+            [(value)]="field().value"
+            [(error)]="field().error"
+            [config]="field().config"
+            [name]="name()"
+            [disabled]="isDisabled()"
+            [validators]="field().validators"
+          />
+        }
+        @case (FormFieldType.COLOR) {
+          <signal-form-color-field
+            [(touched)]="field().touched"
+            [(dirty)]="field().dirty"
+            [(value)]="field().value"
+            [(error)]="field().error"
+            [config]="field().config"
+            [name]="name()"
+            [disabled]="isDisabled()"
+            [validators]="field().validators"
+          />
+        }
+        @case (FormFieldType.MASKED) {
+          <signal-form-masked-field
+            [(touched)]="field().touched"
+            [(dirty)]="field().dirty"
+            [(value)]="field().value"
+            [(error)]="field().error"
+            [config]="field().config"
+            [name]="name()"
+            [disabled]="isDisabled()"
+            [validators]="field().validators"
+          />
+        }
+        @case (FormFieldType.RATING) {
+          <signal-form-rating-field
+            [(touched)]="field().touched"
+            [(dirty)]="field().dirty"
+            [(value)]="field().value"
+            [(error)]="field().error"
+            [config]="field().config"
+            [name]="name()"
+            [disabled]="isDisabled()"
+            [validators]="field().validators"
+          />
+        }
+        @case (FormFieldType.SLIDER) {
+          <signal-form-slider-field
+            [(touched)]="field().touched"
+            [(dirty)]="field().dirty"
+            [(value)]="field().value"
+            [(error)]="field().error"
+            [config]="field().config"
+            [name]="name()"
+            [disabled]="isDisabled()"
+            [validators]="field().validators"
+          />
+        }
+        @case (FormFieldType.SWITCH) {
+          <signal-form-switch-field
+            [(touched)]="field().touched"
+            [(dirty)]="field().dirty"
+            [(value)]="field().value"
+            [(error)]="field().error"
+            [config]="field().config"
+            [name]="name()"
+            [disabled]="isDisabled()"
+            [validators]="field().validators"
+          />
+        }
+      }
+
+      <div class="form-caption">
+        @if (field().error()) {
+          <span class="form-error" role="alert" [id]="'error-' + name()">
+            {{ field().error() }}
+          </span>
+        } @else if (field().config?.hint) {
+          <span class="form-hint" role="alert" [id]="'hint-' + name()">
+            {{ field().config.hint }}
+          </span>
+        }
+      </div>
+    } @loading (minimum 100ms) {
+      loading...
+    } @error {
+      <p>there was a problem loading your input</p>
     }
-    @switch (field().type) {
-      @case (FormFieldType.TEXT) {
-        <signal-form-text-field
-          [(touched)]="field().touched"
-          [(dirty)]="field().dirty"
-          [(value)]="field().value"
-          [(error)]="field().error"
-          [name]="name()"
-          [config]="field().config"
-          [disabled]="isDisabled()"
-        />
-      }
-      @case (FormFieldType.PASSWORD) {
-        <signal-form-password-field
-          [(touched)]="field().touched"
-          [(dirty)]="field().dirty"
-          [(value)]="field().value"
-          [(error)]="field().error"
-          [name]="name()"
-          [config]="field().config"
-          [disabled]="isDisabled()"
-        />
-      }
-      @case (FormFieldType.CHECKBOX) {
-        <signal-form-checkbox-field
-          [(touched)]="field().touched"
-          [(dirty)]="field().dirty"
-          [(value)]="field().value"
-          [(error)]="field().error"
-          [label]="field().label"
-          [name]="name()"
-          [config]="field().config"
-          [disabled]="isDisabled()"
-        />
-      }
-
-      @case (FormFieldType.CHECKBOX_GROUP) {
-        <signal-form-checkbox-group-field
-          [(touched)]="field().touched"
-          [(dirty)]="field().dirty"
-          [(value)]="field().value"
-          [(error)]="field().error"
-          [label]="field().label"
-          [name]="name()"
-          [config]="field().config"
-          [disabled]="isDisabled()"
-          [valueType]="field().valueType"
-          [options]="filteredOptions()"
-        />
-      }
-
-      @case (FormFieldType.NUMBER) {
-        <signal-form-number-field
-          [(touched)]="field().touched"
-          [(dirty)]="field().dirty"
-          [(value)]="field().value"
-          [(error)]="field().error"
-          [config]="field().config"
-          [name]="name()"
-          [disabled]="isDisabled()"
-        />
-      }
-
-      @case (FormFieldType.AUTOCOMPLETE) {
-        <signal-form-autocomplete-field
-          [(touched)]="field().touched"
-          [(dirty)]="field().dirty"
-          [(value)]="field().value"
-          [(error)]="field().error"
-          [config]="field().config"
-          [name]="name()"
-          [loadOptions]="field().loadOptions"
-          [disabled]="isDisabled()"
-        />
-      }
-
-      @case (FormFieldType.TEXTAREA) {
-        <signal-form-textarea-field
-          [(touched)]="field().touched"
-          [(dirty)]="field().dirty"
-          [(value)]="field().value"
-          [(error)]="field().error"
-          [config]="field().config"
-          [name]="name()"
-          [disabled]="isDisabled()"
-        />
-      }
-
-      @case (FormFieldType.SELECT) {
-        <signal-form-select-field
-          [(touched)]="field().touched"
-          [(dirty)]="field().dirty"
-          [(value)]="field().value"
-          [(error)]="field().error"
-          [config]="field().config"
-          [disabled]="isDisabled()"
-          [name]="name()"
-          [options]="filteredOptions()"
-        />
-      }
-
-      @case (FormFieldType.RADIO) {
-        <signal-form-radio-field
-          [(touched)]="field().touched"
-          [(dirty)]="field().dirty"
-          [(value)]="field().value"
-          [(error)]="field().error"
-          [config]="field().config"
-          [name]="name()"
-          [disabled]="isDisabled()"
-          [options]="filteredOptions()"
-        />
-      }
-
-      @case (FormFieldType.DATETIME) {
-        <signal-form-datetime-field
-          [(touched)]="field().touched"
-          [(dirty)]="field().dirty"
-          [(value)]="field().value"
-          [(error)]="field().error"
-          [config]="field().config"
-          [name]="name()"
-          [disabled]="isDisabled()"
-        />
-      }
-
-      @case (FormFieldType.MULTISELECT) {
-        <signal-form-multiselect-field
-          [(touched)]="field().touched"
-          [(dirty)]="field().dirty"
-          [(value)]="field().value"
-          [(error)]="field().error"
-          [config]="field().config"
-          [disabled]="isDisabled()"
-          [name]="name()"
-          [options]="filteredOptions()"
-        />
-      }
-
-      @case (FormFieldType.CHIPLIST) {
-        <signal-form-chip-list-field
-          [(touched)]="field().touched"
-          [(dirty)]="field().dirty"
-          [(value)]="field().value"
-          [(error)]="field().error"
-          [config]="field().config"
-          [disabled]="isDisabled()"
-          [name]="name()"
-          [options]="filteredOptions()"
-        />
-      }
-
-      @case (FormFieldType.FILE) {
-        <signal-form-file-field
-          [(touched)]="field().touched"
-          [(dirty)]="field().dirty"
-          [(value)]="field().value"
-          [(error)]="field().error"
-          [config]="field().config"
-          [name]="name()"
-          [disabled]="isDisabled()"
-        />
-      }
-      @case (FormFieldType.COLOR) {
-        <signal-form-color-field
-          [(touched)]="field().touched"
-          [(dirty)]="field().dirty"
-          [(value)]="field().value"
-          [(error)]="field().error"
-          [config]="field().config"
-          [name]="name()"
-          [disabled]="isDisabled()"
-        />
-      }
-      @case (FormFieldType.MASKED) {
-        <signal-form-masked-field
-          [(touched)]="field().touched"
-          [(dirty)]="field().dirty"
-          [(value)]="field().value"
-          [(error)]="field().error"
-          [config]="field().config"
-          [name]="name()"
-          [disabled]="isDisabled()"
-        />
-      }
-      @case (FormFieldType.RATING) {
-        <signal-form-rating-field
-          [(touched)]="field().touched"
-          [(dirty)]="field().dirty"
-          [(value)]="field().value"
-          [(error)]="field().error"
-          [config]="field().config"
-          [name]="name()"
-          [disabled]="isDisabled()"
-        />
-      }
-      @case (FormFieldType.SLIDER) {
-        <signal-form-slider-field
-          [(touched)]="field().touched"
-          [(dirty)]="field().dirty"
-          [(value)]="field().value"
-          [(error)]="field().error"
-          [config]="field().config"
-          [name]="name()"
-          [disabled]="isDisabled()"
-        />
-      }
-      @case (FormFieldType.SWITCH) {
-        <signal-form-switch-field
-          [(touched)]="field().touched"
-          [(dirty)]="field().dirty"
-          [(value)]="field().value"
-          [(error)]="field().error"
-          [config]="field().config"
-          [name]="name()"
-          [disabled]="isDisabled()"
-        />
-      }
-    }
-
-    <div class="form-caption">
-      @if (field().error()) {
-        <span class="form-error" role="alert" [id]="'error-' + name()">
-          {{ field().error() }}
-        </span>
-      } @else if (field().config?.hint) {
-        <span class="form-hint" role="alert" [id]="'hint-' + name()">
-          {{ field().config.hint }}
-        </span>
-      }
-    </div>
   </div>
 }

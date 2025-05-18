@@ -6,10 +6,10 @@ import {
   ElementRef,
   viewChild,
 } from '@angular/core';
-import { MaskedFieldConfig } from '@models/signal-field-configs.model';
+import { BaseInputDirective } from '@base/base-input/base-input.directive';
+import { FormFieldType } from '@enums/form-field-type.enum';
+import { type MaskedFieldConfig } from '@models/signal-field-configs.model';
 import { MaskParser } from 'app/signal-forms/helpers/mask-parser';
-import { FormFieldType } from '../../../enums/form-field-type.enum';
-import { BaseInputDirective } from '../../base/base-input/base-input.directive';
 
 @Component({
   selector: 'signal-form-masked-field',

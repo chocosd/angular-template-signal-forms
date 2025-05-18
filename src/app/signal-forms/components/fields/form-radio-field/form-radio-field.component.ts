@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { FormFieldType } from '../../../enums/form-field-type.enum';
-import { type RadioFieldConfig } from '../../../models/signal-field-configs.model';
-import { type FormOption } from '../../../models/signal-form.model';
-import { BaseInputDirective } from '../../base/base-input/base-input.directive';
+import { BaseInputDirective } from '@base/base-input/base-input.directive';
+import { FormFieldType } from '@enums/form-field-type.enum';
+import { type RadioFieldConfig } from '@models/signal-field-configs.model';
+import { type FormOption } from '@models/signal-form.model';
 
 @Component({
   selector: 'signal-form-radio-field',

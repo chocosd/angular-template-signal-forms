@@ -1,6 +1,21 @@
-<router-outlet />
+<div class="form-button-rows">
+  @for (action of actions; track action.label) {
+    <button class="button form-button" (click)="action.action()">
+      {{ action.label }}
+    </button>
+  }
+</div>
 
-@if (!!form) {
-  <button type="button" (click)="updateForm()">update the form</button>
-  <app-signal-form [form]="form" (onSave)="save($event)" />
-}
+<section class="example-view">
+  @switch (view()) {
+    @case ("form") {
+      <example-signal-form />
+    }
+    @case ("stepper") {
+      <example-signal-form-stepper />
+    }
+    @case ("form-rows") {
+      <example-signal-form-rows />
+    }
+  }
+</section>

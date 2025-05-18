@@ -6,8 +6,8 @@ import {
   output,
 } from '@angular/core';
 import {
-  SignalFormField,
   type SignalFormContainer,
+  type SignalFormField,
 } from '@models/signal-form.model';
 import { SignalFormInputItemComponent } from '@renderers/signal-form-input-item/signal-form-input-item.component';
 import {

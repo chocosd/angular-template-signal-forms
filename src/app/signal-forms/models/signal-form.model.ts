@@ -2,6 +2,7 @@ import { Signal, WritableSignal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { FormFieldType } from '../enums/form-field-type.enum';
 import { FormStatus } from '../enums/form-status.enum';
+import { MetaValidatorFn } from '../helpers/with-meta';
 import { ConfigTypeForField } from './signal-field-configs.model';
 export interface FormOption<TResult = string | number | boolean | object> {
   label: string;
@@ -24,13 +25,17 @@ export type BuilderField<
 > = {
   name: TKey;
   config?: ConfigTypeForField<TType>;
-  validators?: SignalValidatorFn<TModel[TKey], TModel>[];
+  validators?: SignalValidator<TModel, TKey>[];
   computedValue?: (form: SignalFormContainer<TModel>) => TModel[TKey];
   hidden?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
   disabled?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
   type: TType;
   label: string;
 };
+
+export type SignalValidator<TModel, TKey extends keyof TModel> =
+  | MetaValidatorFn<TModel[TKey], TModel>
+  | SignalValidatorFn<TModel[TKey], TModel>;
 
 //
 // ========== BuilderInput Inference ==========
@@ -89,6 +94,11 @@ export type NestedGroupBuilderField<TModel, K extends keyof TModel> = {
 export type SignalFormConfig<TModel> =
   | GridSignalFormConfig<TModel>
   | FlexSignalFormConfig;
+
+export interface SignalSteppedFormConfig<TModel> {
+  form?: SignalFormConfig<TModel>;
+  canSkipIncompleteSteps?: boolean;
+}
 
 export type BaseSignalFormConfig = {
   view?: 'row' | 'stacked' | 'collapsable';
@@ -372,3 +382,27 @@ export type ElementTypeForField<T extends FormFieldType> = T extends
       : T extends FormFieldType.SELECT
         ? HTMLSelectElement
         : never;
+
+/* Stepped Form */
+
+export interface SteppedFormStep<TModel> {
+  title?: string;
+  description?: string;
+  fields: SignalFormFieldBuilderInput<TModel>[];
+  config?: SignalSteppedFormConfig<TModel>;
+}
+export interface SignalSteppedFormContainer<TModel> {
+  currentStep: WritableSignal<number>;
+  steps: SignalFormContainer<TModel>[];
+  value: Signal<TModel>;
+  getValue(): TModel;
+  getErrors(): ErrorMessage<TModel>[];
+  getField<K extends keyof TModel>(key: K): SignalFormFieldForKey<TModel, K>;
+  validateStep(): boolean;
+  validateAll(): boolean;
+  isValidStep: () => boolean;
+  reset(): void;
+  save(): void;
+  status: WritableSignal<FormStatus>;
+  config?: SignalSteppedFormConfig<TModel>;
+}
