@@ -40,11 +40,15 @@ export class FormSelectFieldComponent extends BaseInputDirective<
   private dropdownOverlayEffect(): void {
     effect(
       () => {
-        if (!this.showDropdown()) return;
+        if (!this.showDropdown()) {
+          return;
+        }
+
+        const reference = this.host.viewContainerRef.element.nativeElement;
 
         this.dropdownService.openDropdown<FormOption>({
           options: this.options(),
-          reference: this.host.viewContainerRef.element.nativeElement,
+          reference,
           viewContainerRef: this.host.viewContainerRef,
           ariaListboxId: this.listboxId(),
           multiselect: false,

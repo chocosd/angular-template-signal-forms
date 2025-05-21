@@ -60,6 +60,7 @@ export class FormDropdownService {
 
     requestAnimationFrame(() => {
       const rect = config.reference.getBoundingClientRect();
+
       instance.setPosition({
         top: rect.bottom + window.scrollY,
         left: rect.left + window.scrollX,

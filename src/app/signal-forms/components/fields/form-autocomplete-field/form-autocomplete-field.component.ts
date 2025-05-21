@@ -45,6 +45,9 @@ export class FormAutocompleteFieldComponent extends BaseInputDirective<
   protected loadedOptions = signal<FormOption[]>([]);
   protected showDropdown = signal(false);
 
+  private lastQuery = signal('');
+  private cachedOptions = signal<FormOption[]>([]);
+
   private readonly destroyRef = inject(DestroyRef);
   private readonly dropdownService = inject(FormDropdownService);
 
@@ -66,14 +69,14 @@ export class FormAutocompleteFieldComponent extends BaseInputDirective<
       () => {
         if (
           !this.showDropdown() ||
-          !this.options().length ||
+          !this.loadedOptions().length ||
           !this.inputRef()
         ) {
           return;
         }
 
         this.dropdownService.openDropdown<FormOption>({
-          options: this.options(),
+          options: this.loadedOptions(),
           ariaListboxId: this.listboxId(),
           reference: this.inputRef()!.nativeElement,
           viewContainerRef: this.hostViewContainerRef!,
@@ -85,6 +88,9 @@ export class FormAutocompleteFieldComponent extends BaseInputDirective<
             this.showDropdown.set(false);
             this.dropdownService.destroyDropdown();
           },
+          onClose: () => {
+            this.showDropdown.set(false);
+          },
           multiselect: false,
         });
       },
@@ -92,15 +98,34 @@ export class FormAutocompleteFieldComponent extends BaseInputDirective<
     );
   }
 
+  public override setValue(val: FormOption | null): void {
+    super.setValue(val);
+
+    this.dirty.set(true);
+    this.touched.set(true);
+  }
+
   public onSelect(option: FormOption) {
     this.setValue(option);
     this.showDropdown.set(false);
+  }
+
+  protected handleFocus(): void {
+    const query = this.lastQuery();
+    if (!!query && this.cachedOptions().length) {
+      console.log(query);
+      console.log(this.cachedOptions());
+      this.showDropdown.set(true);
+      this.loadedOptions.set(this.cachedOptions());
+      console.log(this.showDropdown(), this.loadedOptions());
+    }
   }
 
   private searchQueryChangeEffect(): void {
     effect(
       () => {
         const query = this.search();
+        this.lastQuery.set(query);
 
         if (
           this.config()?.minChars &&
@@ -123,6 +148,7 @@ export class FormAutocompleteFieldComponent extends BaseInputDirective<
 
         const timeout = setTimeout(() => {
           debounced$.subscribe((result) => {
+            this.cachedOptions.set(result); // ✅ cache
             this.loadedOptions.set(result);
             this.showDropdown.set(true);
           });

@@ -50,8 +50,8 @@ export const addressForm = (
           ),
         ),
       config: {
-        debounceMs: 300,
-        minChars: 2,
+        debounceMs: 200,
+        minChars: 1,
       },
     },
     {

@@ -13,6 +13,7 @@ import {
 } from '@angular/core';
 import { type SignalFormContainer } from '@models/signal-form.model';
 import { MetaValidatorFn } from 'app/signal-forms/helpers/with-meta';
+import { LucideAngularModule, SquareCheck } from 'lucide-angular';
 
 export enum StepStatus {
   Complete = 'complete',
@@ -22,13 +23,14 @@ export enum StepStatus {
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgClass],
+  imports: [NgClass, LucideAngularModule],
   selector: 'signal-form-stepper-nav',
   standalone: true,
   styleUrl: './signal-form-stepper-nav.component.scss',
   templateUrl: './signal-form-stepper-nav.component.html',
 })
 export class SignalFormStepperNavComponent<TModel> {
+  public hasSaved = input<boolean>();
   public steps = input.required<SignalFormContainer<TModel>[]>();
   public currentStep = model.required<number>();
 
@@ -40,6 +42,7 @@ export class SignalFormStepperNavComponent<TModel> {
   );
 
   protected readonly stepStatus = StepStatus;
+  protected readonly squareCheckIcon = SquareCheck;
 
   private readonly injector = inject(Injector);
 
@@ -64,9 +67,7 @@ export class SignalFormStepperNavComponent<TModel> {
   private isStepCompleteOrErrorEffect(): void {
     effect(
       () => {
-        const validatedMap = this.steps().map(
-          (step) => step.anyDirty() && step.validateForm(),
-        );
+        const validatedMap = this.steps().map((step) => step.validateForm());
         this.isStepComplete.set(validatedMap);
 
         const errorsMap = this.steps().map(
@@ -84,7 +85,6 @@ export class SignalFormStepperNavComponent<TModel> {
         if (this.steps()) {
           this.initRequiredPerStepMap();
         }
-        console.log(this.requiredPerStepMap()['0']());
       },
       { injector: this.injector },
     );

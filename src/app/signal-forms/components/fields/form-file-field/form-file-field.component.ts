@@ -7,7 +7,7 @@ import {
 import { BaseInputDirective } from '@base/base-input/base-input.directive';
 import { SignalFormHostDirective } from '@base/host-directive/signal-form-host.directive';
 import { FormFieldType } from '@enums/form-field-type.enum';
-import { FileFieldConfig } from '@models/signal-field-configs.model';
+import { type FileFieldConfig } from '@models/signal-field-configs.model';
 
 @Component({
   selector: 'signal-form-file-field',

@@ -1,4 +1,4 @@
-import { Basket } from '../models/example.model';
+import { type Basket } from '../models/example.model';
 
 export const model: Basket = {
   address: {

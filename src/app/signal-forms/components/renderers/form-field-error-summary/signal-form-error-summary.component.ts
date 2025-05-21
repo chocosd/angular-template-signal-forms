@@ -11,8 +11,8 @@ import {
   viewChildren,
 } from '@angular/core';
 import {
-  SignalSteppedFormContainer,
   type SignalFormContainer,
+  type SignalSteppedFormContainer,
 } from '@models/signal-form.model';
 
 @Component({

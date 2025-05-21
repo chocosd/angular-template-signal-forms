@@ -98,11 +98,13 @@ export type SignalFormConfig<TModel> =
 export interface SignalSteppedFormConfig<TModel> {
   form?: SignalFormConfig<TModel>;
   canSkipIncompleteSteps?: boolean;
+  disableUponComplete?: boolean;
 }
 
 export type BaseSignalFormConfig = {
   view?: 'row' | 'stacked' | 'collapsable';
   layout: 'flex' | 'grid-area';
+  disableUponComplete?: boolean;
 };
 
 export interface GridSignalFormConfig<TModel> extends BaseSignalFormConfig {
@@ -194,6 +196,10 @@ export type RepeatableGroupSignalFormField<
   repeatableForms: WritableSignal<SignalFormContainer<ItemOf<TModel[K]>>[]>;
   addItem: (initial?: ItemOf<TModel[K]>) => void;
   removeItem: (index: number) => void;
+  error: WritableSignal<boolean>;
+  touched: WritableSignal<boolean>;
+  dirty: WritableSignal<boolean>;
+  value: WritableSignal<boolean>;
 };
 export interface CheckboxGroupSignalFormField<
   TModel,
@@ -357,6 +363,7 @@ export interface SignalFormContainer<TModel> {
 
   anyTouched: Signal<boolean>;
   anyDirty: Signal<boolean>;
+  hasSaved(): Signal<boolean>;
   getValue(): TModel;
   getRawValue(): TModel;
   getErrors(): ErrorMessage<TModel>[];
@@ -395,6 +402,7 @@ export interface SignalSteppedFormContainer<TModel> {
   currentStep: WritableSignal<number>;
   steps: SignalFormContainer<TModel>[];
   value: Signal<TModel>;
+  hasSaved: Signal<boolean>;
   getValue(): TModel;
   getErrors(): ErrorMessage<TModel>[];
   getField<K extends keyof TModel>(key: K): SignalFormFieldForKey<TModel, K>;
@@ -403,6 +411,8 @@ export interface SignalSteppedFormContainer<TModel> {
   isValidStep: () => boolean;
   reset(): void;
   save(): void;
+  anyDirty: Signal<boolean>;
+  anyTouched: Signal<boolean>;
   status: WritableSignal<FormStatus>;
   config?: SignalSteppedFormConfig<TModel>;
 }
