@@ -1,9 +1,8 @@
+// # region
 import { computed, isSignal, signal, WritableSignal } from '@angular/core';
 import { FormFieldType } from '@enums/form-field-type.enum';
 import { FormStatus } from '@enums/form-status.enum';
 import {
-  SignalSteppedFormConfig,
-  SignalSteppedFormContainer,
   type CheckboxGroupSignalFormField,
   type DeepPartial,
   type ErrorMessage,
@@ -15,9 +14,11 @@ import {
   type SignalFormField,
   type SignalFormFieldBuilderInput,
   type SignalFormFieldForKey,
+  type SignalSteppedFormConfig,
+  type SignalSteppedFormContainer,
   type SignalValidatorFn,
 } from '@models/signal-form.model';
-
+// #endregion
 export class FormBuilder {
   static createForm<TModel>(args: {
     model: TModel;
@@ -67,13 +68,20 @@ export class FormBuilder {
       }),
       getValue: () => form.value(),
       getRawValue: () => form.rawValue(),
+      hasSaved: computed(() => {
+        return (
+          !form.anyTouched() &&
+          !form.anyDirty() &&
+          form.status() === FormStatus.Success
+        );
+      }),
       validateForm: this.validateForm(fields, form),
       reset: this.resetForm(fields, { ...args.model }),
       getErrors: this.getErrors(fields),
       config: args.config,
       patchValue: this.patchForm(fields),
       setValue: this.setFormValue(fields),
-      save: this.save(fields, status, form, args.onSave),
+      save: this.runSaveHandler(fields, status, form, args.onSave),
     });
 
     return form;
@@ -86,17 +94,23 @@ export class FormBuilder {
           return (field.form as SignalFormContainer<TModel>).anyTouched();
         }
 
-        if ('repeatableForms' in field) {
-          const forms = (
-            field as unknown as RepeatableGroupSignalFormField<
-              TModel,
-              keyof TModel
-            >
-          ).repeatableForms();
+        const repeatableFields =
+          field as unknown as RepeatableGroupSignalFormField<
+            TModel,
+            keyof TModel
+          >;
 
-          if (Array.isArray(forms)) {
-            return forms.some((form) => form.anyTouched());
-          }
+        if (repeatableFields.touched()) {
+          return field.touched();
+        }
+
+        if (
+          'repeatableForms' in field &&
+          Array.isArray(repeatableFields.repeatableForms?.())
+        ) {
+          return repeatableFields
+            .repeatableForms()
+            .some((form) => form.anyTouched());
         }
 
         return field.touched();
@@ -148,7 +162,6 @@ export class FormBuilder {
       ).getValue();
     }
 
-    //TODO: Tighten typing here for autocomplete
     return field.value();
   }
 
@@ -164,6 +177,10 @@ export class FormBuilder {
             TModel,
             keyof TModel
           >;
+
+        if (repeatableFields.dirty()) {
+          return field.dirty();
+        }
 
         if (
           'repeatableForms' in field &&
@@ -200,7 +217,7 @@ export class FormBuilder {
       const items = Array.isArray(rawValue) ? rawValue : [];
 
       const repeatableForms = signal(
-        items.map((item, index) =>
+        items.map((item) =>
           this.createForm({
             model: item,
             fields: (field as RepeatableGroupBuilderField<TModel, keyof TModel>)
@@ -225,10 +242,15 @@ export class FormBuilder {
         });
 
         repeatableForms.update((forms) => [...forms, newForm]);
+        baseField.dirty.set(true);
+        baseField.touched.set(true);
       };
 
-      baseField.removeItem = (index: number) =>
+      baseField.removeItem = (index: number) => {
         repeatableForms.update((forms) => forms.filter((_, i) => i !== index));
+        baseField.dirty.set(true);
+        baseField.touched.set(true);
+      };
 
       // 🔁 Compute current values of repeatable group
       baseField.value = computed(() =>
@@ -360,15 +382,16 @@ export class FormBuilder {
     };
   }
 
-  private static save<TModel>(
+  private static runSaveHandler<TModel>(
     fields: SignalFormField<TModel>[],
     status: WritableSignal<FormStatus>,
     form: SignalFormContainer<TModel>,
     onSave?: (value: TModel) => void,
   ): () => void {
     return () => {
-      const validate = this.validateForm(fields, form);
-      if (!validate()) {
+      const isValid = this.validateForm(fields, form);
+
+      if (!isValid()) {
         status.set(FormStatus.Error);
         return;
       }
@@ -386,7 +409,16 @@ export class FormBuilder {
           } else {
             field.touched.set(false);
             field.dirty.set(false);
+
+            // disable if needed
+            if (form.config?.disableUponComplete) {
+              field.disabled = () => true;
+            }
           }
+        }
+
+        if (!form.config?.disableUponComplete) {
+          setTimeout(() => status.set(FormStatus.Idle), 100);
         }
       } catch {
         status.set(FormStatus.Error);
@@ -514,23 +546,25 @@ export class FormBuilder {
 
     const reset = () => steps.forEach((step) => step.reset());
 
-    const save = () => {
-      if (!validateAll()) {
-        status.set(FormStatus.Error);
-        return;
-      }
+    const anyTouched = computed(() => steps.some((step) => step.anyTouched()));
+    const anyDirty = computed(() => steps.some((step) => step.anyDirty()));
+    const hasSaved = computed(
+      () => !anyDirty() && !anyTouched() && status() === FormStatus.Success,
+    );
 
-      status.set(FormStatus.Submitting);
-
-      try {
-        args.onSave?.(value());
-        status.set(FormStatus.Success);
-      } catch {
-        status.set(FormStatus.Error);
-      }
-    };
+    const allFields = steps.flatMap((s) => s.fields);
+    const virtualForm = {
+      ...steps[0],
+      fields: allFields,
+      getValue: () => value(),
+      anyDirty: computed(() => steps.some((s) => s.anyDirty())),
+      anyTouched: computed(() => steps.some((s) => s.anyTouched())),
+      config: args.config,
+    } as SignalFormContainer<TModel>;
 
     return {
+      anyTouched,
+      anyDirty,
       steps,
       currentStep,
       value,
@@ -540,8 +574,9 @@ export class FormBuilder {
       isValidStep,
       getErrors,
       getField,
+      hasSaved,
       reset,
-      save,
+      save: this.runSaveHandler(allFields, status, virtualForm, args.onSave),
       status,
       config: {
         ...args.config,

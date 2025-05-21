@@ -1,1 +1,7 @@
-<signal-form-stepper [form]="steppedForm" />
+<signal-form-stepper
+  [form]="steppedForm"
+  (afterSaveCompletes)="handleAfterSaveHasFinished()"
+/>
+@if (showMessage()) {
+  you should see this
+}

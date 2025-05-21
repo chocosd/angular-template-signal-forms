@@ -2,7 +2,7 @@ import {
   type SignalFormContainer,
   type SignalValidatorFn,
 } from '@models/signal-form.model';
-import { MetaValidatorFn, withMeta } from '../helpers/with-meta';
+import { type MetaValidatorFn, withMeta } from '../helpers/with-meta';
 
 export class SignalValidators {
   static required<TModel, K extends keyof TModel = any>(

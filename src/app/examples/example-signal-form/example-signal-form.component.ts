@@ -5,7 +5,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { FormFieldType } from '@enums/form-field-type.enum';
-import { SignalFormContainer } from '@models/signal-form.model';
+import { type SignalFormContainer } from '@models/signal-form.model';
 import { SignalFormComponent } from '@renderers/signal-form/signal-form.component';
 import { TestApiService } from '@services/test-http.service';
 import { SignalValidators } from '@validators/signal-validators';
@@ -14,7 +14,7 @@ import { FormBuilder } from 'app/signal-forms/helpers/form-builder';
 import { aboutForm } from '../consts/about-form.const';
 import { addressForm } from '../consts/address-form.const';
 import { model } from '../consts/form.const';
-import { Basket } from '../models/example.model';
+import { type Basket } from '../models/example.model';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -105,6 +105,7 @@ export class ExampleSignalFormComponent implements OnInit {
       ],
       onSave: (value) => this.save(value),
       config: {
+        view: 'collapsable',
         layout: 'grid-area',
         gridArea: [
           ['address', 'address', 'address'],

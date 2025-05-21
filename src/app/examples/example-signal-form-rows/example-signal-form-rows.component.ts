@@ -1,6 +1,9 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormFieldType } from '@enums/form-field-type.enum';
-import { FormOption, SignalFormContainer } from '@models/signal-form.model';
+import {
+  type FormOption,
+  type SignalFormContainer,
+} from '@models/signal-form.model';
 import { SignalFormFieldsComponent } from '@renderers/signal-form-fields/signal-form-fields.component';
 import { SignalFormSaveButtonComponent } from '@renderers/signal-form-save-button/signal-form-save-button.component';
 import { FormBuilder } from 'app/signal-forms/helpers/form-builder';
@@ -55,6 +58,7 @@ export class ExampleSignalFormRowsComponent implements OnInit {
     };
 
     this.fieldsA = FormBuilder.createForm({
+      title: 'section A',
       model: userModelA,
       fields: [
         {
@@ -90,7 +94,7 @@ export class ExampleSignalFormRowsComponent implements OnInit {
         },
       ],
       config: {
-        view: 'row',
+        view: 'collapsable',
         layout: 'flex',
       },
       // onSave: (val) => this.formatAndSave(val),
@@ -110,8 +114,6 @@ export class ExampleSignalFormRowsComponent implements OnInit {
               const isFemale = !!genderValue && genderValue.value === 'Female';
               const alsoHasPostcode = !!this.fieldsA.getField('address').value()
                 .postcode;
-
-              console.log(alsoHasPostcode);
 
               return isUnder18 && isFemale && alsoHasPostcode
                 ? 'age is too low'

@@ -2,6 +2,7 @@
   <form onsubmit="event.preventDefault();">
     <signal-form-stepper-nav
       [steps]="form.steps"
+      [hasSaved]="form.hasSaved()"
       [(currentStep)]="form.currentStep"
     />
 
@@ -41,7 +42,13 @@
         </button>
       }
       @if (form.currentStep() === form.steps.length - 1) {
-        <button class="form-button" (click)="save()">Submit</button>
+        <button
+          class="form-button"
+          [disabled]="!!form.getErrors().length"
+          (click)="save()"
+        >
+          Submit
+        </button>
       }
     </div>
   </form>

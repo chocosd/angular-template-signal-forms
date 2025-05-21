@@ -1,3 +1,4 @@
+// #region
 import {
   computed,
   Directive,
@@ -9,7 +10,7 @@ import {
   signal,
 } from '@angular/core';
 import { FormFieldType } from '@enums/form-field-type.enum';
-import { ConfigTypeForField } from '@models/signal-field-configs.model';
+import { type ConfigTypeForField } from '@models/signal-field-configs.model';
 import {
   SignalValidator,
   type DynamicOptions,
@@ -17,7 +18,7 @@ import {
   type FormOption,
 } from '@models/signal-form.model';
 import { MetaValidatorFn } from 'app/signal-forms/helpers/with-meta';
-
+// #endregion
 @Directive()
 export abstract class BaseInputDirective<
   TFieldType extends FormFieldType,
@@ -36,6 +37,7 @@ export abstract class BaseInputDirective<
   public options = input<FormOption<OptionsVal>[]>([]);
   public dynamicOptionsFn = input<DynamicOptions<object, keyof object>>();
   public validators = input([] as SignalValidator<object, keyof object>[]);
+  public parseValue = input<(val: TValue) => TValue>();
 
   private initialValue = signal<TValue | null>(null);
   private hasCapturedInitial = signal(false);
@@ -83,7 +85,8 @@ export abstract class BaseInputDirective<
   }
 
   public setValue(val: TValue): void {
-    this.value.set(val);
+    const parsed = this.parseValue()?.(val) ?? val;
+    this.value.set(parsed);
   }
 
   protected getInitialValue(): TValue {

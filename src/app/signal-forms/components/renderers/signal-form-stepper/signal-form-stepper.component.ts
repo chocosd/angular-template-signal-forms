@@ -1,5 +1,12 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { SignalSteppedFormContainer } from '@models/signal-form.model';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  input,
+  output,
+} from '@angular/core';
+import { type SignalSteppedFormContainer } from '@models/signal-form.model';
 import { SignalFormErrorSummaryComponent } from '@renderers/form-field-error-summary/signal-form-error-summary.component';
 import { SignalFormFieldsComponent } from '@renderers/signal-form-fields/signal-form-fields.component';
 import { SignalFormStepperNavComponent } from './signal-form-stepper-nav/signal-form-stepper-nav.component';
@@ -20,6 +27,20 @@ import { SignalFormStepperNavComponent } from './signal-form-stepper-nav/signal-
 })
 export class SignalFormStepperComponent<TModel> {
   public form = input.required<SignalSteppedFormContainer<TModel>>();
+  public onSave = output<TModel>();
+  public afterSaveCompletes = output<void>();
+
+  protected readonly saveDisabled = computed(
+    () => !(this.form().anyDirty() && this.form().anyTouched()),
+  );
+
+  constructor() {
+    effect(() => {
+      if (this.form().hasSaved()) {
+        this.afterSaveCompletes.emit();
+      }
+    });
+  }
 
   protected next() {
     if (
@@ -36,5 +57,7 @@ export class SignalFormStepperComponent<TModel> {
 
   protected save() {
     this.form().save();
+
+    this.onSave.emit(this.form().value());
   }
 }

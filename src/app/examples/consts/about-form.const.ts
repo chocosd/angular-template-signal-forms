@@ -1,6 +1,6 @@
 import { FormFieldType } from '@enums/form-field-type.enum';
-import { SignalFormFieldBuilderInput } from '@models/signal-form.model';
-import { Basket } from '../models/example.model';
+import { type SignalFormFieldBuilderInput } from '@models/signal-form.model';
+import { type Basket } from '../models/example.model';
 
 export const aboutForm: SignalFormFieldBuilderInput<Basket> = {
   heading: 'About you',

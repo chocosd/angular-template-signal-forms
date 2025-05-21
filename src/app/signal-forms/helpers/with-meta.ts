@@ -1,4 +1,4 @@
-import { SignalValidatorFn } from '@models/signal-form.model';
+import { type SignalValidatorFn } from '@models/signal-form.model';
 
 export interface ValidatorMeta {
   required?: boolean;

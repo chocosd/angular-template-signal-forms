@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { FormFieldType } from '@enums/form-field-type.enum';
 import { type SignalSteppedFormContainer } from '@models/signal-form.model';
 import { SignalFormStepperComponent } from '@renderers/signal-form-stepper/signal-form-stepper.component';
@@ -18,6 +23,7 @@ import { type Basket } from '../models/example.model';
 })
 export class ExampleSignalFormStepperComponent implements OnInit {
   public steppedForm!: SignalSteppedFormContainer<Basket>;
+  public showMessage = signal(false);
 
   public ngOnInit(): void {
     this.steppedForm = FormBuilder.createSteppedForm({
@@ -87,10 +93,20 @@ export class ExampleSignalFormStepperComponent implements OnInit {
           ],
         },
       ],
-      onSave: console.log,
+      onSave: (value) => this.handleSave(value),
       config: {
-        canSkipIncompleteSteps: false,
+        canSkipIncompleteSteps: true,
+        disableUponComplete: true,
       },
     });
+  }
+
+  private handleSave(value: Basket): void {
+    console.log(this.steppedForm.status());
+    console.log(value);
+  }
+
+  protected handleAfterSaveHasFinished(): void {
+    this.showMessage.set(true);
   }
 }

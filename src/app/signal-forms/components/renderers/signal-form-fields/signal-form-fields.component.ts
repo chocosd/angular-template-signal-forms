@@ -40,18 +40,18 @@ export class SignalFormFieldsComponent<TModel> {
   public fields = input.required<SignalFormField<TModel>[]>();
   public form = input.required<SignalFormContainer<TModel>>();
   public index = input<number | null>(null);
+  public isRoot = input<boolean>(true);
 
   protected readonly formFieldType = FormFieldType;
 
   protected visibleFields = computed<SignalFormField<TModel>[] | undefined>(
-    () => {
-      return this.fields().filter((f) => {
+    () =>
+      this.fields().filter((f) => {
         const hidden = f.hidden;
         return !(typeof hidden === 'function'
           ? hidden(this.form()!)
           : !!hidden);
-      });
-    },
+      }),
   );
 
   private isGridAreaConfig(
@@ -71,11 +71,7 @@ export class SignalFormFieldsComponent<TModel> {
       return null;
     }
 
-    const result = config?.gridArea
-      .map((row) => `"${row.join(' ')}"`)
-      .join(' ');
-
-    return result;
+    return config?.gridArea.map((row) => `"${row.join(' ')}"`).join(' ');
   });
 
   protected isGridLayout(): boolean {
@@ -83,8 +79,14 @@ export class SignalFormFieldsComponent<TModel> {
   }
 
   protected formLayoutClass = computed(() => {
-    const view = this.form()?.config?.view ?? 'stacked';
-    return view === 'row' ? 'form-group-row' : 'form-group-stacked';
+    switch (this.form()?.config?.view) {
+      case 'collapsable':
+        return 'form-group-collapsable';
+      case 'row':
+        return 'form-group-row';
+      default:
+        return 'form-group-stacked';
+    }
   });
 
   @HostBinding('class')

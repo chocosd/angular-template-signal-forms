@@ -16,7 +16,7 @@
     [id]="name()"
     [value]="value()?.label ?? ''"
     (input)="search.set($event.target.value)"
-    (focus)="showDropdown.set(true)"
+    (focus)="handleFocus()"
     (change)="handleBlur()"
     (blur)="handleBlur()"
   />

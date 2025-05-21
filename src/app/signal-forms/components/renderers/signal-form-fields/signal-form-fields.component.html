@@ -1,51 +1,64 @@
-@for (field of visibleFields?.(); track field.name) {
-  @if (field.type === formFieldType.REPEATABLE_GROUP) {
-    <signal-form-repeatable-field
-      [repeatableForms]="field.repeatableForms()"
-      [fields]="field.fields"
-      [heading]="field.heading"
-      [style.gridArea]="field.name"
-      (addItem)="field.addItem()"
-      (removeItem)="field.removeItem($event)"
-    />
-  } @else {
-    @if (field.fields?.length) {
-      <section
-        class="nested-form-section"
-        [class]="'form-group-' + (field.config?.view ?? 'stacked')"
+@if (isRoot() && form().config?.view === "collapsable") {
+  <collapsible-section class="collapsable-fields">
+    <ng-container summary>
+      {{ form().title }}
+    </ng-container>
+    <ng-container body *ngTemplateOutlet="fieldBlockTemplate" />
+  </collapsible-section>
+} @else {
+  <ng-container *ngTemplateOutlet="fieldBlockTemplate" />
+}
+
+<ng-template #fieldBlockTemplate>
+  @for (field of visibleFields?.(); track field.name) {
+    @if (field.type === formFieldType.REPEATABLE_GROUP) {
+      <signal-form-repeatable-field
+        [repeatableForms]="field.repeatableForms()"
+        [fields]="field.fields"
+        [heading]="field.heading"
         [style.gridArea]="field.name"
-      >
-        @if (field.config?.view === "collapsable") {
-          <collapsible-section
-            [summaryTemplate]="titleTemplate"
-            [bodyTemplate]="fieldsTemplate"
-            [summaryTemplateContext]="{ $implicit: field, i: index() }"
-            [bodyTemplateContext]="{ $implicit: field, i: index() }"
-          />
-        } @else {
-          <ng-container
-            *ngTemplateOutlet="
-              titleTemplate;
-              context: { $implicit: field, i: index() }
-            "
-          />
-          <ng-container
-            *ngTemplateOutlet="
-              fieldsTemplate;
-              context: { $implicit: field, i: index() }
-            "
-          />
-        }
-      </section>
-    } @else {
-      <signal-form-input-item
-        [field]="field"
-        [form]="form()"
-        [index]="index()"
+        (addItem)="field.addItem()"
+        (removeItem)="field.removeItem($event)"
       />
+    } @else {
+      @if (field.fields?.length) {
+        <section
+          class="nested-form-section"
+          [class]="'form-group-' + (field.config?.view ?? 'stacked')"
+          [style.gridArea]="field.name"
+        >
+          @if (field.config?.view === "collapsable") {
+            <collapsible-section
+              [summaryTemplate]="titleTemplate"
+              [bodyTemplate]="fieldsTemplate"
+              [summaryTemplateContext]="{ $implicit: field, i: index() }"
+              [bodyTemplateContext]="{ $implicit: field, i: index() }"
+            />
+          } @else {
+            <ng-container
+              *ngTemplateOutlet="
+                titleTemplate;
+                context: { $implicit: field, i: index() }
+              "
+            />
+            <ng-container
+              *ngTemplateOutlet="
+                fieldsTemplate;
+                context: { $implicit: field, i: index() }
+              "
+            />
+          }
+        </section>
+      } @else {
+        <signal-form-input-item
+          [field]="field"
+          [form]="form()"
+          [index]="index()"
+        />
+      }
     }
   }
-}
+</ng-template>
 
 <ng-template #titleTemplate let-field>
   <div class="nested-form-title">
@@ -60,6 +73,7 @@
       [form]="field.form"
       [fields]="field.fields"
       [index]="i"
+      [isRoot]="false"
     />
   </div>
 </ng-template>

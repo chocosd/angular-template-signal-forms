@@ -16,7 +16,7 @@
           }
         </button>
 
-        @if ($index < steps().length - 1) {
+        <aside class="step-line-container">
           @for (stepsStatus of requiredPerStepMap?.()[$index](); track $index) {
             <div
               class="step-line"
@@ -24,6 +24,15 @@
               [ngClass]="stepsStatus"
             ></div>
           }
+        </aside>
+
+        @if ($last) {
+          <lucide-icon
+            [class.completed-form]="hasSaved()"
+            class="finish-form"
+            [img]="squareCheckIcon"
+            [size]="28"
+          />
         }
       </div>
     }
