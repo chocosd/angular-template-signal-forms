@@ -29,6 +29,7 @@ export type BuilderField<
   computedValue?: (form: SignalFormContainer<TModel>) => TModel[TKey];
   hidden?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
   disabled?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
+  parser?: (value: string) => TModel[TKey];
   type: TType;
   label: string;
 };
@@ -199,7 +200,8 @@ export type RepeatableGroupSignalFormField<
   error: WritableSignal<boolean>;
   touched: WritableSignal<boolean>;
   dirty: WritableSignal<boolean>;
-  value: WritableSignal<boolean>;
+  value: Signal<ItemOf<TModel[keyof TModel]>[]>;
+  parentForm?: Signal<SignalFormContainer<TModel>>;
 };
 export interface CheckboxGroupSignalFormField<
   TModel,
@@ -354,12 +356,17 @@ export type DeepPartial<T> = {
     : T[K];
 };
 
-export interface SignalFormContainer<TModel> {
+export type ParentForm = WritableSignal<SignalFormContainer<any, any>>;
+export type ComputedParentForm = Signal<SignalFormContainer<any, any>>;
+
+export interface SignalFormContainer<TModel, TParentModel = unknown> {
   title?: string;
   status: WritableSignal<FormStatus>;
   fields: SignalFormField<TModel>[];
 
   getField<K extends keyof TModel>(key: K): SignalFormFieldForKey<TModel, K>;
+  getParent?(): SignalFormContainer<any, any> | undefined;
+  parentForm: Signal<SignalFormContainer<any, any> | undefined>;
 
   anyTouched: Signal<boolean>;
   anyDirty: Signal<boolean>;

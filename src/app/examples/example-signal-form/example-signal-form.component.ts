@@ -10,7 +10,7 @@ import { SignalFormComponent } from '@renderers/signal-form/signal-form.componen
 import { TestApiService } from '@services/test-http.service';
 import { SignalValidators } from '@validators/signal-validators';
 import { OnlyPositiveValidator } from 'app/app.component';
-import { FormBuilder } from 'app/signal-forms/helpers/form-builder';
+import { FormBuilder } from 'app/signal-forms/form-builder/builder/form-builder';
 import { aboutForm } from '../consts/about-form.const';
 import { addressForm } from '../consts/address-form.const';
 import { model } from '../consts/form.const';
@@ -120,8 +120,7 @@ export class ExampleSignalFormComponent implements OnInit {
   }
 
   protected save(e: Basket) {
-    console.log(e);
-    console.log('value', this.form.value());
+    console.log((this.form.getField('address') as any).form.getParent());
   }
 
   protected updateForm() {
