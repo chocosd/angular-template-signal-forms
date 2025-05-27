@@ -2,16 +2,7 @@
   <input
     type="text"
     class="form-input"
-    [attr.aria-describedby]="ariaDescribedBy()"
-    [attr.aria-invalid]="error() ? 'true' : 'false'"
-    [required]="isRequired()"
-    [attr.aria-required]="isRequired()"
-    [attr.name]="name()"
-    [id]="name()"
-    [placeholder]="config()?.placeholder"
-    [disabled]="disabled()"
-    [(value)]="value"
-    (input)="handleInput($event)"
-    (blur)="handleBlur()"
+    [signalModel]="field()"
+    [form]="form()"
   />
 </div>

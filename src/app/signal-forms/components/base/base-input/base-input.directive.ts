@@ -6,123 +6,118 @@ import {
   inject,
   Injector,
   input,
-  model,
-  signal,
+  WritableSignal,
 } from '@angular/core';
-import { FormFieldType } from '@enums/form-field-type.enum';
-import { type ConfigTypeForField } from '@models/signal-field-configs.model';
-import {
-  SignalValidator,
-  type DynamicOptions,
-  type ElementTypeForField,
-  type FormOption,
-} from '@models/signal-form.model';
+import { type RuntimeFields } from '@models/signal-field-types.model';
+import { SignalFormContainer } from '@models/signal-form.model';
 import { MetaValidatorFn } from 'app/signal-forms/helpers/with-meta';
 // #endregion
+
 @Directive()
 export abstract class BaseInputDirective<
-  TFieldType extends FormFieldType,
-  TValue,
-  OptionsVal = TValue,
+  TField extends RuntimeFields<TModel, K>,
+  TModel extends object,
+  K extends keyof TModel = keyof TModel,
 > {
-  public hint = input<string>('');
-  public disabled = input<boolean>(false);
-  public config = input<ConfigTypeForField<TFieldType> | undefined>();
-  public type = input<TFieldType>();
-  public error = model<string | null>();
-  public touched = model.required<boolean>();
-  public value = model.required<TValue | null>();
-  public dirty = model.required<boolean>();
-  public name = input.required<string>();
-  public options = input<FormOption<OptionsVal>[]>([]);
-  public dynamicOptionsFn = input<DynamicOptions<object, keyof object>>();
-  public validators = input([] as SignalValidator<object, keyof object>[]);
-  public parseValue = input<(val: TValue) => TValue>();
-
-  private initialValue = signal<TValue | null>(null);
-  private hasCapturedInitial = signal(false);
+  public field = input.required<TField>();
+  public form = input.required<SignalFormContainer<TModel>>();
 
   protected readonly injector = inject(Injector);
-  protected readonly listboxId = computed(
-    () => `dropdown-listbox-${this.name()}`,
-  );
-  // protected readonly placeholder = computed(() => {
-  //   this.config()?.placeholder ?? defaultPlaceholderMap.get()
-  // });
 
-  protected isRequired = computed(() =>
-    (this.validators() ?? []).some(
+  protected readonly isRequired = computed(() =>
+    (this.field().validators ?? []).some(
       (validator) =>
-        (validator as MetaValidatorFn<TValue, unknown>).__meta?.required,
+        (validator as MetaValidatorFn<TModel[K], unknown>).__meta?.required,
     ),
   );
 
+  protected readonly isHidden = computed(() => {
+    const { hidden } = this.field();
+    return typeof hidden === 'function' ? hidden(this.form()) : !!hidden;
+  });
+
+  protected readonly isDisabled = computed(() => {
+    const { disabled } = this.field();
+    return typeof disabled === 'function' ? disabled(this.form()) : !!disabled;
+  });
+
+  protected readonly filteredOptions = computed(() => {
+    const field = this.field();
+    const form = this.form();
+
+    if (!('options' in field)) {
+      return [];
+    }
+
+    const options = (field as any).options();
+    const dynamicOptionsFn = (field as any).dynamicOptions;
+
+    if (typeof dynamicOptionsFn !== 'function') {
+      return options;
+    }
+
+    return dynamicOptionsFn(form, options, field.value());
+  });
+
   constructor() {
-    this.captureInitialValuesEffect();
+    this.initializeComputedValueEffect();
+    this.watchComputedValueEffect();
+    this.validationEffect();
   }
 
-  protected ariaDescribedBy = computed(() =>
-    [
-      this.error() ? 'error-' + this.name() : null,
-      this.config()?.hint ? 'hint-' + this.name() : null,
-    ]
-      .filter(Boolean)
-      .join(' '),
-  );
-
-  private captureInitialValuesEffect(): void {
+  private initializeComputedValueEffect(): void {
     effect(
       () => {
-        if (!this.hasCapturedInitial() && this.value()) {
-          this.initialValue.set(this.value());
-          this.hasCapturedInitial.set(true);
-        }
+        const field = this.field();
+        if (!field.computedValue) return;
+
+        const initialValue = field.computedValue(this.form());
+        this.setValue(initialValue, false);
       },
-      {
-        injector: this.injector,
-      },
+      { injector: this.injector },
     );
   }
 
-  public setValue(val: TValue): void {
-    const parsed = this.parseValue()?.(val) ?? val;
-    this.value.set(parsed);
+  private watchComputedValueEffect(): void {
+    effect(
+      () => {
+        const field = this.field();
+        if (!field.computedValue) return;
+
+        const newValue = field.computedValue(this.form());
+        this.setValue(newValue, false);
+      },
+      { injector: this.injector },
+    );
   }
 
-  protected getInitialValue(): TValue {
-    return undefined as unknown as TValue;
+  private validationEffect(): void {
+    effect(
+      () => {
+        const field = this.field();
+        const value = field.value();
+
+        const validators = field.validators ?? [];
+        for (const validator of validators) {
+          const error = validator(value as TModel[K], this.form());
+          if (error) {
+            field.error.set(error);
+            return;
+          }
+        }
+
+        field.error.set(null);
+      },
+      { injector: this.injector },
+    );
   }
 
-  protected handleBlur() {
-    this.touched.set(true);
-  }
-
-  protected handleInput(event: Event) {
-    const target = event.target as ElementTypeForField<TFieldType>;
-    const extractedValue = this.extractValue?.(target);
-    this.setValue(extractedValue);
-
-    const isDirty = !this.isEqual(extractedValue, this.initialValue()!);
-    this.dirty.set(isDirty);
-    this.touched.set(true);
-  }
-
-  protected extractValue(element: ElementTypeForField<TFieldType>): TValue {
-    if (element instanceof HTMLInputElement) {
-      if (this.isCheckboxFieldType()) {
-        return element.checked as TValue;
-      }
-      return element.value as TValue;
+  protected setValue<T>(value: T, markTouched: boolean = true) {
+    const field = this.field();
+    if (markTouched) {
+      field.touched.set(true);
+      field.dirty.set(true);
     }
-
-    throw new Error('Unsupported element type');
-  }
-
-  protected isCheckboxFieldType(): boolean {
-    return this.type() === FormFieldType.CHECKBOX;
-  }
-
-  protected isEqual(a: TValue, b: TValue): boolean {
-    return JSON.stringify(a) === JSON.stringify(b);
+    (field.value as WritableSignal<T>).set(value);
   }
 }

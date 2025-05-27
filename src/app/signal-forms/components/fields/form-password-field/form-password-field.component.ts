@@ -1,17 +1,21 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { BaseInputDirective } from '@base/base-input/base-input.directive';
-import { FormFieldType } from '@enums/form-field-type.enum';
-import { type PasswordFieldConfig } from '@models/signal-field-configs.model';
+import { SignalModelDirective } from '../../../directives/signal-model.directive';
+import { RuntimePasswordSignalField } from '../../../models/signal-field-types.model';
 
 @Component({
   selector: 'signal-form-password-field',
-  imports: [],
+  standalone: true,
+  imports: [SignalModelDirective],
   templateUrl: './form-password-field.component.html',
   styleUrl: './form-password-field.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FormPasswordFieldComponent extends BaseInputDirective<
-  FormFieldType.PASSWORD,
-  string,
-  PasswordFieldConfig
+export class FormPasswordFieldComponent<
+  TModel extends object,
+  K extends keyof TModel = keyof TModel,
+> extends BaseInputDirective<
+  RuntimePasswordSignalField<TModel, K>,
+  TModel,
+  K
 > {}

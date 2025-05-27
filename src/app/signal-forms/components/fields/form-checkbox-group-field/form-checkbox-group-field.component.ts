@@ -1,48 +1,47 @@
 import { NgClass } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
 import { BaseInputDirective } from '@base/base-input/base-input.directive';
-import { FormFieldType } from '@enums/form-field-type.enum';
-import { type FormOption } from '@models/signal-form.model';
+import { SignalModelDirective } from '../../../directives/signal-model.directive';
+import { RuntimeCheckboxGroupSignalField } from '../../../models/signal-field-types.model';
+import { FormOption } from '../../../models/signal-form.model';
 
 @Component({
   selector: 'signal-form-checkbox-group-field',
   standalone: true,
-  imports: [NgClass],
+  imports: [NgClass, SignalModelDirective],
   templateUrl: './form-checkbox-group-field.component.html',
   styleUrl: './form-checkbox-group-field.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FormCheckboxGroupFieldComponent extends BaseInputDirective<
-  FormFieldType.CHECKBOX_GROUP,
-  string[] | Record<string, boolean>,
-  string
+export class FormCheckboxGroupFieldComponent<
+  TModel extends object,
+  K extends keyof TModel = keyof TModel,
+> extends BaseInputDirective<
+  RuntimeCheckboxGroupSignalField<TModel, K>,
+  TModel,
+  K
 > {
-  public valueType = input<'array' | 'map'>('array');
-
   protected layoutClass = computed(() =>
-    this.config()?.layout === 'inline'
+    this.field().config?.layout === 'inline'
       ? 'checkbox-group-inline'
       : 'checkbox-group-stacked',
   );
 
-  protected isChecked = (option: FormOption) => {
-    const val = this.value();
+  protected isChecked = (option: FormOption<TModel[K]>) => {
+    const val = this.field().value();
     const key = option.value as string;
 
-    return this.valueType() === 'map'
-      ? !!(val as Record<string, boolean>)?.[key]
-      : (val as string[])?.includes(key);
+    if (this.field().config?.valueType === 'map') {
+      const record = val as Record<string, boolean>;
+      return record ? record[key] : false;
+    }
+    return (val as string[])?.includes(key);
   };
 
-  protected toggleOption(option: FormOption): void {
+  protected toggleOption(option: FormOption<TModel[K]>): void {
     const key = option.value as string;
-    const valueType = this.valueType();
-    let val = this.value();
+    const valueType = this.field().config?.valueType ?? 'array';
+    let val = this.field().value();
 
     // Normalize value
     if (!val) {
@@ -50,16 +49,17 @@ export class FormCheckboxGroupFieldComponent extends BaseInputDirective<
     }
 
     if (valueType === 'map') {
-      const current =
-        typeof val === 'object' && !Array.isArray(val) ? { ...val } : {};
+      const current = (
+        typeof val === 'object' && !Array.isArray(val) ? { ...val } : {}
+      ) as Record<string, boolean>;
 
       // Flip the selected value
       current[key] = !current[key];
 
       // Normalize to include all options with explicit true/false
       const fullRecord: Record<string, boolean> = {};
-      for (const opt of this.options()) {
-        const optKey = opt.value;
+      for (const opt of this.field().options()) {
+        const optKey = opt.value as string;
         fullRecord[optKey] = !!current[optKey];
       }
 
@@ -71,7 +71,7 @@ export class FormCheckboxGroupFieldComponent extends BaseInputDirective<
       );
     }
 
-    this.touched.set(true);
-    this.dirty.set(true);
+    this.field().touched.set(true);
+    this.field().dirty.set(true);
   }
 }

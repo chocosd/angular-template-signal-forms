@@ -1,21 +1,16 @@
 <div class="slider-wrapper">
   <input
     type="range"
-    [attr.name]="name()"
-    [id]="name()"
     class="slider"
-    [min]="config()?.min ?? 0"
-    [max]="config()?.max ?? 100"
-    [step]="config()?.step ?? 1"
-    [value]="value()"
-    [attr.aria-valuemin]="config()?.min ?? 0"
-    [attr.aria-valuemax]="config()?.max ?? 100"
-    [attr.aria-valuenow]="value()"
-    [attr.aria-describedby]="ariaDescribedBy()"
-    [attr.aria-invalid]="error() ? 'true' : 'false'"
-    [disabled]="disabled()"
-    (input)="handleInput($event)"
-    (blur)="handleBlur()"
+    [signalModel]="field()"
+    [form]="form()"
+    [min]="field().config?.min ?? 0"
+    [max]="field().config?.max ?? 100"
+    [step]="field().config?.step ?? 1"
+    [value]="field().value()"
+    [attr.aria-valuemin]="field().config?.min ?? 0"
+    [attr.aria-valuemax]="field().config?.max ?? 100"
+    [attr.aria-valuenow]="field().value()"
   />
-  {{ value() }}
+  {{ field().value() }}
 </div>

@@ -22,6 +22,9 @@ export function withOptionalSignalValidation<TVal, TDep, TModel>(
   };
 }
 
+export const OnlyPositiveValidator = (name: string) => (x: number) =>
+  x < 0 ? `${name} only positive prices` : null;
+
 /**
  * Variant for guaranteed signal access (same-step dependencies), with full access to the form context.
  */

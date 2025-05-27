@@ -4,9 +4,10 @@ import { FormFieldType } from '../enums/form-field-type.enum';
 import { FormStatus } from '../enums/form-status.enum';
 import { MetaValidatorFn } from '../helpers/with-meta';
 import { ConfigTypeForField } from './signal-field-configs.model';
+
 export interface FormOption<TResult = string | number | boolean | object> {
   label: string;
-  value: TResult;
+  value: NonNullable<TResult>;
 }
 
 export type SignalValidatorFn<T, TModel> = (
@@ -14,47 +15,15 @@ export type SignalValidatorFn<T, TModel> = (
   form: SignalFormContainer<TModel>,
 ) => string | null;
 
-//
-// ========== BuilderField Type ==========
-//
-
-export type BuilderField<
-  TModel,
-  TKey extends keyof TModel,
-  TType extends FormFieldType,
-> = {
-  name: TKey;
-  config?: ConfigTypeForField<TType>;
-  validators?: SignalValidator<TModel, TKey>[];
-  computedValue?: (form: SignalFormContainer<TModel>) => TModel[TKey];
-  hidden?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
-  disabled?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
-  parser?: (value: string) => TModel[TKey];
-  type: TType;
-  label: string;
-};
-
 export type SignalValidator<TModel, TKey extends keyof TModel> =
   | MetaValidatorFn<TModel[TKey], TModel>
   | SignalValidatorFn<TModel[TKey], TModel>;
-
-//
-// ========== BuilderInput Inference ==========
-//
 
 export type DynamicOptions<TModel, K extends keyof TModel> = (
   form: SignalFormContainer<TModel>,
   options: FormOption[],
   currentValue: TModel[K],
 ) => FormOption[];
-
-// type IsPlainObject<T> = T extends object
-//   ? T extends Date | unknown[] | Function
-//     ? false
-//     : T extends FormOption
-//       ? false
-//       : true
-//   : false;
 
 type IsPlainObject<T> = T extends object
   ? T extends (...args: any[]) => any
@@ -71,17 +40,230 @@ type IsPlainObject<T> = T extends object
 type IsArrayOfPlainObjects<T> =
   T extends Array<infer U> ? IsPlainObject<U> : false;
 
-export type SignalFormFieldBuilderInput<TModel> = {
-  [K in keyof TModel]: SignalFormFieldBuilderForKey<TModel, K>;
-}[keyof TModel];
+// ========== Field Config Types ==========
+export type BaseFieldConfig<TModel, K extends keyof TModel> = {
+  name: K;
+  label: string;
+  validators?: SignalValidator<TModel, K>[];
+  computedValue?: (form: SignalFormContainer<TModel>) => TModel[K];
+  hidden?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
+  disabled?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
+  parser?: (value: string) => TModel[K];
+};
 
-type SignalFormFieldBuilderForKey<TModel, K extends keyof TModel> =
-  IsArrayOfPlainObjects<TModel[K]> extends true
+export type TextSignalField<TModel, K extends keyof TModel> = BaseFieldConfig<
+  TModel,
+  K
+> & {
+  type: FormFieldType.TEXT;
+  config?: ConfigTypeForField<FormFieldType.TEXT>;
+};
+
+export type PasswordSignalField<
+  TModel,
+  K extends keyof TModel,
+> = BaseFieldConfig<TModel, K> & {
+  type: FormFieldType.PASSWORD;
+  config?: ConfigTypeForField<FormFieldType.PASSWORD>;
+};
+
+export type TextareaSignalField<
+  TModel,
+  K extends keyof TModel,
+> = BaseFieldConfig<TModel, K> & {
+  type: FormFieldType.TEXTAREA;
+  config?: ConfigTypeForField<FormFieldType.TEXTAREA>;
+};
+
+export type NumberSignalField<TModel, K extends keyof TModel> = BaseFieldConfig<
+  TModel,
+  K
+> & {
+  type: FormFieldType.NUMBER;
+  config?: ConfigTypeForField<FormFieldType.NUMBER>;
+};
+
+export type SelectSignalField<TModel, K extends keyof TModel> = BaseFieldConfig<
+  TModel,
+  K
+> & {
+  type: FormFieldType.SELECT;
+  config?: ConfigTypeForField<FormFieldType.SELECT>;
+  options: FormOption[];
+  dynamicOptions?: DynamicOptions<TModel, K>;
+  computedOptions?: (form: SignalFormContainer<TModel>) => FormOption[];
+};
+
+export type CheckboxSignalField<
+  TModel,
+  K extends keyof TModel,
+> = BaseFieldConfig<TModel, K> & {
+  type: FormFieldType.CHECKBOX;
+  config?: ConfigTypeForField<FormFieldType.CHECKBOX>;
+  options: FormOption[];
+  dynamicOptions?: DynamicOptions<TModel, K>;
+};
+
+export type CheckboxGroupSignalField<
+  TModel,
+  K extends keyof TModel,
+> = BaseFieldConfig<TModel, K> & {
+  type: FormFieldType.CHECKBOX_GROUP;
+  config?: ConfigTypeForField<FormFieldType.CHECKBOX_GROUP>;
+  options: FormOption[];
+  dynamicOptions?: DynamicOptions<TModel, K>;
+  valueType?: 'array' | 'map';
+};
+
+export type DateTimeSignalField<
+  TModel,
+  K extends keyof TModel,
+> = BaseFieldConfig<TModel, K> & {
+  type: FormFieldType.DATETIME;
+  config?: ConfigTypeForField<FormFieldType.DATETIME>;
+};
+
+export type RadioSignalField<TModel, K extends keyof TModel> = BaseFieldConfig<
+  TModel,
+  K
+> & {
+  type: FormFieldType.RADIO;
+  config?: ConfigTypeForField<FormFieldType.RADIO>;
+  options: FormOption[];
+  dynamicOptions?: DynamicOptions<TModel, K>;
+};
+
+export type LoadOptionsFn = (
+  search: string,
+) => Observable<FormOption[]> | Promise<FormOption[]>;
+
+export type AutocompleteSignalField<
+  TModel,
+  K extends keyof TModel,
+> = BaseFieldConfig<TModel, K> & {
+  type: FormFieldType.AUTOCOMPLETE;
+  config?: ConfigTypeForField<FormFieldType.AUTOCOMPLETE>;
+  loadOptions: LoadOptionsFn;
+};
+
+export type ColorSignalField<TModel, K extends keyof TModel> = BaseFieldConfig<
+  TModel,
+  K
+> & {
+  type: FormFieldType.COLOR;
+  config?: ConfigTypeForField<FormFieldType.COLOR>;
+};
+
+export type SwitchSignalField<TModel, K extends keyof TModel> = BaseFieldConfig<
+  TModel,
+  K
+> & {
+  type: FormFieldType.SWITCH;
+  config?: ConfigTypeForField<FormFieldType.SWITCH>;
+};
+
+export type SliderSignalField<TModel, K extends keyof TModel> = BaseFieldConfig<
+  TModel,
+  K
+> & {
+  type: FormFieldType.SLIDER;
+  config?: ConfigTypeForField<FormFieldType.SLIDER>;
+};
+
+export type FileSignalField<TModel, K extends keyof TModel> = BaseFieldConfig<
+  TModel,
+  K
+> & {
+  type: FormFieldType.FILE;
+  config?: ConfigTypeForField<FormFieldType.FILE>;
+};
+
+export type RatingSignalField<TModel, K extends keyof TModel> = BaseFieldConfig<
+  TModel,
+  K
+> & {
+  type: FormFieldType.RATING;
+  config?: ConfigTypeForField<FormFieldType.RATING>;
+};
+
+export type MaskedSignalField<TModel, K extends keyof TModel> = BaseFieldConfig<
+  TModel,
+  K
+> & {
+  type: FormFieldType.MASKED;
+  config?: ConfigTypeForField<FormFieldType.MASKED>;
+};
+
+export type MultiSelectSignalField<
+  TModel,
+  K extends keyof TModel,
+> = BaseFieldConfig<TModel, K> & {
+  type: FormFieldType.MULTISELECT;
+  config?: ConfigTypeForField<FormFieldType.MULTISELECT>;
+  options: FormOption[];
+  dynamicOptions?: DynamicOptions<TModel, K>;
+};
+
+export type ChipListSignalField<
+  TModel,
+  K extends keyof TModel,
+> = BaseFieldConfig<TModel, K> & {
+  type: FormFieldType.CHIPLIST;
+  config?: ConfigTypeForField<FormFieldType.CHIPLIST>;
+  options: FormOption[];
+  dynamicOptions?: DynamicOptions<TModel, K>;
+};
+
+// Update the FieldConfig union type to include all field types
+export type SignalField<TModel, K extends keyof TModel> =
+  | TextSignalField<TModel, K>
+  | PasswordSignalField<TModel, K>
+  | TextareaSignalField<TModel, K>
+  | NumberSignalField<TModel, K>
+  | SelectSignalField<TModel, K>
+  | CheckboxSignalField<TModel, K>
+  | CheckboxGroupSignalField<TModel, K>
+  | DateTimeSignalField<TModel, K>
+  | RadioSignalField<TModel, K>
+  | AutocompleteSignalField<TModel, K>
+  | ColorSignalField<TModel, K>
+  | SwitchSignalField<TModel, K>
+  | SliderSignalField<TModel, K>
+  | FileSignalField<TModel, K>
+  | RatingSignalField<TModel, K>
+  | MaskedSignalField<TModel, K>
+  | MultiSelectSignalField<TModel, K>
+  | ChipListSignalField<TModel, K>;
+
+// ========== Runtime Field State ==========
+export type BaseFieldState<TModel, TValue> = {
+  error: WritableSignal<string | null>;
+  touched: WritableSignal<boolean>;
+  dirty: WritableSignal<boolean>;
+  focus: WritableSignal<boolean>;
+  value: WritableSignal<TValue>;
+  getForm: () => SignalFormContainer<TModel>;
+  isDisabled: Signal<boolean>;
+  isHidden: Signal<boolean>;
+  readonly path: string;
+};
+
+// ========== Combined Field Types ==========
+export type SignalFormField<
+  TModel,
+  K extends keyof TModel = keyof TModel,
+> = SignalField<TModel, K> & BaseFieldState<TModel, TModel[K]>;
+
+// ========== Builder Input Types ==========
+export type SignalFormFieldBuilderInput<TModel> = {
+  [K in keyof TModel]: IsArrayOfPlainObjects<TModel[K]> extends true
     ? RepeatableGroupBuilderField<TModel, K>
     : IsPlainObject<TModel[K]> extends true
       ? NestedGroupBuilderField<TModel, K>
-      : FieldBuilderByType<TModel, K>;
+      : SignalField<TModel, K>;
+}[keyof TModel];
 
+// ========== Group Types ==========
 export type NestedGroupBuilderField<TModel, K extends keyof TModel> = {
   name: K;
   heading: string;
@@ -91,91 +273,6 @@ export type NestedGroupBuilderField<TModel, K extends keyof TModel> = {
   disabled?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
   config?: SignalFormConfig<TModel[K]>;
 };
-
-export type SignalFormConfig<TModel> =
-  | GridSignalFormConfig<TModel>
-  | FlexSignalFormConfig;
-
-export interface SignalSteppedFormConfig<TModel> {
-  form?: SignalFormConfig<TModel>;
-  canSkipIncompleteSteps?: boolean;
-  disableUponComplete?: boolean;
-}
-
-export type BaseSignalFormConfig = {
-  view?: 'row' | 'stacked' | 'collapsable';
-  layout: 'flex' | 'grid-area';
-  disableUponComplete?: boolean;
-};
-
-export interface GridSignalFormConfig<TModel> extends BaseSignalFormConfig {
-  layout: 'grid-area';
-  gridArea: Array<keyof TModel | '.'>[];
-}
-
-export interface FlexSignalFormConfig extends BaseSignalFormConfig {
-  layout: 'flex';
-}
-
-export type LoadOptionsFn = (
-  search: string,
-) => Observable<FormOption[]> | Promise<FormOption[]>;
-
-export type PreloadOptionsFn<TVal> = (
-  value: TVal,
-) => Observable<FormOption[]> | Promise<FormOption[]>;
-
-export type FieldBuilderByType<TModel, K extends keyof TModel> =
-  | TextSignalFormField<TModel, K, FormFieldType.TEXT>
-  | PasswordSignalFormField<TModel, K, FormFieldType.PASSWORD>
-  | TextareaSignalFormField<TModel, K, FormFieldType.TEXTAREA>
-  | NumberSignalFormField<TModel, K, FormFieldType.NUMBER>
-  | CheckboxSignalFormField<TModel, K, FormFieldType.CHECKBOX>
-  | CheckboxGroupSignalFormField<TModel, K, FormFieldType.CHECKBOX_GROUP>
-  | DateTimeSignalFormField<TModel, K, FormFieldType.DATETIME>
-  | SelectSignalFormField<TModel, K, FormFieldType.SELECT>
-  | RadioSignalFormField<TModel, K, FormFieldType.RADIO>
-  | AutocompleteSignalFormField<TModel, K, FormFieldType.AUTOCOMPLETE>
-  | ColorSignalFormField<TModel, K, FormFieldType.COLOR>
-  | SwitchSignalFormField<TModel, K, FormFieldType.SWITCH>
-  | SliderSignalFormField<TModel, K, FormFieldType.SLIDER>
-  | FileSignalFormField<TModel, K, FormFieldType.FILE>
-  | RatingSignalFormField<TModel, K, FormFieldType.RATING>
-  | MaskedSignalFormField<TModel, K, FormFieldType.MASKED>
-  | MultiSelectSignalFormField<TModel, K, FormFieldType.MULTISELECT>
-  | ChipListSignalFormField<TModel, K, FormFieldType.CHIPLIST>;
-
-export type SelectSignalFormField<
-  TModel,
-  K extends keyof TModel,
-  TType extends FormFieldType.SELECT,
-> = BuilderField<TModel, K, TType> & {
-  type: TType;
-  options: FormOption[];
-  dynamicOptions?: DynamicOptions<TModel, K>;
-  computedOptions?: (form: SignalFormContainer<TModel>) => FormOption[];
-};
-
-export type RadioSignalFormField<
-  TModel,
-  K extends keyof TModel,
-  TType extends FormFieldType.RADIO,
-> = BuilderField<TModel, K, TType> & {
-  type: TType;
-  options: FormOption[];
-  dynamicOptions?: DynamicOptions<TModel, K>;
-};
-
-export type AutocompleteSignalFormField<
-  TModel,
-  K extends keyof TModel,
-  TType extends FormFieldType.AUTOCOMPLETE,
-> = BuilderField<TModel, K, TType> & {
-  type: TType;
-  loadOptions: LoadOptionsFn;
-};
-
-export type ItemOf<T> = T extends Array<infer U> ? U : never;
 
 export type RepeatableGroupBuilderField<TModel, K extends keyof TModel> = {
   name: K;
@@ -203,150 +300,39 @@ export type RepeatableGroupSignalFormField<
   value: Signal<ItemOf<TModel[keyof TModel]>[]>;
   parentForm?: Signal<SignalFormContainer<TModel>>;
 };
-export interface CheckboxGroupSignalFormField<
-  TModel,
-  K extends keyof TModel,
-  TType extends FormFieldType.CHECKBOX_GROUP,
-> extends BuilderField<TModel, K, TType> {
-  type: TType;
-  options: FormOption[];
-  dynamicOptions?: DynamicOptions<TModel, K>;
-  valueType?: 'array' | 'map';
+
+// ========== Form Configuration Types ==========
+export type SignalFormConfig<TModel> =
+  | GridSignalFormConfig<TModel>
+  | FlexSignalFormConfig;
+
+export interface SignalSteppedFormConfig<TModel> {
+  form?: SignalFormConfig<TModel>;
+  canSkipIncompleteSteps?: boolean;
+  disableUponComplete?: boolean;
 }
 
-export interface ColorSignalFormField<
-  TModel,
-  K extends keyof TModel,
-  TType extends FormFieldType.COLOR,
-> extends BuilderField<TModel, K, TType> {
-  type: TType;
-}
-export interface SwitchSignalFormField<
-  TModel,
-  K extends keyof TModel,
-  TType extends FormFieldType.SWITCH,
-> extends BuilderField<TModel, K, TType> {
-  type: TType;
-}
-export interface SliderSignalFormField<
-  TModel,
-  K extends keyof TModel,
-  TType extends FormFieldType.SLIDER,
-> extends BuilderField<TModel, K, TType> {
-  type: TType;
-}
-export interface FileSignalFormField<
-  TModel,
-  K extends keyof TModel,
-  TType extends FormFieldType.FILE,
-> extends BuilderField<TModel, K, TType> {
-  type: TType;
-}
-export interface RatingSignalFormField<
-  TModel,
-  K extends keyof TModel,
-  TType extends FormFieldType.RATING,
-> extends BuilderField<TModel, K, TType> {
-  type: TType;
-}
-export interface MaskedSignalFormField<
-  TModel,
-  K extends keyof TModel,
-  TType extends FormFieldType.MASKED,
-> extends BuilderField<TModel, K, TType> {
-  type: TType;
-}
-export interface TextSignalFormField<
-  TModel,
-  K extends keyof TModel,
-  TType extends FormFieldType.TEXT,
-> extends BuilderField<TModel, K, TType> {
-  type: TType;
-}
-export interface PasswordSignalFormField<
-  TModel,
-  K extends keyof TModel,
-  TType extends FormFieldType.PASSWORD,
-> extends BuilderField<TModel, K, TType> {
-  type: TType;
-}
-export interface TextareaSignalFormField<
-  TModel,
-  K extends keyof TModel,
-  TType extends FormFieldType.TEXTAREA,
-> extends BuilderField<TModel, K, TType> {
-  type: TType;
-}
-export interface NumberSignalFormField<
-  TModel,
-  K extends keyof TModel,
-  TType extends FormFieldType.NUMBER,
-> extends BuilderField<TModel, K, TType> {
-  type: TType;
-}
-export interface CheckboxSignalFormField<
-  TModel,
-  K extends keyof TModel,
-  TType extends FormFieldType.CHECKBOX,
-> extends BuilderField<TModel, K, TType> {
-  type: TType;
-  options: FormOption[];
-  dynamicOptions?: DynamicOptions<TModel, K>;
-}
-export interface DateTimeSignalFormField<
-  TModel,
-  K extends keyof TModel,
-  TType extends FormFieldType.DATETIME,
-> extends BuilderField<TModel, K, TType> {
-  type: TType;
-}
-export interface MultiSelectSignalFormField<
-  TModel,
-  K extends keyof TModel,
-  TType extends FormFieldType.MULTISELECT,
-> extends BuilderField<TModel, K, TType> {
-  type: TType;
-  options: FormOption[];
-  dynamicOptions?: DynamicOptions<TModel, K>;
-}
-
-export interface ChipListSignalFormField<
-  TModel,
-  K extends keyof TModel,
-  TType extends FormFieldType.CHIPLIST,
-> extends BuilderField<TModel, K, TType> {
-  type: TType;
-  options: FormOption[];
-  dynamicOptions?: DynamicOptions<TModel, K>;
-}
-
-export type NestedSignalFormFields<TModel, K extends keyof TModel> = {
-  name: K;
-  label: string;
-  fields: SignalFormFieldBuilderInput<TModel[K]>;
+export type BaseSignalFormConfig = {
+  view?: 'row' | 'stacked' | 'collapsable';
+  layout: 'flex' | 'grid-area';
+  disableUponComplete?: boolean;
 };
 
-export interface BaseSignalFormField<TValue> {
-  error: WritableSignal<string | null>;
-  touched: WritableSignal<boolean>;
-  dirty: WritableSignal<boolean>;
-  focus: WritableSignal<boolean>;
-  value: WritableSignal<TValue>;
+export interface GridSignalFormConfig<TModel> extends BaseSignalFormConfig {
+  layout: 'grid-area';
+  gridArea: Array<keyof TModel | '.'>[];
 }
 
-export type SignalFormField<TModel> = {
-  [K in keyof TModel]: SignalFormFieldForKey<TModel, K>;
-}[keyof TModel];
+export interface FlexSignalFormConfig extends BaseSignalFormConfig {
+  layout: 'flex';
+}
 
-export type SignalFormFieldForKey<
-  TModel,
-  K extends keyof TModel,
-> = TModel[K] extends infer TVal
-  ? BaseSignalFormField<TVal> &
-      BuilderField<TModel, K, FormFieldType> & { name: K }
-  : never;
-
-export type ErrorMessage<TModel> = { name: keyof TModel; message: string };
+// ========== Form Container Types ==========
+export type ErrorMessage<TModel> = {
+  name: keyof TModel;
+  message: string;
+  path: string;
+};
 
 export type DeepPartial<T> = {
   [K in keyof T]?: T[K] extends object
@@ -356,18 +342,29 @@ export type DeepPartial<T> = {
     : T[K];
 };
 
-export type ParentForm = WritableSignal<SignalFormContainer<any, any>>;
-export type ComputedParentForm = Signal<SignalFormContainer<any, any>>;
+export type ItemOf<T> = T extends Array<infer U> ? U : never;
+
+export type InferFieldType<TModel, K extends keyof TModel> =
+  TModel[K] extends Array<infer U>
+    ? RepeatableGroupSignalFormField<TModel, K> & {
+        repeatableForms: WritableSignal<SignalFormContainer<U>[]>;
+        form: SignalFormContainer<U>;
+        fields: SignalFormField<U>[];
+      }
+    : TModel[K] extends object
+      ? SignalFormField<TModel, K> & {
+          form: SignalFormContainer<TModel[K]>;
+          fields: SignalFormField<TModel[K]>[];
+        }
+      : SignalFormField<TModel, K>;
 
 export interface SignalFormContainer<TModel, TParentModel = unknown> {
   title?: string;
   status: WritableSignal<FormStatus>;
   fields: SignalFormField<TModel>[];
-
-  getField<K extends keyof TModel>(key: K): SignalFormFieldForKey<TModel, K>;
+  getField<K extends keyof TModel>(key: K): InferFieldType<TModel, K>;
   getParent?(): SignalFormContainer<any, any> | undefined;
   parentForm: Signal<SignalFormContainer<any, any> | undefined>;
-
   anyTouched: Signal<boolean>;
   anyDirty: Signal<boolean>;
   hasSaved(): Signal<boolean>;
@@ -384,27 +381,6 @@ export interface SignalFormContainer<TModel, TParentModel = unknown> {
   setValue: (model: TModel) => void;
 }
 
-export type ElementTypeForField<T extends FormFieldType> = T extends
-  | FormFieldType.TEXT
-  | FormFieldType.PASSWORD
-  | FormFieldType.NUMBER
-  ? HTMLInputElement
-  : T extends FormFieldType.TEXTAREA
-    ? HTMLTextAreaElement
-    : T extends FormFieldType.CHECKBOX | FormFieldType.RADIO
-      ? HTMLInputElement
-      : T extends FormFieldType.SELECT
-        ? HTMLSelectElement
-        : never;
-
-/* Stepped Form */
-
-export interface SteppedFormStep<TModel> {
-  title?: string;
-  description?: string;
-  fields: SignalFormFieldBuilderInput<TModel>[];
-  config?: SignalSteppedFormConfig<TModel>;
-}
 export interface SignalSteppedFormContainer<TModel> {
   currentStep: WritableSignal<number>;
   steps: SignalFormContainer<TModel>[];
@@ -412,7 +388,7 @@ export interface SignalSteppedFormContainer<TModel> {
   hasSaved: Signal<boolean>;
   getValue(): TModel;
   getErrors(): ErrorMessage<TModel>[];
-  getField<K extends keyof TModel>(key: K): SignalFormFieldForKey<TModel, K>;
+  getField<K extends keyof TModel>(key: K): SignalFormField<TModel, K>;
   validateStep(): boolean;
   validateAll(): boolean;
   isValidStep: () => boolean;
@@ -423,3 +399,42 @@ export interface SignalSteppedFormContainer<TModel> {
   status: WritableSignal<FormStatus>;
   config?: SignalSteppedFormConfig<TModel>;
 }
+
+export type ElementTypeForField<T extends FormFieldType> =
+  T extends FormFieldType.CHECKBOX
+    ? HTMLInputElement
+    : T extends FormFieldType.CHECKBOX_GROUP
+      ? HTMLInputElement
+      : T extends FormFieldType.RADIO
+        ? HTMLInputElement
+        : T extends FormFieldType.NUMBER
+          ? HTMLInputElement
+          : T extends FormFieldType.TEXT
+            ? HTMLInputElement
+            : T extends FormFieldType.PASSWORD
+              ? HTMLInputElement
+              : T extends FormFieldType.TEXTAREA
+                ? HTMLTextAreaElement
+                : T extends FormFieldType.SELECT
+                  ? HTMLSelectElement
+                  : T extends FormFieldType.DATETIME
+                    ? HTMLInputElement
+                    : T extends FormFieldType.COLOR
+                      ? HTMLInputElement
+                      : T extends FormFieldType.SWITCH
+                        ? HTMLInputElement
+                        : T extends FormFieldType.SLIDER
+                          ? HTMLInputElement
+                          : T extends FormFieldType.FILE
+                            ? HTMLInputElement
+                            : T extends FormFieldType.RATING
+                              ? HTMLInputElement
+                              : T extends FormFieldType.MASKED
+                                ? HTMLInputElement
+                                : T extends FormFieldType.MULTISELECT
+                                  ? HTMLSelectElement
+                                  : T extends FormFieldType.CHIPLIST
+                                    ? HTMLInputElement
+                                    : T extends FormFieldType.AUTOCOMPLETE
+                                      ? HTMLInputElement
+                                      : never;

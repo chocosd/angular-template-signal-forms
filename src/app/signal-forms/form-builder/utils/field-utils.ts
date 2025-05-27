@@ -1,36 +1,32 @@
 import { computed } from '@angular/core';
-import { FormStatus } from '@enums/form-status.enum';
+import { FormStatus } from '../../enums/form-status.enum';
 import {
-  RepeatableGroupSignalFormField,
   SignalFormContainer,
   SignalFormField,
-} from '@models/signal-form.model';
+} from '../../models/signal-form.model';
+
+type FieldWithForm<TModel> = SignalFormField<TModel> & {
+  form: SignalFormContainer<TModel[keyof TModel]>;
+};
+
+type RepeatableField<TModel> = SignalFormField<TModel> & {
+  repeatableForms: SignalFormContainer<any>[];
+};
 
 export class FieldUtils {
   static anyTouched<TModel>(fields: SignalFormField<TModel>[]) {
     return computed(() => {
       return fields.some((field) => {
-        if ('form' in field && field.form) {
-          return (field.form as SignalFormContainer<TModel>).anyTouched();
+        if (this.isFieldWithForm(field)) {
+          return field.form.anyTouched();
         }
 
-        const repeatableFields =
-          field as unknown as RepeatableGroupSignalFormField<
-            TModel,
-            keyof TModel
-          >;
+        if (this.isRepeatableField(field)) {
+          if (field.touched()) {
+            return true;
+          }
 
-        if (repeatableFields.touched()) {
-          return field.touched();
-        }
-
-        if (
-          'repeatableForms' in field &&
-          Array.isArray(repeatableFields.repeatableForms?.())
-        ) {
-          return repeatableFields
-            .repeatableForms()
-            .some((form) => form.anyTouched());
+          return field.repeatableForms.some((form) => form.anyTouched());
         }
 
         return field.touched();
@@ -51,31 +47,32 @@ export class FieldUtils {
   static anyDirty<TModel>(fields: SignalFormField<TModel>[]) {
     return computed(() => {
       return fields.some((field) => {
-        if ('form' in field && field.form) {
-          return (field.form as SignalFormContainer<TModel>).anyDirty();
+        if (this.isFieldWithForm(field)) {
+          return field.form.anyDirty();
         }
 
-        const repeatableFields =
-          field as unknown as RepeatableGroupSignalFormField<
-            TModel,
-            keyof TModel
-          >;
+        if (this.isRepeatableField(field)) {
+          if (field.dirty()) {
+            return true;
+          }
 
-        if (repeatableFields.dirty()) {
-          return field.dirty();
-        }
-
-        if (
-          'repeatableForms' in field &&
-          Array.isArray(repeatableFields.repeatableForms?.())
-        ) {
-          return repeatableFields
-            .repeatableForms()
-            .some((form) => form.anyDirty());
+          return field.repeatableForms.some((form) => form.anyDirty());
         }
 
         return field.dirty();
       });
     });
+  }
+
+  private static isFieldWithForm<TModel>(
+    field: SignalFormField<TModel>,
+  ): field is FieldWithForm<TModel> {
+    return 'form' in field && field.form !== undefined;
+  }
+
+  private static isRepeatableField<TModel>(
+    field: SignalFormField<TModel>,
+  ): field is RepeatableField<TModel> {
+    return 'repeatableForms' in field && Array.isArray(field.repeatableForms);
   }
 }

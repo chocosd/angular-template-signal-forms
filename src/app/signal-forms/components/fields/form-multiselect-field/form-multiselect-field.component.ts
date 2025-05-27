@@ -7,24 +7,27 @@ import {
 } from '@angular/core';
 import { BaseInputDirective } from '@base/base-input/base-input.directive';
 import { SignalFormHostDirective } from '@base/host-directive/signal-form-host.directive';
-import { FormFieldType } from '@enums/form-field-type.enum';
-import { type MultiSelectFieldConfig } from '@models/signal-field-configs.model';
-import { type FormOption } from '@models/signal-form.model';
+import { SignalModelDirective } from '@directives/signal-model.directive';
 import { FormDropdownService } from '@services/form-dropdown.service';
+import { RuntimeMultiSelectSignalField } from '../../../models/signal-field-types.model';
+import { FormOption } from '../../../models/signal-form.model';
 
 @Component({
   selector: 'signal-form-multiselect-field',
   standalone: true,
-  imports: [],
+  imports: [SignalModelDirective],
   templateUrl: './form-multiselect-field.component.html',
   styleUrl: './form-multiselect-field.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   hostDirectives: [SignalFormHostDirective],
 })
-export class FormMultiselectFieldComponent extends BaseInputDirective<
-  FormFieldType.MULTISELECT,
-  FormOption[],
-  MultiSelectFieldConfig
+export class FormMultiselectFieldComponent<
+  TModel extends object,
+  K extends keyof TModel = keyof TModel,
+> extends BaseInputDirective<
+  RuntimeMultiSelectSignalField<TModel, K>,
+  TModel,
+  K
 > {
   protected showDropdown = signal(false);
 
@@ -45,18 +48,16 @@ export class FormMultiselectFieldComponent extends BaseInputDirective<
 
         const reference = this.host.viewContainerRef.element.nativeElement;
 
-        this.dropdownService.openDropdown<FormOption[]>({
-          options: this.options(),
+        this.dropdownService.openDropdown<any>({
+          options: this.field().options(),
           reference,
           viewContainerRef: this.host.viewContainerRef,
           multiselect: true,
-          ariaListboxId: this.listboxId(),
-          initialSelection: this.value(),
+          ariaListboxId: `${String(this.field().name)}-listbox`,
+          initialSelection: this.field().value(),
           onSelect: (selected) => {
-            if (Array.isArray(selected)) {
-              this.setValue(selected);
-              this.touched.set(true);
-            }
+            this.setValue(selected);
+            this.field().touched.set(true);
           },
           onClose: () => {
             this.showDropdown.set(false);
@@ -69,11 +70,11 @@ export class FormMultiselectFieldComponent extends BaseInputDirective<
     );
   }
 
-  public removeChip(option: FormOption): void {
-    this.value.update((vals) =>
+  public removeChip(option: FormOption<TModel[K]>): void {
+    this.field().value.update((vals) =>
       (vals ?? []).filter((o) => o.value !== option.value),
     );
-    this.touched.set(true);
+    this.field().touched.set(true);
   }
 
   public toggleDropdown(): void {

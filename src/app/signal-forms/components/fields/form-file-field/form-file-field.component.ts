@@ -6,27 +6,27 @@ import {
 } from '@angular/core';
 import { BaseInputDirective } from '@base/base-input/base-input.directive';
 import { SignalFormHostDirective } from '@base/host-directive/signal-form-host.directive';
-import { FormFieldType } from '@enums/form-field-type.enum';
-import { type FileFieldConfig } from '@models/signal-field-configs.model';
+import { SignalModelDirective } from '../../../directives/signal-model.directive';
+import { RuntimeFileSignalField } from '../../../models/signal-field-types.model';
 
 @Component({
   selector: 'signal-form-file-field',
   standalone: true,
+  imports: [SignalModelDirective],
   templateUrl: './form-file-field.component.html',
   styleUrl: './form-file-field.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   hostDirectives: [SignalFormHostDirective],
 })
-export class FormFileFieldComponent extends BaseInputDirective<
-  FormFieldType.FILE,
-  File | null,
-  FileFieldConfig
-> {
+export class FormFileFieldComponent<
+  TModel extends object,
+  K extends keyof TModel = keyof TModel,
+> extends BaseInputDirective<RuntimeFileSignalField<TModel, K>, TModel, K> {
   protected isDragging = signal(false);
   protected uploadProgress = signal<number | null>(null);
 
   private maxSizeBytes = computed(
-    () => (this.config()?.maxSizeMb ?? 5) * 1024 * 1024,
+    () => (this.field().config?.maxSizeMb ?? 5) * 1024 * 1024,
   );
 
   public onFileChange(event: File): void {
@@ -37,16 +37,16 @@ export class FormFileFieldComponent extends BaseInputDirective<
 
     const maxSize = this.maxSizeBytes();
     if (file.size > maxSize) {
-      this.error.set(
-        `File exceeds max size of ${this.config()?.maxSizeMb ?? 5}MB`,
+      this.field().error.set(
+        `File exceeds max size of ${this.field().config?.maxSizeMb ?? 5}MB`,
       );
       return;
     }
 
-    this.setValue(file);
+    this.setValue(file as TModel[K]);
     this.uploadProgress.set(0);
     this.simulateUpload(file);
-    this.touched.set(true);
+    this.field().touched.set(true);
   }
 
   private simulateUpload(file: File) {

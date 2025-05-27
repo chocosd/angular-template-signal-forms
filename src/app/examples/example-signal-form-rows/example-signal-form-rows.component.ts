@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { FormBuilder } from '@builder/builder/form-builder';
 import { FormFieldType } from '@enums/form-field-type.enum';
 import {
   type FormOption,
@@ -6,7 +7,6 @@ import {
 } from '@models/signal-form.model';
 import { SignalFormFieldsComponent } from '@renderers/signal-form-fields/signal-form-fields.component';
 import { SignalFormSaveButtonComponent } from '@renderers/signal-form-save-button/signal-form-save-button.component';
-import { FormBuilder } from 'app/signal-forms/form-builder/builder/form-builder';
 
 export interface User {
   username: string | null;
@@ -27,16 +27,18 @@ type UserP1 = Pick<User, 'address'>;
 type UserP2 = Omit<User, 'address'>;
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SignalFormFieldsComponent, SignalFormSaveButtonComponent],
   selector: 'example-signal-form-rows',
   standalone: true,
-  styleUrl: './example-signal-form-rows.component.scss',
+  imports: [SignalFormFieldsComponent, SignalFormSaveButtonComponent],
   templateUrl: './example-signal-form-rows.component.html',
+  styleUrl: './example-signal-form-rows.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExampleSignalFormRowsComponent implements OnInit {
   public fieldsA!: SignalFormContainer<UserP1>;
   public fieldsB!: SignalFormContainer<UserP2>;
+
+  constructor() {}
 
   public ngOnInit(): void {
     const userModelA: UserP1 = {
@@ -97,7 +99,6 @@ export class ExampleSignalFormRowsComponent implements OnInit {
         view: 'collapsable',
         layout: 'flex',
       },
-      // onSave: (val) => this.formatAndSave(val),
     });
 
     this.fieldsB = FormBuilder.createForm({
@@ -108,7 +109,7 @@ export class ExampleSignalFormRowsComponent implements OnInit {
           type: FormFieldType.NUMBER,
           label: 'Age',
           validators: [
-            (val, form) => {
+            (val: number | null, form: SignalFormContainer<UserP2>) => {
               const isUnder18 = !!val && val < 18;
               const genderValue = form.getField('gender').value();
               const isFemale = !!genderValue && genderValue.value === 'Female';
@@ -147,7 +148,7 @@ export class ExampleSignalFormRowsComponent implements OnInit {
     });
   }
 
-  private formatAndSave(value: User) {
-    console.log('the value on save', value);
+  private formatAndSave(value: User): void {
+    console.log(this.fieldsA.getField('address').form.parentForm());
   }
 }

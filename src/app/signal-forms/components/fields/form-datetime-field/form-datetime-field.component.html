@@ -1,12 +1,7 @@
 <input
   class="form-input"
   type="datetime-local"
-  [attr.name]="name()"
-  [id]="name()"
-  [attr.aria-describedby]="ariaDescribedBy()"
-  [attr.aria-invalid]="error() ? 'true' : 'false'"
+  [signalModel]="field()"
+  [form]="form()"
   [value]="formattedValue()"
-  [disabled]="disabled()"
-  (input)="handleInput($event)"
-  (blur)="handleBlur()"
 />

@@ -7,25 +7,25 @@ import {
   viewChild,
 } from '@angular/core';
 import { BaseInputDirective } from '@base/base-input/base-input.directive';
-import { FormFieldType } from '@enums/form-field-type.enum';
-import { type MaskedFieldConfig } from '@models/signal-field-configs.model';
 import { MaskParser } from 'app/signal-forms/helpers/mask-parser';
+import { SignalModelDirective } from '../../../directives/signal-model.directive';
+import { RuntimeMaskedSignalField } from '../../../models/signal-field-types.model';
 
 @Component({
   selector: 'signal-form-masked-field',
   standalone: true,
+  imports: [SignalModelDirective],
   templateUrl: './form-masked-field.component.html',
   styleUrl: './form-masked-field.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FormMaskedFieldComponent extends BaseInputDirective<
-  FormFieldType.MASKED,
-  string,
-  MaskedFieldConfig
-> {
+export class FormMaskedFieldComponent<
+  TModel extends object,
+  K extends keyof TModel = keyof TModel,
+> extends BaseInputDirective<RuntimeMaskedSignalField<TModel, K>, TModel, K> {
   private inputRef = viewChild('maskedInput', { read: ElementRef });
 
-  private readonly mask = computed(() => this.config()?.mask ?? '');
+  private readonly mask = computed(() => this.field().config?.mask ?? '');
   private lastCaretPos = 0;
 
   constructor() {
@@ -35,10 +35,10 @@ export class FormMaskedFieldComponent extends BaseInputDirective<
 
   private initializeEffect() {
     effect(() => {
-      if (!this.mask() || this.value()) return;
+      if (!this.mask() || this.field().value()) return;
 
       const initial = MaskParser.format('', this.mask());
-      this.setValue(initial);
+      this.setValue(initial as TModel[K]);
     });
   }
 
@@ -48,9 +48,9 @@ export class FormMaskedFieldComponent extends BaseInputDirective<
     const caret = el.selectionStart ?? 0;
 
     const masked = MaskParser.format(rawValue, this.mask());
-    this.setValue(masked);
+    this.setValue(masked as TModel[K]);
 
-    this.dirty.set(true);
+    this.field().dirty.set(true);
     this.lastCaretPos = MaskParser.getNextEditableIndex(this.mask(), caret);
     this.moveCaret(this.lastCaretPos);
   }
@@ -67,7 +67,7 @@ export class FormMaskedFieldComponent extends BaseInputDirective<
       event.preventDefault();
 
       const mask = this.mask();
-      let updated = this.value() ?? '';
+      let updated = this.field().value() ?? '';
 
       const editableIndices = MaskParser.getEditableIndices(mask);
 
@@ -77,11 +77,14 @@ export class FormMaskedFieldComponent extends BaseInputDirective<
       );
 
       for (const idx of charsToClear) {
-        updated = updated.substring(0, idx) + '_' + updated.substring(idx + 1);
+        updated =
+          (updated as string).substring(0, idx) +
+          '_' +
+          (updated as string).substring(idx + 1);
       }
 
-      this.setValue(updated);
-      this.dirty.set(true);
+      this.setValue(updated as TModel[K]);
+      this.field().dirty.set(true);
 
       const caretAfter = MaskParser.getNextEditableIndex(mask, range[0]);
       this.moveCaret(caretAfter);
@@ -101,7 +104,7 @@ export class FormMaskedFieldComponent extends BaseInputDirective<
   }
 
   private removeCharAt(pos: number): void {
-    const current = this.value() ?? '';
+    const current = this.field().value() ?? '';
     const maskChar = this.mask()[pos];
     if (
       !MaskParser.DEFAULT_MASK_DEFINITION[
@@ -109,11 +112,12 @@ export class FormMaskedFieldComponent extends BaseInputDirective<
       ]
     )
       return;
-
     const updated =
-      current.substring(0, pos) + '_' + current.substring(pos + 1);
-    this.setValue(updated);
-    this.dirty.set(true);
+      (current as string).substring(0, pos) +
+      '_' +
+      (current as string).substring(pos + 1);
+    this.setValue(updated as TModel[K]);
+    this.field().dirty.set(true);
   }
 
   private moveCaret(pos: number): void {

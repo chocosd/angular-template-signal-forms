@@ -11,9 +11,11 @@ import {
   viewChildren,
 } from '@angular/core';
 import {
+  type ErrorMessage,
   type SignalFormContainer,
   type SignalSteppedFormContainer,
 } from '@models/signal-form.model';
+import { FieldTraversalUtils } from '../../../form-builder/utils/field-traversal.utils';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,7 +34,7 @@ export class SignalFormErrorSummaryComponent<TModel> {
   private readonly injector = inject(Injector);
 
   public errors = computed(() => {
-    if ('steps' in this.form) {
+    if ('steps' in this.form()) {
       return (this.form() as SignalSteppedFormContainer<TModel>).steps.flatMap(
         (step) => step.getErrors(),
       );
@@ -75,29 +77,37 @@ export class SignalFormErrorSummaryComponent<TModel> {
     const isStepped = 'steps' in this.form();
 
     if (isStepped) {
-      const steppedForm = this.form() as SignalSteppedFormContainer<TModel>;
-      const steppedError = err;
-      const stepIndex = steppedForm.steps.findIndex((step) =>
-        step.fields.some((f) => f.name === steppedError.name),
-      );
-
-      if (stepIndex !== -1) {
-        steppedForm.currentStep.set(stepIndex);
-        effect(
-          () => {
-            const field = steppedForm.steps[stepIndex].getField(
-              steppedError.name,
-            );
-
-            field.focus.set(true);
-          },
-          { injector: this.injector },
-        );
-      }
+      this.focusSteppedError(err);
     } else {
-      this.form().getField(err.name)?.focus.set(true);
-      console.log(this.form().getField(err.name));
-      console.log(this.form());
+      this.focusNestedError(err);
+    }
+  }
+
+  private focusSteppedError(err: ErrorMessage<TModel>): void {
+    const steppedForm = this.form() as SignalSteppedFormContainer<TModel>;
+    // Find the step that contains a field matching the full path
+    const stepIndex = steppedForm.steps.findIndex((step) =>
+      FieldTraversalUtils.findFieldByPath(step, err.path),
+    );
+
+    if (stepIndex !== -1) {
+      steppedForm.currentStep.set(stepIndex);
+      effect(
+        () => {
+          this.focusNestedError(err, steppedForm.steps[stepIndex]);
+        },
+        { injector: this.injector },
+      );
+    }
+  }
+
+  private focusNestedError(
+    err: ErrorMessage<TModel>,
+    form: SignalFormContainer<TModel> = this.form() as SignalFormContainer<TModel>,
+  ): void {
+    const field = FieldTraversalUtils.findFieldByPath(form, err.path);
+    if (field?.focus) {
+      field.focus.set(true);
     }
   }
 }

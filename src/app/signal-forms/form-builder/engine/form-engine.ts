@@ -1,17 +1,27 @@
 // form-engine.ts
 import { computed, WritableSignal } from '@angular/core';
-import { FormFieldType } from '@enums/form-field-type.enum';
-import { FormStatus } from '@enums/form-status.enum';
+import { FormFieldType } from '../../enums/form-field-type.enum';
+import { FormStatus } from '../../enums/form-status.enum';
 import {
-  CheckboxGroupSignalFormField,
   DeepPartial,
   ErrorMessage,
-  RepeatableGroupSignalFormField,
+  InferFieldType,
   SignalFormContainer,
   SignalFormField,
-  SignalFormFieldForKey,
-  SignalValidatorFn,
-} from '@models/signal-form.model';
+} from '../../models/signal-form.model';
+
+type FieldWithForm<TModel> = SignalFormField<TModel> & {
+  form: SignalFormContainer<TModel[keyof TModel]>;
+};
+
+type RepeatableField<TModel> = SignalFormField<TModel> & {
+  repeatableForms: WritableSignal<SignalFormContainer<any>[]>;
+};
+
+type CheckboxGroupField<TModel> = SignalFormField<TModel> & {
+  type: FormFieldType.CHECKBOX_GROUP;
+  valueType?: 'array' | 'map';
+};
 
 export class FormEngine {
   static validateForm<TModel>(
@@ -22,25 +32,14 @@ export class FormEngine {
       let valid = true;
 
       for (const field of fields) {
-        if ('form' in field && field.form) {
-          const nestedValid = (
-            field.form as SignalFormContainer<TModel[keyof TModel]>
-          ).validateForm();
+        if (this.isFieldWithForm(field)) {
+          const nestedValid = field.form.validateForm();
           valid = valid && nestedValid;
           continue;
         }
 
-        const repeatableField =
-          field as unknown as RepeatableGroupSignalFormField<
-            TModel,
-            keyof TModel
-          >;
-
-        if (
-          'repeatableForms' in field &&
-          Array.isArray(repeatableField.repeatableForms?.())
-        ) {
-          const nestedForms = repeatableField.repeatableForms();
+        if (this.isRepeatableField(field)) {
+          const nestedForms = field.repeatableForms();
           const allValid = nestedForms.every((form) => form.validateForm());
           valid = valid && allValid;
           continue;
@@ -49,10 +48,7 @@ export class FormEngine {
         field.touched.set(true);
         const validators = field.validators ?? [];
 
-        for (const validator of validators as SignalValidatorFn<
-          unknown,
-          TModel
-        >[]) {
+        for (const validator of validators) {
           const error = validator(field.value(), form);
           if (error) {
             field.error.set(error);
@@ -74,14 +70,13 @@ export class FormEngine {
   ): () => void {
     return () => {
       for (const field of fields) {
-        if ('form' in field && field.form) {
-          (field.form as SignalFormContainer<TModel[keyof TModel]>).reset();
+        if (this.isFieldWithForm(field)) {
+          field.form.reset();
           continue;
         }
 
-        const initialValue = initialModel[field.name as keyof TModel];
-        (field.value as WritableSignal<unknown>).set(initialValue);
-
+        const initialValue = initialModel[field.name];
+        field.value.set(initialValue);
         field.touched.set(false);
         field.dirty.set(false);
         field.error.set(null);
@@ -95,17 +90,15 @@ export class FormEngine {
   ): (patch: DeepPartial<TModel>) => void {
     return (patch: DeepPartial<TModel>) => {
       for (const field of fields) {
-        const fieldName = field.name as keyof TModel;
-        const newValue = patch[fieldName] as DeepPartial<TModel[keyof TModel]>;
+        const fieldName = field.name;
+        const newValue = patch[fieldName];
 
         if (newValue === undefined) continue;
 
-        if ('form' in field && field.form && typeof newValue === 'object') {
-          (field.form as SignalFormContainer<TModel[keyof TModel]>).patchValue(
-            newValue,
-          );
+        if (this.isFieldWithForm(field) && typeof newValue === 'object') {
+          field.form.patchValue(newValue as DeepPartial<TModel[keyof TModel]>);
         } else {
-          field.value.set(newValue);
+          field.value.set(newValue as TModel[keyof TModel]);
           field.dirty.set(true);
         }
       }
@@ -117,13 +110,11 @@ export class FormEngine {
   ): (value: TModel) => void {
     return (value: TModel) => {
       for (const field of fields) {
-        const fieldName = field.name as keyof TModel;
+        const fieldName = field.name;
         const newValue = value[fieldName];
 
-        if ('form' in field && field.form && typeof newValue === 'object') {
-          (field.form as SignalFormContainer<TModel[keyof TModel]>).setValue(
-            newValue,
-          );
+        if (this.isFieldWithForm(field) && typeof newValue === 'object') {
+          field.form.setValue(newValue as TModel[keyof TModel]);
         } else {
           field.value.set(newValue);
           field.dirty.set(true);
@@ -137,11 +128,13 @@ export class FormEngine {
       const errors: ErrorMessage<TModel>[] = [];
 
       for (const field of fields) {
-        if ('form' in field && field.form) {
-          const nestedErrors = (
-            field.form as SignalFormContainer<TModel[keyof TModel]>
-          ).getErrors() as ErrorMessage<TModel>[];
-          errors.push(...nestedErrors);
+        if (this.isFieldWithForm(field)) {
+          const nestedErrors = field.form.getErrors() as ErrorMessage<TModel>[];
+          const updatedNestedErrors = nestedErrors.map((err) => ({
+            ...err,
+            path: `${field.path}.${err.path}`,
+          }));
+          errors.push(...updatedNestedErrors);
           continue;
         }
 
@@ -149,6 +142,7 @@ export class FormEngine {
           errors.push({
             name: field.name,
             message: field.error() ?? '',
+            path: field.path,
           });
         }
       }
@@ -162,14 +156,14 @@ export class FormEngine {
     form: SignalFormContainer<TModel>,
   ): TModel {
     return fields.reduce((acc, field) => {
-      const name = field.name as keyof TModel;
+      const name = field.name;
       const disabled =
         typeof field.disabled === 'function'
           ? field.disabled(form)
           : field.disabled;
 
       if (!disabled) {
-        (acc[name] as unknown) = FormEngine.getFieldOutputValue(field);
+        acc[name] = this.getFieldOutputValue(field) as TModel[keyof TModel];
       }
 
       return acc;
@@ -177,27 +171,13 @@ export class FormEngine {
   }
 
   static getFieldOutputValue<TModel>(field: SignalFormField<TModel>): unknown {
-    if (
-      field.type === FormFieldType.REPEATABLE_GROUP &&
-      'repeatableForms' in field
-    ) {
-      return (
-        field as unknown as RepeatableGroupSignalFormField<TModel, keyof TModel>
-      )
-        .repeatableForms()
-        .map((form) => form.getValue());
+    if (this.isRepeatableField(field)) {
+      return field.repeatableForms().map((form) => form.getValue());
     }
 
-    if (field.type === FormFieldType.CHECKBOX_GROUP) {
+    if (this.isCheckboxGroupField(field)) {
       const val = field.value();
-      const valueType =
-        (
-          field as unknown as CheckboxGroupSignalFormField<
-            TModel,
-            keyof TModel,
-            FormFieldType.CHECKBOX_GROUP
-          >
-        ).valueType ?? 'array';
+      const valueType = field.valueType ?? 'array';
 
       if (valueType === 'map') {
         return val;
@@ -212,10 +192,8 @@ export class FormEngine {
       return val;
     }
 
-    if ('form' in field && field.form) {
-      return (
-        field.form as SignalFormContainer<TModel[keyof TModel]>
-      ).getValue();
+    if (this.isFieldWithForm(field)) {
+      return field.form.getValue();
     }
 
     return field.value();
@@ -224,23 +202,37 @@ export class FormEngine {
   static getValue<TModel>(fields: SignalFormField<TModel>[]) {
     return (): TModel =>
       fields.reduce((acc, field) => {
-        (acc[field.name as keyof TModel] as unknown) = field.value();
+        acc[field.name] = field.value() as TModel[keyof TModel];
         return acc;
       }, {} as TModel);
   }
 
   static getField<TModel>(fields: SignalFormField<TModel>[]) {
-    return <K extends keyof TModel>(key: K): SignalFormFieldForKey<TModel, K> =>
-      fields.find((f) => f.name === key) as unknown as SignalFormFieldForKey<
-        TModel,
-        K
-      >;
+    return <K extends keyof TModel>(key: K): InferFieldType<TModel, K> => {
+      const field = fields.find((f) => f.name === key);
+      if (!field) {
+        throw new Error(`Field ${String(key)} not found`);
+      }
+
+      // Handle repeatable fields
+      if (this.isRepeatableField(field)) {
+        return field as InferFieldType<TModel, K>;
+      }
+
+      // Handle nested form fields
+      if (this.isFieldWithForm(field)) {
+        return field as InferFieldType<TModel, K>;
+      }
+
+      // Handle regular fields
+      return field as InferFieldType<TModel, K>;
+    };
   }
 
   static getRawValue<TModel>(fields: SignalFormField<TModel>[]) {
     return computed(() => {
       return fields.reduce((acc, field) => {
-        (acc[field.name as keyof TModel] as unknown) = field.value();
+        acc[field.name] = field.value() as TModel[keyof TModel];
         return acc;
       }, {} as TModel);
     });
@@ -268,13 +260,11 @@ export class FormEngine {
         status.set(FormStatus.Success);
 
         for (const field of fields) {
-          if ('form' in field && field.form) {
-            (field.form as SignalFormContainer<TModel[keyof TModel]>).save();
+          if (this.isFieldWithForm(field)) {
+            field.form.save();
           } else {
             field.touched.set(false);
             field.dirty.set(false);
-
-            // disable if needed
             if (form.config?.disableUponComplete) {
               field.disabled = () => true;
             }
@@ -288,5 +278,23 @@ export class FormEngine {
         status.set(FormStatus.Error);
       }
     };
+  }
+
+  private static isFieldWithForm<TModel>(
+    field: SignalFormField<TModel>,
+  ): field is FieldWithForm<TModel> {
+    return 'form' in field && field.form !== undefined;
+  }
+
+  private static isRepeatableField<TModel>(
+    field: SignalFormField<TModel>,
+  ): field is RepeatableField<TModel> {
+    return 'repeatableForms' in field && field.repeatableForms !== undefined;
+  }
+
+  private static isCheckboxGroupField<TModel>(
+    field: SignalFormField<TModel>,
+  ): field is CheckboxGroupField<TModel> {
+    return field.type === FormFieldType.CHECKBOX_GROUP;
   }
 }

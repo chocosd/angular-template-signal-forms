@@ -5,7 +5,6 @@ import {
   effect,
   ElementRef,
   inject,
-  input,
   Optional,
   signal,
   viewChild,
@@ -16,27 +15,29 @@ import { NgClass } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BaseInputDirective } from '@base/base-input/base-input.directive';
 import { SignalFormHostDirective } from '@base/host-directive/signal-form-host.directive';
-import { FormFieldType } from '@enums/form-field-type.enum';
-import { type AutocompleteFieldConfig } from '@models/signal-field-configs.model';
-import { type FormOption, type LoadOptionsFn } from '@models/signal-form.model';
 import { FormDropdownService } from '@services/form-dropdown.service';
 import { from, isObservable } from 'rxjs';
+import { SignalModelDirective } from '../../../directives/signal-model.directive';
+import { RuntimeAutocompleteSignalField } from '../../../models/signal-field-types.model';
+import { FormOption } from '../../../models/signal-form.model';
 
 @Component({
   selector: 'signal-form-autocomplete-field',
   standalone: true,
-  imports: [NgClass],
+  imports: [NgClass, SignalModelDirective],
   templateUrl: './form-autocomplete-field.component.html',
   styleUrl: './form-autocomplete-field.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   hostDirectives: [SignalFormHostDirective],
 })
-export class FormAutocompleteFieldComponent extends BaseInputDirective<
-  FormFieldType.AUTOCOMPLETE,
-  FormOption | null,
-  AutocompleteFieldConfig
+export class FormAutocompleteFieldComponent<
+  TModel extends object,
+  K extends keyof TModel = keyof TModel,
+> extends BaseInputDirective<
+  RuntimeAutocompleteSignalField<TModel, K>,
+  TModel,
+  K
 > {
-  public loadOptions = input.required<LoadOptionsFn>();
   public inputRef = viewChild<ElementRef<HTMLElement>>(
     'autocompleteInputWrapper',
   );
@@ -77,14 +78,14 @@ export class FormAutocompleteFieldComponent extends BaseInputDirective<
 
         this.dropdownService.openDropdown<FormOption>({
           options: this.loadedOptions(),
-          ariaListboxId: this.listboxId(),
+          ariaListboxId: `${String(this.field().name)}-listbox`,
           reference: this.inputRef()!.nativeElement,
           viewContainerRef: this.hostViewContainerRef!,
           onSelect: (option) => {
             if (option) {
-              this.setValue(option);
+              this.updateValue(option);
             }
-            this.touched.set(true);
+            this.field().touched.set(true);
             this.showDropdown.set(false);
             this.dropdownService.destroyDropdown();
           },
@@ -98,15 +99,13 @@ export class FormAutocompleteFieldComponent extends BaseInputDirective<
     );
   }
 
-  public override setValue(val: FormOption | null): void {
-    super.setValue(val);
-
-    this.dirty.set(true);
-    this.touched.set(true);
+  private updateValue(val: FormOption | null): void {
+    super.setValue(val as TModel[K]);
+    this.field().dirty.set(true);
   }
 
   public onSelect(option: FormOption) {
-    this.setValue(option);
+    this.updateValue(option);
     this.showDropdown.set(false);
   }
 
@@ -128,14 +127,14 @@ export class FormAutocompleteFieldComponent extends BaseInputDirective<
         this.lastQuery.set(query);
 
         if (
-          this.config()?.minChars &&
-          query.length < (this.config()?.minChars ?? 0)
+          this.field().config?.minChars &&
+          query.length < (this.field().config?.minChars ?? 0)
         ) {
           this.loadedOptions.set([]);
           return;
         }
 
-        const loader = this.loadOptions();
+        const loader = this.field().loadOptions;
         if (!loader || !query) {
           this.loadedOptions.set([]);
           return;
@@ -152,7 +151,7 @@ export class FormAutocompleteFieldComponent extends BaseInputDirective<
             this.loadedOptions.set(result);
             this.showDropdown.set(true);
           });
-        }, this.config()?.debounceMs ?? 300);
+        }, this.field().config?.debounceMs ?? 300);
 
         return () => clearTimeout(timeout);
       },

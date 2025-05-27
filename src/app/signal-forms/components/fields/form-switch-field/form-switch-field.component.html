@@ -3,15 +3,10 @@
     type="checkbox"
     role="switch"
     class="switch-input"
-    [attr.name]="name()"
-    [checked]="value()"
-    [id]="name()"
-    [attr.aria-checked]="value()"
-    [attr.aria-describedby]="ariaDescribedBy()"
-    [attr.aria-invalid]="error() ? 'true' : 'false'"
-    [disabled]="disabled()"
-    (change)="handleInput($event)"
-    (blur)="handleBlur()"
+    [signalModel]="field()"
+    [form]="form()"
+    [checked]="field().value()"
+    [attr.aria-checked]="field().value()"
   />
   <span class="switch-slider" aria-hidden="true"></span>
 </label>

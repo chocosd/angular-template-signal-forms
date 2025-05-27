@@ -1,9 +1,8 @@
 <div
   class="form-rating"
   role="radiogroup"
-  [attr.name]="name()"
-  [attr.aria-describedby]="ariaDescribedBy()"
-  [attr.aria-invalid]="error() ? 'true' : 'false'"
+  [signalModel]="field()"
+  [form]="form()"
 >
   <div class="rating-stars">
     @for (index of stars(); track index) {
@@ -11,12 +10,10 @@
         class="star"
         type="button"
         role="radio"
-        [attr.aria-checked]="value() === index + 1"
+        [attr.aria-checked]="field().value() === index + 1"
         [attr.aria-label]="'Rate ' + (index + 1) + ' star'"
-        [class.filled]="value() >= index + 1"
-        [disabled]="disabled()"
-        (click)="setValue(index + 1)"
-        (blur)="handleBlur()"
+        [class.filled]="field().value() >= index + 1"
+        (click)="setRating(index + 1)"
       >
         ★
       </button>

@@ -4,29 +4,32 @@ import {
   inject,
   OnInit,
 } from '@angular/core';
+import { FormBuilder } from '@builder/builder/form-builder';
 import { FormFieldType } from '@enums/form-field-type.enum';
 import { type SignalFormContainer } from '@models/signal-form.model';
 import { SignalFormComponent } from '@renderers/signal-form/signal-form.component';
 import { TestApiService } from '@services/test-http.service';
 import { SignalValidators } from '@validators/signal-validators';
-import { OnlyPositiveValidator } from 'app/app.component';
-import { FormBuilder } from 'app/signal-forms/form-builder/builder/form-builder';
+import { OnlyPositiveValidator } from '@validators/validator-fns';
 import { aboutForm } from '../consts/about-form.const';
 import { addressForm } from '../consts/address-form.const';
 import { model } from '../consts/form.const';
 import { type Basket } from '../models/example.model';
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SignalFormComponent],
   selector: 'example-signal-form',
   standalone: true,
-  styleUrl: './example-signal-form.component.scss',
+  imports: [SignalFormComponent],
   templateUrl: './example-signal-form.component.html',
+  styleUrl: './example-signal-form.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExampleSignalFormComponent implements OnInit {
   public form!: SignalFormContainer<Basket>;
+
   private readonly testApiService = inject(TestApiService);
+
+  constructor() {}
 
   public ngOnInit(): void {
     this.form = FormBuilder.createForm<Basket>({
@@ -119,11 +122,11 @@ export class ExampleSignalFormComponent implements OnInit {
     });
   }
 
-  protected save(e: Basket) {
+  protected save(e: Basket): void {
     console.log((this.form.getField('address') as any).form.getParent());
   }
 
-  protected updateForm() {
+  protected updateForm(): void {
     this.form.patchValue({
       apples: 50,
       pears: 50,

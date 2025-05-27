@@ -8,9 +8,6 @@ import { ExampleSignalFormRowsComponent } from './examples/example-signal-form-r
 import { ExampleSignalFormStepperComponent } from './examples/example-signal-form-stepper/example-signal-form-stepper.component';
 import { ExampleSignalFormComponent } from './examples/example-signal-form/example-signal-form.component';
 
-export const OnlyPositiveValidator = (name: string) => (x: number) =>
-  x < 0 ? `${name} only positive prices` : null;
-
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-root',
@@ -40,7 +37,7 @@ export class AppComponent implements OnInit {
     },
   ];
 
-  protected view = signal<'form' | 'stepper' | 'form-rows' | null>(null);
+  protected view = signal<'form' | 'stepper' | 'form-rows' | null>('form');
 
   protected showForm(): void {
     this.view.set('form');

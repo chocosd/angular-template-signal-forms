@@ -7,7 +7,6 @@ import {
   type SignalFormContainer,
   type SignalFormField,
   type SignalFormFieldBuilderInput,
-  type SignalFormFieldForKey,
   type SignalSteppedFormConfig,
   type SignalSteppedFormContainer,
 } from '@models/signal-form.model';
@@ -15,30 +14,45 @@ import { FormEngine } from '../engine/form-engine';
 import { FieldFactory } from '../factory/field-factory';
 import { FieldUtils } from '../utils/field-utils';
 // #endregion
-export class FormBuilder {
-  static createForm<TModel, TParentModel = unknown>(args: {
-    model: TModel;
+
+export interface FormBuilderArgs<TModel> {
+  model: TModel;
+  fields: SignalFormFieldBuilderInput<TModel>[];
+  title?: string;
+  config?: SignalFormConfig<TModel>;
+  onSave?: (value: TModel) => void;
+  parentForm?: SignalFormContainer<unknown>;
+  parentPath?: string;
+}
+
+export interface SteppedFormBuilderArgs<TModel> {
+  model: TModel;
+  steps: {
     fields: SignalFormFieldBuilderInput<TModel>[];
-    title?: string;
     config?: SignalFormConfig<TModel>;
-    onSave?: (value: TModel) => void;
-    parentForm?: SignalFormContainer<any>;
-    parentPath?: string;
-  }): SignalFormContainer<TModel> {
-    // 👇 Create a mutable object early
+    title?: string;
+    description?: string;
+  }[];
+  onSave?: (value: TModel) => void;
+  config?: SignalSteppedFormConfig<TModel>;
+}
+
+export class FormBuilder {
+  static createForm<TModel>(
+    args: FormBuilderArgs<TModel>,
+  ): SignalFormContainer<TModel> {
     const form: Partial<SignalFormContainer<TModel>> = {};
     const status = signal<FormStatus>(FormStatus.Idle);
 
-    // 👇 Safe because 'form' is already declared
     const fields: SignalFormField<TModel>[] = args.fields.map((field) =>
       FieldFactory.build(
         field,
         args.model,
         form as SignalFormContainer<TModel>,
+        args.parentPath,
       ),
     );
 
-    // 👇 Complete the object with all methods
     Object.assign(form, {
       title: args.title,
       status,
@@ -62,7 +76,7 @@ export class FormBuilder {
       ),
       reset: FormEngine.resetForm(fields, { ...args.model }),
       getErrors: FormEngine.getErrors(fields),
-      config: args.config ?? {},
+      config: args.config ?? { layout: 'flex' },
       patchValue: FormEngine.patchForm(fields),
       setValue: FormEngine.setFormValue(fields),
       save: FormEngine.runSaveHandler(
@@ -72,22 +86,15 @@ export class FormBuilder {
         args.onSave,
       ),
       getParent: () => args.parentForm,
+      parentForm: computed(() => args.parentForm),
     });
 
     return form as SignalFormContainer<TModel>;
   }
 
-  static createSteppedForm<TModel>(args: {
-    model: TModel;
-    steps: {
-      fields: SignalFormFieldBuilderInput<TModel>[];
-      config?: SignalFormConfig<TModel>;
-      title?: string;
-      description?: string;
-    }[];
-    onSave?: (value: TModel) => void;
-    config?: SignalSteppedFormConfig<TModel>;
-  }): SignalSteppedFormContainer<TModel> {
+  static createSteppedForm<TModel>(
+    args: SteppedFormBuilderArgs<TModel>,
+  ): SignalSteppedFormContainer<TModel> {
     const currentStep = signal(0);
     const status = signal<FormStatus>(FormStatus.Idle);
 
@@ -112,20 +119,19 @@ export class FormBuilder {
     const validateAll = () => steps.every((step) => step.validateForm());
 
     const getErrors = (): ErrorMessage<TModel>[] =>
-      steps.flatMap((step) =>
-        step.getErrors().map(({ name, message }: ErrorMessage<TModel>) => ({
-          name,
-          message,
-        })),
-      );
+      steps.flatMap((step) => step.getErrors());
 
     const getField = <K extends keyof TModel>(
       key: K,
-    ): SignalFormFieldForKey<TModel, K> => {
+    ): SignalFormField<TModel, K> => {
       const allFields = steps.flatMap((step) => step.fields);
-      return allFields.find(
-        (f) => f.name === key,
-      ) as unknown as SignalFormFieldForKey<TModel, K>;
+      const field = allFields.find(
+        (f: SignalFormField<TModel>) => f.name === key,
+      );
+      if (!field) {
+        throw new Error(`Field ${String(key)} not found in form`);
+      }
+      return field as SignalFormField<TModel, K>;
     };
 
     const reset = () => steps.forEach((step) => step.reset());
@@ -137,14 +143,14 @@ export class FormBuilder {
     );
 
     const allFields = steps.flatMap((s) => s.fields);
-    const virtualForm = {
+    const virtualForm: SignalFormContainer<TModel> = {
       ...steps[0],
       fields: allFields,
       getValue: () => value(),
       anyDirty: computed(() => steps.some((s) => s.anyDirty())),
       anyTouched: computed(() => steps.some((s) => s.anyTouched())),
-      config: args.config,
-    } as SignalFormContainer<TModel>;
+      config: args.config?.form ?? { layout: 'flex' },
+    };
 
     return {
       anyTouched,

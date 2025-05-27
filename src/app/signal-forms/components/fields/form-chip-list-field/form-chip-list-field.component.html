@@ -1,9 +1,11 @@
 <div
   class="chip-option-list"
   role="group"
-  [attr.aria-labelledby]="name() + '-label'"
+  [signalModel]="field()"
+  [form]="form()"
+  [attr.aria-labelledby]="field().name + '-label'"
 >
-  @for (option of options(); track option.value) {
+  @for (option of field().options(); track option.value) {
     <div
       class="chip-option"
       role="checkbox"
