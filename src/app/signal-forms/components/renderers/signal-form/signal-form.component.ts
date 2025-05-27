@@ -31,7 +31,11 @@ export class SignalFormComponent<TModel> {
     const anyTouched = this.form().anyTouched();
     const anyDirty = this.form().anyDirty();
 
-    return !(anyTouched && anyDirty);
+    const hasError = this.form().getErrors().length;
+
+    console.log(hasError);
+
+    return !(anyTouched && anyDirty) || hasError;
   });
 
   protected submitForm(): void {

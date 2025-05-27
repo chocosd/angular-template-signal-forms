@@ -96,6 +96,8 @@ export class SignalFormErrorSummaryComponent<TModel> {
       }
     } else {
       this.form().getField(err.name)?.focus.set(true);
+      console.log(this.form().getField(err.name));
+      console.log(this.form());
     }
   }
 }

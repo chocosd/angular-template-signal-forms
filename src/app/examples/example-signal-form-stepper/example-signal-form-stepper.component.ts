@@ -9,7 +9,7 @@ import { type SignalSteppedFormContainer } from '@models/signal-form.model';
 import { SignalFormStepperComponent } from '@renderers/signal-form-stepper/signal-form-stepper.component';
 import { SignalValidators } from '@validators/signal-validators';
 import { withOptionalSignalValidation } from '@validators/validator-fns';
-import { FormBuilder } from 'app/signal-forms/helpers/form-builder';
+import { FormBuilder } from 'app/signal-forms/form-builder/builder/form-builder';
 import { model } from '../consts/form.const';
 import { type Basket } from '../models/example.model';
 

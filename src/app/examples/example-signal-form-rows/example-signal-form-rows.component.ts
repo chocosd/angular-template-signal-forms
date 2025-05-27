@@ -6,7 +6,7 @@ import {
 } from '@models/signal-form.model';
 import { SignalFormFieldsComponent } from '@renderers/signal-form-fields/signal-form-fields.component';
 import { SignalFormSaveButtonComponent } from '@renderers/signal-form-save-button/signal-form-save-button.component';
-import { FormBuilder } from 'app/signal-forms/helpers/form-builder';
+import { FormBuilder } from 'app/signal-forms/form-builder/builder/form-builder';
 
 export interface User {
   username: string | null;
