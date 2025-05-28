@@ -5,46 +5,50 @@ import {
   effect,
 } from '@angular/core';
 import { BaseInputDirective } from '@base/base-input/base-input.directive';
-import { FormFieldType } from '@enums/form-field-type.enum';
-import { type ColorFieldConfig } from '@models/signal-field-configs.model';
+import { SignalModelDirective } from '@directives/signal-model.directive';
+import { type RuntimeColorSignalField } from '@models/signal-field-types.model';
 
 @Component({
   selector: 'signal-form-color-field',
   standalone: true,
+  imports: [SignalModelDirective],
   templateUrl: './form-color-field.component.html',
   styleUrl: './form-color-field.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FormColorFieldComponent extends BaseInputDirective<
-  FormFieldType.COLOR,
-  string,
-  ColorFieldConfig
-> {
+export class FormColorFieldComponent<
+  TModel extends object,
+  K extends keyof TModel,
+> extends BaseInputDirective<RuntimeColorSignalField<TModel, K>, TModel, K> {
   private fallbackColor = '#000000';
 
-  protected currentColor = computed(() => this.value() ?? this.fallbackColor);
+  protected currentColor = computed(
+    () => this.field().value() ?? this.fallbackColor,
+  );
   protected isSwatchOnly = computed(() => {
-    return this.config()?.view === 'swatch';
+    return this.field().config?.view === 'swatch';
   });
 
-  protected inputValue = computed(() => this.value() ?? this.fallbackColor);
+  protected inputValue = computed(
+    () => this.field().value() ?? this.fallbackColor,
+  );
 
   constructor() {
     super();
 
     effect(() => {
       if (!CSS.supports('color', this.inputValue())) {
-        this.error.set('unsupported Color value!');
+        this.field().error.set('unsupported Color value!');
       }
     });
   }
 
   protected onTextInputChange(val: string): void {
-    this.setValue(val);
+    this.setValue<string>(val);
   }
 
   protected onColorInputChange(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
-    this.setValue(value);
+    this.setValue<string>(value);
   }
 }

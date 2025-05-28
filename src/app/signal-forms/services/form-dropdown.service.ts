@@ -8,6 +8,40 @@ import {
 import { type FormOption } from '@models/signal-form.model';
 import { FormDropdownOverlayComponent } from '@ui/form-dropdown-overlay/form-dropdown-overlay.component';
 
+type BaseDropdownConfig<
+  TOption extends FormOption<TValue>,
+  TValue = TOption['value'],
+> = {
+  options: TOption[];
+  reference: HTMLElement;
+  ariaListboxId: string;
+  viewContainerRef: ViewContainerRef;
+  onClose?: () => void;
+};
+
+type SingleSelectConfig<
+  TOption extends FormOption<TValue>,
+  TValue = TOption['value'],
+> = BaseDropdownConfig<TOption, TValue> & {
+  multiselect: false;
+  initialSelection?: TOption | null;
+  onSelect: (option: TOption) => void;
+};
+
+type MultiSelectConfig<
+  TOption extends FormOption<TValue>,
+  TValue = TOption['value'],
+> = BaseDropdownConfig<TOption, TValue> & {
+  multiselect: true;
+  initialSelection?: TOption[] | null;
+  onSelect: (options: TOption[]) => void;
+};
+
+type DropdownConfig<
+  TOption extends FormOption<TValue>,
+  TValue = TOption['value'],
+> = SingleSelectConfig<TOption, TValue> | MultiSelectConfig<TOption, TValue>;
+
 @Injectable({ providedIn: 'root' })
 export class FormDropdownService {
   private dropdownRef?: ComponentRef<FormDropdownOverlayComponent>;
@@ -17,16 +51,10 @@ export class FormDropdownService {
     private readonly injector: Injector,
   ) {}
 
-  public openDropdown<TVal>(config: {
-    options: FormOption[];
-    reference: HTMLElement;
-    ariaListboxId: string;
-    viewContainerRef: ViewContainerRef;
-    onSelect: (option: TVal) => void;
-    onClose?: () => void;
-    initialSelection?: TVal | null;
-    multiselect: boolean;
-  }): void {
+  public openDropdown<
+    TOption extends FormOption<TValue>,
+    TValue = TOption['value'],
+  >(config: DropdownConfig<TOption, TValue>): void {
     this.destroyDropdown();
 
     this.dropdownRef = config.viewContainerRef.createComponent(
@@ -46,7 +74,7 @@ export class FormDropdownService {
     this.dropdownRef.setInput('initialSelection', config.initialSelection);
 
     instance.select.subscribe((option) => {
-      config.onSelect(option as TVal);
+      config.onSelect(option as any);
 
       if (!config.multiselect) {
         this.destroyDropdown();

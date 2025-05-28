@@ -18,3 +18,99 @@
     }
   }
 }
+
+.chip-list-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  padding: 0.25rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background: var(--input-bg);
+  cursor: text;
+
+  &:focus-within {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px var(--primary-color-light);
+  }
+}
+
+.selected-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background: var(--chip-bg, var(--primary-color-light));
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  .chip-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    padding: 0;
+    border: none;
+    background: none;
+    border-radius: 50%;
+    color: inherit;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 1;
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px var(--primary-color);
+    }
+  }
+}
+
+.dropdown-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border: none;
+  background: none;
+  color: var(--text-color);
+  cursor: pointer;
+  font-size: 0.875rem;
+  min-width: 120px;
+
+  &:hover {
+    background: var(--hover-bg);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--primary-color);
+  }
+
+  .dropdown-arrow {
+    opacity: 0.5;
+    transition: transform 0.2s;
+  }
+
+  &[aria-expanded="true"] .dropdown-arrow {
+    transform: rotate(180deg);
+  }
+}

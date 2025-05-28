@@ -2,24 +2,27 @@
   class="multi-select-wrapper"
   #multiselectWrapper
   role="combobox"
-  [attr.name]="name()"
-  [id]="name()"
-  [attr.aria-describedby]="ariaDescribedBy()"
-  [attr.aria-invalid]="error() ? 'true' : 'false'"
+  [signalModel]="field()"
+  [form]="form()"
   [attr.aria-expanded]="showDropdown()"
   [attr.aria-multiselectable]="true"
-  [attr.aria-owns]="listboxId()"
-  tabindex="0"
+  [attr.aria-haspopup]="'listbox'"
   (keydown.enter)="toggleDropdown()"
 >
-  <div class="chip-list" (click)="toggleDropdown()">
-    @for (item of value() ?? []; track item.value) {
-      <div class="chip">
+  <div
+    class="chip-list"
+    role="list"
+    [attr.aria-label]="'Selected ' + field().label + ' items'"
+    (click)="toggleDropdown()"
+  >
+    @for (item of field().value() ?? []; track item.value) {
+      <div class="chip" role="listitem">
         {{ item.label }}
         <button
           type="button"
           class="remove-btn"
-          (click)="removeChip(item)"
+          (click)="removeChip(item); $event.stopPropagation()"
+          (keydown.enter)="removeChip(item)"
           aria-label="Remove {{ item.label }}"
         >
           ×
@@ -28,9 +31,9 @@
     }
   </div>
 
-  @if (!value()?.length && config()?.placeholder) {
+  @if (!field().value()?.length) {
     <div class="placeholder">
-      {{ config()?.placeholder }}
+      {{ field().config?.placeholder }}
     </div>
   }
 </div>

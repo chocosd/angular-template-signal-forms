@@ -1,15 +1,5 @@
 <div class="form-input-wrapper">
-  <textarea
-    class="form-input"
-    [attr.name]="name()"
-    [id]="name()"
-    [placeholder]="config()?.placeholder"
-    [attr.aria-describedby]="ariaDescribedBy()"
-    [attr.aria-invalid]="error() ? 'true' : 'false'"
-    [disabled]="disabled()"
-    (input)="handleInput($event)"
-    (blur)="handleBlur()"
-  >
-    {{ value() }}
-  </textarea>
+  <textarea class="form-input" [signalModel]="field()" [form]="form()">{{
+    field().value()
+  }}</textarea>
 </div>

@@ -1,22 +1,20 @@
 <fieldset
   class="form-radio-group"
   role="radiogroup"
-  [attr.name]="name()"
-  [attr.aria-describedby]="ariaDescribedBy()"
-  [attr.aria-invalid]="error() ? 'true' : 'false'"
+  [attr.name]="field().name"
+  [attr.aria-invalid]="field().error() ? 'true' : 'false'"
 >
-  <legend class="sr-only">{{ name() }}</legend>
+  <legend class="sr-only">{{ field().label }}</legend>
 
-  @for (option of options(); track option.value) {
+  @for (option of field().options(); track option.value) {
     <label class="form-radio-option">
       <input
         type="radio"
-        [name]="name()"
+        [signalModel]="field()"
+        [form]="form()"
+        [name]="field().name"
         [value]="option.value"
-        [checked]="value() === option.value"
-        [disabled]="disabled()"
-        (change)="handleInput($event)"
-        (blur)="handleBlur()"
+        [checked]="field().value() === option.value"
       />
       {{ option.label }}
     </label>

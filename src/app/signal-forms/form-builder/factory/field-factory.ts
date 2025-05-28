@@ -1,17 +1,29 @@
 // field-factory.ts
-import { computed, isSignal, signal, WritableSignal } from '@angular/core';
+import { computed, signal } from '@angular/core';
 import { FormFieldType } from '@enums/form-field-type.enum';
 import {
-  FormOption,
-  ItemOf,
-  RepeatableGroupBuilderField,
-  RepeatableGroupSignalFormField,
-  SignalFormConfig,
-  SignalFormContainer,
-  SignalFormField,
-  SignalFormFieldBuilderInput,
+  type BaseFieldState,
+  type FormOption,
+  type ItemOf,
+  type NestedGroupBuilderField,
+  type RepeatableGroupBuilderField,
+  type RepeatableGroupSignalFormField,
+  type SignalFormContainer,
+  type SignalFormField,
+  type SignalFormFieldBuilderInput,
 } from '@models/signal-form.model';
 import { FormBuilder } from '../builder/form-builder';
+
+type FieldWithOptions = {
+  type:
+    | FormFieldType.SELECT
+    | FormFieldType.RADIO
+    | FormFieldType.CHECKBOX
+    | FormFieldType.CHECKBOX_GROUP
+    | FormFieldType.MULTISELECT
+    | FormFieldType.CHIPLIST;
+  options: FormOption[];
+};
 
 export class FieldFactory {
   static build<TModel>(
@@ -25,69 +37,121 @@ export class FieldFactory {
       ? `${parentPath}.${String(field.name)}`
       : `${String(field.name)}`;
 
-    const baseField = {
-      ...field,
+    const baseFieldState: BaseFieldState<TModel, TModel[keyof TModel]> = {
+      path: referencePath,
       error: signal<string | null>(null),
       touched: signal<boolean>(false),
       dirty: signal<boolean>(false),
       focus: signal<boolean>(false),
-    } as unknown as SignalFormField<TModel>;
+      value: signal(rawValue),
+      getForm: () => formRef,
+      isDisabled: computed(() =>
+        typeof field.disabled === 'function'
+          ? field.disabled(formRef)
+          : (field.disabled ?? false),
+      ),
+      isHidden: computed(() =>
+        typeof field.hidden === 'function'
+          ? field.hidden(formRef)
+          : (field.hidden ?? false),
+      ),
+    };
 
-    // 🌀 Repeatable Group
-    if (
-      (field as RepeatableGroupBuilderField<TModel, keyof TModel>).type ===
-      FormFieldType.REPEATABLE_GROUP
-    ) {
+    // Handle Repeatable Group
+    if (this.isRepeatableGroupField(field)) {
       return this.buildRepeatableGroup(
-        baseField as unknown as RepeatableGroupBuilderField<
-          TModel,
-          keyof TModel
-        >,
+        { ...field, path: referencePath },
         rawValue,
         formRef,
         referencePath,
-      ) as unknown as SignalFormField<TModel>;
+        baseFieldState,
+      );
     }
 
-    // 🧱 Nested Form Group
-    if ('fields' in field && Array.isArray(field.fields)) {
-      return this.buildNestedForm(baseField, rawValue, formRef, referencePath);
+    // Handle Nested Form Group
+    if (this.isNestedGroupField(field)) {
+      return this.buildNestedForm(
+        { ...field, path: referencePath },
+        rawValue,
+        formRef,
+        referencePath,
+        baseFieldState,
+      );
     }
 
-    // 🧠 Normal field: assign value
-    baseField.value = signal(rawValue);
+    // Handle normal field
+    let baseField = {
+      ...field,
+      ...baseFieldState,
+      path: referencePath,
+    } as SignalFormField<TModel>;
 
-    // 🧠 Attach signal-wrapped options if needed
-    if ('options' in field && Array.isArray(field.options)) {
-      (
-        baseField as unknown as SignalFormField<TModel> & {
-          options: WritableSignal<FormOption[]> | FormOption[];
-        }
-      ).options = isSignal(field.options)
-        ? field.options
-        : signal(field.options);
+    // Handle options for fields that support them
+    if (this.hasOptions(field)) {
+      baseField = {
+        ...baseField,
+        options: signal(field.options),
+      } as unknown as SignalFormField<TModel>;
     }
 
     return baseField;
   }
 
-  private static buildRepeatableGroup<TModel, TParent>(
-    baseField: RepeatableGroupBuilderField<TModel, keyof TModel>,
+  private static isRepeatableGroupField<TModel>(
+    field: SignalFormFieldBuilderInput<TModel>,
+  ): field is Extract<
+    SignalFormFieldBuilderInput<TModel>,
+    RepeatableGroupBuilderField<TModel, keyof TModel>
+  > {
+    return 'type' in field && field.type === FormFieldType.REPEATABLE_GROUP;
+  }
+
+  private static isNestedGroupField<TModel>(
+    field: SignalFormFieldBuilderInput<TModel>,
+  ): field is Extract<
+    SignalFormFieldBuilderInput<TModel>,
+    NestedGroupBuilderField<TModel, keyof TModel>
+  > {
+    return (
+      !('type' in field) && 'fields' in field && Array.isArray(field.fields)
+    );
+  }
+
+  private static hasOptions<TModel>(
+    field: SignalFormFieldBuilderInput<TModel>,
+  ): field is SignalFormFieldBuilderInput<TModel> & FieldWithOptions {
+    return (
+      'type' in field &&
+      'options' in field &&
+      Array.isArray(field.options) &&
+      [
+        FormFieldType.SELECT,
+        FormFieldType.RADIO,
+        FormFieldType.CHECKBOX,
+        FormFieldType.CHECKBOX_GROUP,
+        FormFieldType.MULTISELECT,
+        FormFieldType.CHIPLIST,
+      ].includes(field.type as FormFieldType)
+    );
+  }
+
+  private static buildRepeatableGroup<TModel>(
+    field: RepeatableGroupBuilderField<TModel, keyof TModel>,
     rawValue: TModel[keyof TModel],
-    parentForm?: SignalFormContainer<TParent>,
-    referencePath?: string,
-  ): RepeatableGroupSignalFormField<TModel, keyof TModel> {
+    parentForm: SignalFormContainer<TModel>,
+    referencePath: string,
+    baseFieldState: BaseFieldState<TModel, TModel[keyof TModel]>,
+  ): SignalFormField<TModel> {
     const items = Array.isArray(rawValue) ? rawValue : [];
+    type TItemType = ItemOf<TModel[keyof TModel]>;
 
     const repeatableForms = signal(
       items.map((item) =>
-        FormBuilder.createForm({
+        FormBuilder.createForm<TItemType>({
           model: item,
-          fields: baseField.fields,
-          config: (baseField.config as SignalFormConfig<
-            ItemOf<TModel[keyof TModel]>
-          >) ?? { layout: 'flex' },
-          parentForm,
+          fields: field.fields,
+          config: field.config ?? { layout: 'flex' },
+          parentForm: parentForm as unknown as SignalFormContainer<unknown>,
         }),
       ),
     );
@@ -96,18 +160,20 @@ export class FieldFactory {
       TModel,
       keyof TModel
     > = {
-      ...baseField,
+      ...field,
+      error: signal(false),
+      touched: signal(false),
+      dirty: signal(false),
+      value: computed(() => repeatableForms().map((f) => f.getValue())),
       repeatableForms,
-      addItem: (initial = {} as ItemOf<TModel[keyof TModel]>) => {
-        const newForm = FormBuilder.createForm({
-          model: initial as ItemOf<TModel[keyof TModel]>,
-          fields: baseField.fields,
-          config: (baseField.config as SignalFormConfig<
-            ItemOf<TModel[keyof TModel]>
-          >) ?? { layout: 'flex' },
+      addItem: (initial = {} as TItemType) => {
+        const newForm = FormBuilder.createForm<TItemType>({
+          model: initial,
+          fields: field.fields,
+          config: field.config ?? { layout: 'flex' },
+          parentForm: parentForm as unknown as SignalFormContainer<unknown>,
         });
 
-        (repeatableField as any).getParentForm = () => parentForm;
         repeatableForms.update((forms) => [...forms, newForm]);
         repeatableField.dirty.set(true);
         repeatableField.touched.set(true);
@@ -117,34 +183,34 @@ export class FieldFactory {
         repeatableField.dirty.set(true);
         repeatableField.touched.set(true);
       },
-      value: computed(() => repeatableForms().map((f) => f.getValue())),
-      error: signal(false),
-      touched: signal(false),
-      dirty: signal(false),
     };
 
-    return repeatableField;
+    return repeatableField as unknown as SignalFormField<TModel>;
   }
 
-  private static buildNestedForm<TModel, TParent>(
-    baseField: any,
+  private static buildNestedForm<TModel>(
+    field: NestedGroupBuilderField<TModel, keyof TModel>,
     rawValue: TModel[keyof TModel],
-    parentForm?: SignalFormContainer<TParent>,
-    referencePath?: string,
-  ): any {
-    const nestedForm = FormBuilder.createForm({
+    parentForm: SignalFormContainer<TModel>,
+    referencePath: string,
+    baseFieldState: BaseFieldState<TModel, TModel[keyof TModel]>,
+  ): SignalFormField<TModel> {
+    type TNestedType = TModel[keyof TModel];
+
+    const nestedForm = FormBuilder.createForm<TNestedType>({
       model: rawValue,
-      fields: baseField.fields as SignalFormFieldBuilderInput<
-        TModel[keyof TModel]
-      >[],
-      config: baseField.config ?? { layout: 'flex' },
-      parentForm,
+      fields: field.fields,
+      config: field.config ?? { layout: 'flex' },
+      parentForm: parentForm as unknown as SignalFormContainer<unknown>,
     });
 
-    baseField.form = nestedForm;
-    baseField.fields = nestedForm.fields;
-    baseField.value = computed(() => nestedForm.getValue());
+    const nestedField = {
+      ...field,
+      ...baseFieldState,
+      form: nestedForm,
+      fields: nestedForm.fields,
+    };
 
-    return baseField;
+    return nestedField as unknown as SignalFormField<TModel>;
   }
 }

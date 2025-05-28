@@ -3,16 +3,10 @@
     #maskedInput
     class="form-input"
     type="text"
-    [attr.name]="name()"
-    [id]="name()"
-    [placeholder]="config()?.placeholder"
-    [attr.inputmode]="config()?.numericOnly ? 'numeric' : null"
-    [attr.aria-describedby]="ariaDescribedBy()"
-    [attr.aria-invalid]="error() ? 'true' : 'false'"
-    [disabled]="disabled()"
-    [value]="value()"
+    [signalModel]="field()"
+    [form]="form()"
+    [value]="field().value()"
     (keydown)="onKeyDown($event)"
     (input)="onInput($event)"
-    (blur)="handleBlur()"
   />
 </div>

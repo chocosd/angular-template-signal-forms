@@ -4,26 +4,31 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
+import { FormBuilder } from '@builder/builder/form-builder';
 import { FormFieldType } from '@enums/form-field-type.enum';
-import { type SignalSteppedFormContainer } from '@models/signal-form.model';
+import {
+  type SignalFormContainer,
+  type SignalSteppedFormContainer,
+} from '@models/signal-form.model';
 import { SignalFormStepperComponent } from '@renderers/signal-form-stepper/signal-form-stepper.component';
 import { SignalValidators } from '@validators/signal-validators';
 import { withOptionalSignalValidation } from '@validators/validator-fns';
-import { FormBuilder } from 'app/signal-forms/form-builder/builder/form-builder';
 import { model } from '../consts/form.const';
 import { type Basket } from '../models/example.model';
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [SignalFormStepperComponent],
   selector: 'example-signal-form-stepper',
   standalone: true,
-  styleUrl: './example-signal-form-stepper.component.scss',
+  imports: [SignalFormStepperComponent],
   templateUrl: './example-signal-form-stepper.component.html',
+  styleUrl: './example-signal-form-stepper.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExampleSignalFormStepperComponent implements OnInit {
   public steppedForm!: SignalSteppedFormContainer<Basket>;
   public showMessage = signal(false);
+
+  constructor() {}
 
   public ngOnInit(): void {
     this.steppedForm = FormBuilder.createSteppedForm({
@@ -39,7 +44,11 @@ export class ExampleSignalFormStepperComponent implements OnInit {
                 SignalValidators.required(),
                 withOptionalSignalValidation(
                   () => this.steppedForm.getField('pearPrice')?.value,
-                  (applePrice, pearPrice, form) => {
+                  (
+                    applePrice: number,
+                    pearPrice: number | undefined,
+                    form: SignalFormContainer<Basket>,
+                  ) => {
                     if (
                       applePrice < 0 &&
                       (pearPrice ?? 0) < 20 &&
@@ -93,7 +102,7 @@ export class ExampleSignalFormStepperComponent implements OnInit {
           ],
         },
       ],
-      onSave: (value) => this.handleSave(value),
+      onSave: (value: Basket) => this.handleSave(value),
       config: {
         canSkipIncompleteSteps: true,
         disableUponComplete: true,
@@ -101,12 +110,12 @@ export class ExampleSignalFormStepperComponent implements OnInit {
     });
   }
 
+  protected handleAfterSaveHasFinished(): void {
+    this.showMessage.set(true);
+  }
+
   private handleSave(value: Basket): void {
     console.log(this.steppedForm.status());
     console.log(value);
-  }
-
-  protected handleAfterSaveHasFinished(): void {
-    this.showMessage.set(true);
   }
 }

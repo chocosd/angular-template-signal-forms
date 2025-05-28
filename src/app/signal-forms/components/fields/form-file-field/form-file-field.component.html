@@ -1,10 +1,9 @@
 <div
   class="file-upload-dropzone"
   role="button"
-  tabindex="0"
+  [signalModel]="field()"
+  [form]="form()"
   [class.dragging]="isDragging()"
-  [attr.aria-describedby]="ariaDescribedBy()"
-  [attr.aria-invalid]="error() ? 'true' : 'false'"
   (drop)="onDrop($event)"
   (dragover)="onDragOver($event)"
   (dragleave)="onDragLeave()"
@@ -14,21 +13,20 @@
 >
   <div class="upload-icon" aria-hidden="true">☁️</div>
   <div class="upload-text">
-    {{ config()?.uploadText || "Click or drag a file to upload" }}
+    {{ field().config?.uploadText || "Click or drag a file to upload" }}
   </div>
 
-  @if (value()) {
-    <div class="uploaded-file">{{ value()?.name }}</div>
+  @if (field().value()) {
+    <div class="uploaded-file">{{ field().value()?.name }}</div>
   }
 
   <input
     #fileInput
     class="sr-only"
     type="file"
-    [attr.name]="name()"
-    [id]="name()"
-    [accept]="config()?.accept?.join(',')"
-    [disabled]="disabled()"
+    [signalModel]="field()"
+    [form]="form()"
+    [accept]="field().config?.accept?.join(',')"
     (change)="onFileChange($event)"
   />
 

@@ -1,18 +1,16 @@
 <div
   class="form-select-wrapper"
   role="combobox"
-  tabindex="0"
-  [attr.name]="name()"
-  [attr.id]="name()"
+  [signalModel]="field()"
+  [form]="form()"
   [attr.aria-expanded]="showDropdown()"
-  [attr.aria-describedby]="ariaDescribedBy()"
-  [attr.aria-invalid]="error() ? 'true' : 'false'"
-  [attr.aria-owns]="listboxId()"
   (click)="toggleDropdown()"
   (keydown.enter)="toggleDropdown()"
 >
   <div class="form-select-display">
-    {{ displayValue() || (config()?.placeholder ?? "Select an option") }}
+    {{ displayValue() || field().config?.placeholder }}
   </div>
   <div class="form-select-arrow">▾</div>
 </div>
+
+<!-- [attr.aria-describedby]="field().ariaDescribedBy" -->

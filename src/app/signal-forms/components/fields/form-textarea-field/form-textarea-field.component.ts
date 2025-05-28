@@ -1,17 +1,21 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { FormFieldType } from '../../../enums/form-field-type.enum';
+import { SignalModelDirective } from '../../../directives/signal-model.directive';
+import { RuntimeTextAreaSignalField } from '../../../models/signal-field-types.model';
 import { BaseInputDirective } from '../../base/base-input/base-input.directive';
-import { TextFieldConfig } from '../form-text-field/form-text-field.component';
 
 @Component({
   selector: 'signal-form-textarea-field',
-  imports: [],
+  standalone: true,
+  imports: [SignalModelDirective],
   templateUrl: './form-textarea-field.component.html',
   styleUrl: './form-textarea-field.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FormTextareaFieldComponent extends BaseInputDirective<
-  FormFieldType.TEXTAREA,
-  string,
-  TextFieldConfig
+export class FormTextareaFieldComponent<
+  TModel extends object,
+  K extends keyof TModel = keyof TModel,
+> extends BaseInputDirective<
+  RuntimeTextAreaSignalField<TModel, K>,
+  TModel,
+  K
 > {}

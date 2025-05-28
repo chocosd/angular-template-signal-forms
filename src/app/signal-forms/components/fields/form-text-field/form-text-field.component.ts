@@ -1,21 +1,16 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { FormFieldType } from '../../../enums/form-field-type.enum';
+import { SignalModelDirective } from '../../../directives/signal-model.directive';
+import { RuntimeTextSignalField } from '../../../models/signal-field-types.model';
 import { BaseInputDirective } from '../../base/base-input/base-input.directive';
-
-export interface TextFieldConfig {
-  placeholder?: string;
-  minLength?: number;
-  maxLength?: number;
-}
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'signal-form-text-field',
   standalone: true,
+  imports: [SignalModelDirective],
   templateUrl: 'form-text-field.component.html',
 })
-export class FormTextFieldComponent extends BaseInputDirective<
-  FormFieldType.TEXT,
-  string,
-  TextFieldConfig
-> {}
+export class FormTextFieldComponent<
+  TModel extends object,
+  K extends keyof TModel = keyof TModel,
+> extends BaseInputDirective<RuntimeTextSignalField<TModel, K>, TModel, K> {}

@@ -8,16 +8,14 @@
     type="text"
     role="combobox"
     aria-autocomplete="list"
+    [signalModel]="field()"
+    [form]="form()"
     [attr.aria-expanded]="showDropdown()"
-    [attr.aria-controls]="listboxId()"
-    [attr.aria-describedby]="ariaDescribedBy()"
-    [attr.aria-invalid]="error() ? 'true' : 'false'"
-    [attr.name]="name()"
-    [id]="name()"
-    [value]="value()?.label ?? ''"
+    [value]="field().value()?.label ?? ''"
     (input)="search.set($event.target.value)"
     (focus)="handleFocus()"
-    (change)="handleBlur()"
-    (blur)="handleBlur()"
   />
 </div>
+
+<!-- (change)="handleBlur()"
+  (blur)="handleBlur()" -->

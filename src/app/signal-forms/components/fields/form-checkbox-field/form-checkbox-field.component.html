@@ -1,15 +1,10 @@
-<label class="form-checkbox-wrapper" [attr.for]="name()">
+<label class="form-checkbox-wrapper" [attr.for]="field().name">
   <input
     class="checkbox"
     type="checkbox"
-    [id]="name()"
-    [attr.name]="name()"
-    [attr.aria-describedby]="ariaDescribedBy()"
-    [attr.aria-invalid]="error() ? 'true' : 'false'"
-    [disabled]="disabled()"
-    [checked]="value()"
-    (change)="handleInput($event)"
-    (blur)="handleBlur()"
+    [signalModel]="field()"
+    [form]="form()"
+    [checked]="field().value()"
   />
-  <span class="form-checkbox-label">{{ label() }}</span>
+  <span class="form-checkbox-label">{{ field().label }}</span>
 </label>
