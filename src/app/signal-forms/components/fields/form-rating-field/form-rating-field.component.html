@@ -1,19 +1,14 @@
-<div
-  class="form-rating"
-  role="radiogroup"
-  [signalModel]="field()"
-  [form]="form()"
->
+<div class="form-rating" role="radiogroup" [signalModel]="field()">
   <div class="rating-stars">
-    @for (index of stars(); track index) {
+    @for (star of stars(); track star) {
       <button
         class="star"
         type="button"
         role="radio"
-        [attr.aria-checked]="field().value() === index + 1"
-        [attr.aria-label]="'Rate ' + (index + 1) + ' star'"
-        [class.filled]="field().value() >= index + 1"
-        (click)="setRating(index + 1)"
+        [class.filled]="field().value() >= star"
+        [attr.aria-label]="'Rate ' + star + ' star'"
+        [attr.aria-checked]="field().value() === star"
+        (click)="setRating(star)"
       >
         ★
       </button>

@@ -1,6 +1,6 @@
 import { CurrencyType } from '../enums/currency-type.enum';
 import { FormFieldType } from '../enums/form-field-type.enum';
-import { DynamicOptions, FormOption } from './signal-form.model';
+import { type ValidationConfig } from './signal-form.model';
 
 /**
  * this config is extended on every other config type
@@ -8,6 +8,7 @@ import { DynamicOptions, FormOption } from './signal-form.model';
 export interface BaseFieldConfig<TModel, K extends keyof TModel> {
   placeholder?: string;
   hint?: string;
+  validation?: ValidationConfig;
 }
 
 export interface TextFieldConfig<TModel, K extends keyof TModel>
@@ -58,16 +59,10 @@ export interface FileFieldConfig<TModel, K extends keyof TModel>
 }
 export interface RatingFieldConfig<TModel, K extends keyof TModel>
   extends BaseFieldConfig<TModel, K> {
+  min?: number;
   max?: number;
   allowHalf?: boolean;
 }
-export interface MaskedFieldConfig<TModel, K extends keyof TModel>
-  extends BaseFieldConfig<TModel, K> {
-  mask: string; // e.g., "(999) 999-9999"
-  placeholderChar?: string; // e.g, "_"
-  numericOnly?: boolean;
-}
-
 export interface TextAreaFieldConfig<TModel, K extends keyof TModel>
   extends BaseFieldConfig<TModel, K> {}
 export interface PasswordFieldConfig<TModel, K extends keyof TModel>
@@ -75,8 +70,6 @@ export interface PasswordFieldConfig<TModel, K extends keyof TModel>
 export interface RadioFieldConfig<TModel, K extends keyof TModel>
   extends BaseFieldConfig<TModel, K> {
   valueType?: 'number' | 'boolean' | 'string';
-  options: FormOption[];
-  dynamicOptions?: DynamicOptions<TModel, K>;
 }
 export interface MultiSelectFieldConfig<TModel, K extends keyof TModel>
   extends BaseFieldConfig<TModel, K> {}
@@ -130,12 +123,10 @@ export type ConfigTypeForField<
                             ? FileFieldConfig<TModel, K>
                             : T extends FormFieldType.RATING
                               ? RatingFieldConfig<TModel, K>
-                              : T extends FormFieldType.MASKED
-                                ? MaskedFieldConfig<TModel, K>
-                                : T extends FormFieldType.MULTISELECT
-                                  ? MultiSelectFieldConfig<TModel, K>
-                                  : T extends FormFieldType.CHIPLIST
-                                    ? ChipListFieldConfig<TModel, K>
-                                    : T extends FormFieldType.REPEATABLE_GROUP
-                                      ? RepeatableGroupFieldConfig<TModel, K>
-                                      : never;
+                              : T extends FormFieldType.MULTISELECT
+                                ? MultiSelectFieldConfig<TModel, K>
+                                : T extends FormFieldType.CHIPLIST
+                                  ? ChipListFieldConfig<TModel, K>
+                                  : T extends FormFieldType.REPEATABLE_GROUP
+                                    ? RepeatableGroupFieldConfig<TModel, K>
+                                    : never;

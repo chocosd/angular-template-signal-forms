@@ -14,4 +14,11 @@ import { type RuntimeRadioSignalField } from '@models/signal-field-types.model';
 export class FormRadioFieldComponent<
   TModel extends object,
   K extends keyof TModel = keyof TModel,
-> extends BaseInputDirective<RuntimeRadioSignalField<TModel, K>, TModel, K> {}
+> extends BaseInputDirective<RuntimeRadioSignalField<TModel, K>, TModel, K> {
+  /**
+   * Convert option value to string for radio input value attribute
+   */
+  valueToString(value: TModel[K]): string {
+    return String(value);
+  }
+}

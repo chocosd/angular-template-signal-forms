@@ -45,13 +45,7 @@ export class SignalFormFieldsComponent<TModel> {
   protected readonly formFieldType = FormFieldType;
 
   protected visibleFields = computed<SignalFormField<TModel>[] | undefined>(
-    () =>
-      this.fields().filter((f) => {
-        const hidden = f.hidden;
-        return !(typeof hidden === 'function'
-          ? hidden(this.form()!)
-          : !!hidden);
-      }),
+    () => this.fields().filter((f) => !f.isHidden?.()),
   );
 
   private isGridAreaConfig(

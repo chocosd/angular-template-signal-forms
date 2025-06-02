@@ -27,7 +27,7 @@ export class FormSelectFieldComponent<
   TModel extends object,
   K extends keyof TModel = keyof TModel,
 > extends BaseInputDirective<RuntimeSelectSignalField<TModel, K>, TModel, K> {
-  protected showDropdown = signal(false);
+  public showDropdown = signal(false);
   protected displayText = computed(() => this.displayValue());
 
   private readonly dropdownService = inject(FormDropdownService);

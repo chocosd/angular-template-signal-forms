@@ -15,9 +15,14 @@ export class FormRatingFieldComponent<
   TModel extends object,
   K extends keyof TModel = keyof TModel,
 > extends BaseInputDirective<RuntimeRatingSignalField<TModel, K>, TModel, K> {
-  protected stars = computed(() =>
-    Array.from({ length: this.field().config?.max ?? 5 }, (_, i) => i + 1),
-  );
+  protected minValue = computed(() => this.field().config?.min ?? 1);
+  protected maxValue = computed(() => this.field().config?.max ?? 5);
+
+  protected stars = computed(() => {
+    const min = this.minValue();
+    const max = this.maxValue();
+    return Array.from({ length: max - min + 1 }, (_, i) => min + i);
+  });
 
   public setRating(star: number): void {
     this.setValue(star as TModel[K]);

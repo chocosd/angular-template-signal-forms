@@ -2,7 +2,6 @@
   class="file-upload-dropzone"
   role="button"
   [signalModel]="field()"
-  [form]="form()"
   [class.dragging]="isDragging()"
   (drop)="onDrop($event)"
   (dragover)="onDragOver($event)"
@@ -25,8 +24,6 @@
     class="sr-only"
     type="file"
     [signalModel]="field()"
-    [form]="form()"
-    [accept]="field().config?.accept?.join(',')"
     (change)="onFileChange($event)"
   />
 

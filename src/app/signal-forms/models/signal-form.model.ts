@@ -15,15 +15,36 @@ export type SignalValidatorFn<T, TModel> = (
   form: SignalFormContainer<TModel>,
 ) => string | null;
 
+export type SignalAsyncValidatorFn<T, TModel> = (
+  value: T,
+  form: SignalFormContainer<TModel>,
+) => Observable<string | null> | Promise<string | null>;
+
 export type SignalValidator<TModel, TKey extends keyof TModel> =
   | MetaValidatorFn<TModel[TKey], TModel>
   | SignalValidatorFn<TModel[TKey], TModel>;
 
-export type DynamicOptions<TModel, K extends keyof TModel> = (
-  form: SignalFormContainer<TModel>,
-  options: FormOption[],
-  currentValue: TModel[K],
-) => FormOption[];
+export type SignalAsyncValidator<
+  TModel,
+  TKey extends keyof TModel,
+> = SignalAsyncValidatorFn<TModel[TKey], TModel>;
+
+export type ValidationTrigger = 'change' | 'blur' | 'submit';
+
+export interface ValidationConfig {
+  trigger?: ValidationTrigger;
+  debounceMs?: number;
+  validateAsyncOnInit?: boolean;
+}
+
+export type ComputedOptions<TModel> = {
+  source: (form: SignalFormContainer<TModel>) => any;
+  filterFn: (
+    sourceValue: any,
+    options: FormOption[],
+    currentValue: any,
+  ) => FormOption[];
+};
 
 type IsPlainObject<T> = T extends object
   ? T extends (...args: any[]) => any
@@ -45,6 +66,8 @@ export type BaseFieldConfig<TModel, K extends keyof TModel> = {
   name: K;
   label: string;
   validators?: SignalValidator<TModel, K>[];
+  asyncValidators?: SignalAsyncValidator<TModel, K>[];
+  validationConfig?: ValidationConfig;
   computedValue?: (form: SignalFormContainer<TModel>) => TModel[K];
   hidden?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
   disabled?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
@@ -90,8 +113,7 @@ export type SelectSignalField<TModel, K extends keyof TModel> = BaseFieldConfig<
   type: FormFieldType.SELECT;
   config?: ConfigTypeForField<FormFieldType.SELECT>;
   options: FormOption[];
-  dynamicOptions?: DynamicOptions<TModel, K>;
-  computedOptions?: (form: SignalFormContainer<TModel>) => FormOption[];
+  computedOptions?: ComputedOptions<TModel>;
 };
 
 export type CheckboxSignalField<
@@ -101,7 +123,7 @@ export type CheckboxSignalField<
   type: FormFieldType.CHECKBOX;
   config?: ConfigTypeForField<FormFieldType.CHECKBOX>;
   options: FormOption[];
-  dynamicOptions?: DynamicOptions<TModel, K>;
+  computedOptions?: ComputedOptions<TModel>;
 };
 
 export type CheckboxGroupSignalField<
@@ -111,7 +133,7 @@ export type CheckboxGroupSignalField<
   type: FormFieldType.CHECKBOX_GROUP;
   config?: ConfigTypeForField<FormFieldType.CHECKBOX_GROUP>;
   options: FormOption[];
-  dynamicOptions?: DynamicOptions<TModel, K>;
+  computedOptions?: ComputedOptions<TModel>;
   valueType?: 'array' | 'map';
 };
 
@@ -130,7 +152,7 @@ export type RadioSignalField<TModel, K extends keyof TModel> = BaseFieldConfig<
   type: FormFieldType.RADIO;
   config?: ConfigTypeForField<FormFieldType.RADIO>;
   options: FormOption[];
-  dynamicOptions?: DynamicOptions<TModel, K>;
+  computedOptions?: ComputedOptions<TModel>;
 };
 
 export type LoadOptionsFn = (
@@ -186,14 +208,6 @@ export type RatingSignalField<TModel, K extends keyof TModel> = BaseFieldConfig<
   config?: ConfigTypeForField<FormFieldType.RATING>;
 };
 
-export type MaskedSignalField<TModel, K extends keyof TModel> = BaseFieldConfig<
-  TModel,
-  K
-> & {
-  type: FormFieldType.MASKED;
-  config?: ConfigTypeForField<FormFieldType.MASKED>;
-};
-
 export type MultiSelectSignalField<
   TModel,
   K extends keyof TModel,
@@ -201,7 +215,7 @@ export type MultiSelectSignalField<
   type: FormFieldType.MULTISELECT;
   config?: ConfigTypeForField<FormFieldType.MULTISELECT>;
   options: FormOption[];
-  dynamicOptions?: DynamicOptions<TModel, K>;
+  computedOptions?: ComputedOptions<TModel>;
 };
 
 export type ChipListSignalField<
@@ -211,7 +225,7 @@ export type ChipListSignalField<
   type: FormFieldType.CHIPLIST;
   config?: ConfigTypeForField<FormFieldType.CHIPLIST>;
   options: FormOption[];
-  dynamicOptions?: DynamicOptions<TModel, K>;
+  computedOptions?: ComputedOptions<TModel>;
 };
 
 // Update the FieldConfig union type to include all field types
@@ -231,13 +245,14 @@ export type SignalField<TModel, K extends keyof TModel> =
   | SliderSignalField<TModel, K>
   | FileSignalField<TModel, K>
   | RatingSignalField<TModel, K>
-  | MaskedSignalField<TModel, K>
   | MultiSelectSignalField<TModel, K>
   | ChipListSignalField<TModel, K>;
 
 // ========== Runtime Field State ==========
 export type BaseFieldState<TModel, TValue> = {
   error: WritableSignal<string | null>;
+  asyncError: WritableSignal<string | null>;
+  validating: WritableSignal<boolean>;
   touched: WritableSignal<boolean>;
   dirty: WritableSignal<boolean>;
   focus: WritableSignal<boolean>;
@@ -429,12 +444,10 @@ export type ElementTypeForField<T extends FormFieldType> =
                             ? HTMLInputElement
                             : T extends FormFieldType.RATING
                               ? HTMLInputElement
-                              : T extends FormFieldType.MASKED
-                                ? HTMLInputElement
-                                : T extends FormFieldType.MULTISELECT
-                                  ? HTMLSelectElement
-                                  : T extends FormFieldType.CHIPLIST
+                              : T extends FormFieldType.MULTISELECT
+                                ? HTMLSelectElement
+                                : T extends FormFieldType.CHIPLIST
+                                  ? HTMLInputElement
+                                  : T extends FormFieldType.AUTOCOMPLETE
                                     ? HTMLInputElement
-                                    : T extends FormFieldType.AUTOCOMPLETE
-                                      ? HTMLInputElement
-                                      : never;
+                                    : never;

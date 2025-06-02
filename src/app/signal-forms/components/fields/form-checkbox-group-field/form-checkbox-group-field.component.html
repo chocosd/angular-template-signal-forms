@@ -1,8 +1,7 @@
 <fieldset
   class="form-checkbox-group"
   [ngClass]="layoutClass()"
-  [signalModel]="field()"
-  [form]="form()"
+  [attr.aria-invalid]="field().error() ? 'true' : 'false'"
   role="group"
 >
   <legend class="sr-only">{{ field().label }}</legend>

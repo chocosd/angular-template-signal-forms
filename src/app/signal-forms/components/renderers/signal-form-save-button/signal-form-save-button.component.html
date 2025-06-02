@@ -5,7 +5,13 @@
     </button>
   }
 
-  <button type="submit" [disabled]="!form().anyTouched()" class="form-button">
+  <button
+    type="submit"
+    [disabled]="!form().anyTouched()"
+    [class.saved]="form().hasSaved()"
+    class="form-button"
+    (click)="save()"
+  >
     {{ submitButtonText() }}
   </button>
 </section>

@@ -46,9 +46,7 @@ export class FieldRoleAttributesService {
         'aria-describedby': field.error() ? `${name}-error` : null,
       },
       inputAttributes: {
-        id: name,
-        name,
-        disabled: field.isDisabled(),
+        disabled: field.isDisabled() ? true : null,
         placeholder: field.config?.placeholder ?? null,
       },
     };
@@ -61,21 +59,7 @@ export class FieldRoleAttributesService {
     const name = String(field.name);
     switch (field.type) {
       case FormFieldType.SELECT:
-      case FormFieldType.MULTISELECT:
       case FormFieldType.AUTOCOMPLETE:
-        console.log('Getting attributes for', field.type, {
-          name,
-          field,
-          attributes: {
-            role: 'combobox',
-            ariaAttributes: {
-              'aria-owns': `${name}-listbox`,
-              'aria-controls': `${name}-listbox`,
-              'aria-haspopup': 'listbox',
-            },
-            inputAttributes: {},
-          },
-        });
         return {
           role: 'combobox',
           ariaAttributes: {
@@ -105,13 +89,26 @@ export class FieldRoleAttributesService {
         };
 
       case FormFieldType.SWITCH:
+        const fieldValue = field.value();
+        let ariaChecked: string | null = null;
+
+        if (fieldValue === null || fieldValue === undefined) {
+          ariaChecked = null;
+        } else if (typeof fieldValue === 'boolean') {
+          ariaChecked = fieldValue ? 'true' : 'false';
+        } else if (fieldValue) {
+          ariaChecked = String(fieldValue);
+        } else {
+          ariaChecked = String(fieldValue);
+        }
+
         return {
           role: 'switch',
           ariaAttributes: {
-            'aria-checked': field.value() ? 'true' : 'false',
+            'aria-checked': ariaChecked,
           },
           inputAttributes: {
-            checked: Boolean(field.value()),
+            checked: Boolean(fieldValue),
           },
         };
 
@@ -139,7 +136,14 @@ export class FieldRoleAttributesService {
         return {
           role: 'radiogroup',
           ariaAttributes: {
-            'aria-orientation': 'horizontal',
+            'aria-valuemin': '0',
+            'aria-valuemax': field.config?.max?.toString() ?? '5',
+            'aria-valuenow': field.value()?.toString() ?? '0',
+            'aria-label': field.label,
+            'aria-invalid': field.error() ? 'true' : 'false',
+            'aria-describedby': field.error()
+              ? `error-${String(field.name)}`
+              : `hint-${String(field.name)}`,
           },
           inputAttributes: {},
         };
@@ -160,6 +164,16 @@ export class FieldRoleAttributesService {
           },
         };
 
+      case FormFieldType.MULTISELECT:
+        return {
+          role: 'listbox',
+          ariaAttributes: {
+            'aria-label': field.label,
+            'aria-multiselectable': 'true',
+          },
+          inputAttributes: {},
+        };
+
       default:
         return {
           ariaAttributes: {},
@@ -173,14 +187,6 @@ export class FieldRoleAttributesService {
     K extends keyof TModel,
   >(field: SignalFormField<TModel, K>): RoleAttributes {
     switch (field.type) {
-      case FormFieldType.MASKED:
-        return {
-          ariaAttributes: {},
-          inputAttributes: {
-            inputmode: field.config?.numericOnly ? 'numeric' : 'text',
-          },
-        };
-
       case FormFieldType.PASSWORD:
         return {
           ariaAttributes: {

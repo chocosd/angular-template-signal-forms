@@ -3,7 +3,6 @@
   #multiselectWrapper
   role="combobox"
   [signalModel]="field()"
-  [form]="form()"
   [attr.aria-expanded]="showDropdown()"
   [attr.aria-multiselectable]="true"
   [attr.aria-haspopup]="'listbox'"
@@ -23,7 +22,7 @@
           class="remove-btn"
           (click)="removeChip(item); $event.stopPropagation()"
           (keydown.enter)="removeChip(item)"
-          aria-label="Remove {{ item.label }}"
+          [attr.aria-label]="'Remove ' + item.label"
         >
           ×
         </button>

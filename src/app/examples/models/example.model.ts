@@ -23,6 +23,18 @@ export type Basket = {
     rating: number;
     phoneNumber: number | null;
     features: string[];
+    preferences: {
+      theme: string;
+      notifications: {
+        email: boolean;
+        sms: boolean;
+        push: boolean;
+      };
+      privacy: {
+        profileVisible: boolean;
+        dataSharing: boolean;
+      };
+    };
   };
   applePrice: number;
   pearPrice: number;

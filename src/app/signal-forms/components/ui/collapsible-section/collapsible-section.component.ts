@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   input,
   signal,
   TemplateRef,
@@ -33,10 +34,17 @@ export class CollapsibleSectionComponent {
   public summaryTemplateContext? = input<unknown>();
 
   protected collapsing = signal(false);
-  protected collapsed = signal(this.collapsedInitially());
+  protected collapsed = signal(false);
 
   protected readonly chevronDown = ChevronDownCircleIcon;
   protected readonly chevronUp = ChevronUpCircleIcon;
+
+  constructor() {
+    // Initialize collapsed state from input
+    effect(() => {
+      this.collapsed.set(this.collapsedInitially());
+    });
+  }
 
   protected toggle(): void {
     if (!this.collapsed()) {

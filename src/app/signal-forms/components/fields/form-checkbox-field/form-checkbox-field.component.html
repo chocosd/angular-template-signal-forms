@@ -1,10 +1,4 @@
 <label class="form-checkbox-wrapper" [attr.for]="field().name">
-  <input
-    class="checkbox"
-    type="checkbox"
-    [signalModel]="field()"
-    [form]="form()"
-    [checked]="field().value()"
-  />
+  <input class="checkbox" type="checkbox" [signalModel]="field()" />
   <span class="form-checkbox-label">{{ field().label }}</span>
 </label>

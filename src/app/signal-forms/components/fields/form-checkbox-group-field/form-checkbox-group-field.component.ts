@@ -1,14 +1,13 @@
 import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
 import { BaseInputDirective } from '@base/base-input/base-input.directive';
-import { SignalModelDirective } from '../../../directives/signal-model.directive';
 import { RuntimeCheckboxGroupSignalField } from '../../../models/signal-field-types.model';
 import { FormOption } from '../../../models/signal-form.model';
 
 @Component({
   selector: 'signal-form-checkbox-group-field',
   standalone: true,
-  imports: [NgClass, SignalModelDirective],
+  imports: [NgClass],
   templateUrl: './form-checkbox-group-field.component.html',
   styleUrl: './form-checkbox-group-field.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

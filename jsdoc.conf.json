@@ -1,0 +1,16 @@
+{
+  "source": {
+    "include": ["./src/app/signal-forms/"],
+    "includePattern": "\\.(js|ts)$",
+    "exclude": ["node_modules/", "dist/", "*.spec.ts", "*.test.ts"]
+  },
+  "opts": {
+    "destination": "./docs/",
+    "recurse": true
+  },
+  "plugins": ["plugins/markdown"],
+  "templates": {
+    "cleverLinks": false,
+    "monospaceLinks": false
+  }
+}

@@ -1,13 +1,7 @@
 <div class="color-field-wrapper">
   @if (isSwatchOnly()) {
     <label class="color-swatch">
-      <input
-        type="color"
-        class="sr-only"
-        [signalModel]="field()"
-        [form]="form()"
-        [value]="currentColor()"
-      />
+      <input type="color" class="sr-only" [signalModel]="field()" />
       <span
         class="swatch-display"
         [style.background]="currentColor()"
@@ -16,15 +10,8 @@
     </label>
   } @else {
     <div class="color-picker-full">
-      <input
-        type="color"
-        class="color-input"
-        [signalModel]="field()"
-        [form]="form()"
-        [value]="currentColor()"
-      />
+      <input type="color" class="color-input" [signalModel]="field()" />
 
-      <!-- This is a temporary input for hex value editing -->
       <input
         type="text"
         class="hex-input"

@@ -1,0 +1,69 @@
+<div class="form-control" [attr.data-form-field]="name()">
+  @if (!isCheckbox()) {
+    <div class="skeleton-label"></div>
+  }
+
+  @switch (skeletonType()) {
+    @case ("input") {
+      <div class="skeleton-input"></div>
+    }
+    @case ("textarea") {
+      <div class="skeleton-textarea"></div>
+    }
+    @case ("select") {
+      <div class="skeleton-select">
+        <div class="skeleton-select-arrow"></div>
+      </div>
+    }
+    @case ("checkbox") {
+      <div class="skeleton-checkbox-wrapper">
+        <div class="skeleton-checkbox"></div>
+        <div class="skeleton-checkbox-label"></div>
+      </div>
+    }
+    @case ("radio-group") {
+      <div class="skeleton-radio-group">
+        @for (i of [1, 2, 3]; track i) {
+          <div class="skeleton-radio-option">
+            <div class="skeleton-radio"></div>
+            <div class="skeleton-radio-label"></div>
+          </div>
+        }
+      </div>
+    }
+    @case ("multiselect") {
+      <div class="skeleton-multiselect">
+        <div class="skeleton-chip-container">
+          @for (i of [1, 2]; track i) {
+            <div class="skeleton-chip"></div>
+          }
+        </div>
+      </div>
+    }
+    @case ("rating") {
+      <div class="skeleton-rating">
+        @for (i of [1, 2, 3, 4, 5]; track i) {
+          <div class="skeleton-star"></div>
+        }
+      </div>
+    }
+    @case ("slider") {
+      <div class="skeleton-slider">
+        <div class="skeleton-slider-track">
+          <div class="skeleton-slider-thumb"></div>
+        </div>
+      </div>
+    }
+    @case ("file") {
+      <div class="skeleton-file-upload">
+        <div class="skeleton-upload-icon"></div>
+        <div class="skeleton-upload-text"></div>
+      </div>
+    }
+    @default {
+      <div class="skeleton-input"></div>
+    }
+  }
+
+  <div class="skeleton-hint"></div>
+</div>

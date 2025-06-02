@@ -11,10 +11,8 @@
       <input
         type="radio"
         [signalModel]="field()"
-        [form]="form()"
-        [name]="field().name"
-        [value]="option.value"
-        [checked]="field().value() === option.value"
+        [value]="valueToString(option.value)"
+        [attr.name]="field().name"
       />
       {{ option.label }}
     </label>

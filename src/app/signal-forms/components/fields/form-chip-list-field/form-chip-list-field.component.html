@@ -2,7 +2,6 @@
   class="chip-option-list"
   role="group"
   [signalModel]="field()"
-  [form]="form()"
   [attr.aria-labelledby]="field().name + '-label'"
 >
   @for (option of field().options(); track option.value) {
@@ -10,9 +9,8 @@
       class="chip-option"
       role="checkbox"
       tabindex="0"
-      [attr.aria-checked]="isSelected(option)"
-      [attr.aria-label]="option.label"
       [class.selected]="isSelected(option)"
+      [attr.aria-checked]="isSelected(option)"
       (click)="toggleOption(option)"
       (keydown.enter)="toggleOption(option)"
       (keydown.space)="toggleOption(option); $event.preventDefault()"
