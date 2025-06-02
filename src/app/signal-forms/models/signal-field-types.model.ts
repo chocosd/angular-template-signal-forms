@@ -1,25 +1,24 @@
 import { Signal } from '@angular/core';
 import {
-  AutocompleteSignalField,
-  BaseFieldState,
-  CheckboxGroupSignalField,
-  CheckboxSignalField,
-  ChipListSignalField,
-  ColorSignalField,
-  DateTimeSignalField,
-  FileSignalField,
-  FormOption,
-  MaskedSignalField,
-  MultiSelectSignalField,
-  NumberSignalField,
-  PasswordSignalField,
-  RadioSignalField,
-  RatingSignalField,
-  SelectSignalField,
-  SliderSignalField,
-  SwitchSignalField,
-  TextareaSignalField,
-  TextSignalField,
+  type AutocompleteSignalField,
+  type BaseFieldState,
+  type CheckboxGroupSignalField,
+  type CheckboxSignalField,
+  type ChipListSignalField,
+  type ColorSignalField,
+  type DateTimeSignalField,
+  type FileSignalField,
+  type FormOption,
+  type MultiSelectSignalField,
+  type NumberSignalField,
+  type PasswordSignalField,
+  type RadioSignalField,
+  type RatingSignalField,
+  type SelectSignalField,
+  type SliderSignalField,
+  type SwitchSignalField,
+  type TextareaSignalField,
+  type TextSignalField,
 } from './signal-form.model';
 
 export type RuntimeTextSignalField<
@@ -44,7 +43,7 @@ export type RuntimeRadioSignalField<
   TModel extends object,
   K extends keyof TModel,
 > = Omit<RadioSignalField<TModel, K>, 'options'> &
-  BaseFieldState<TModel, FormOption<TModel[K]>> & {
+  BaseFieldState<TModel, TModel[K]> & {
     options: Signal<FormOption<TModel[K]>[]>;
   };
 
@@ -110,11 +109,6 @@ export type RuntimeRatingSignalField<
   K extends keyof TModel,
 > = RatingSignalField<TModel, K> & BaseFieldState<TModel, number>;
 
-export type RuntimeMaskedSignalField<
-  TModel extends object,
-  K extends keyof TModel,
-> = MaskedSignalField<TModel, K> & BaseFieldState<TModel, string>;
-
 export type RuntimeMultiSelectSignalField<
   TModel extends object,
   K extends keyof TModel,
@@ -147,6 +141,5 @@ export type RuntimeFields<TModel extends object, K extends keyof TModel> =
   | RuntimeSliderSignalField<TModel, K>
   | RuntimeFileSignalField<TModel, K>
   | RuntimeRatingSignalField<TModel, K>
-  | RuntimeMaskedSignalField<TModel, K>
   | RuntimeMultiSelectSignalField<TModel, K>
   | RuntimeChipListSignalField<TModel, K>;

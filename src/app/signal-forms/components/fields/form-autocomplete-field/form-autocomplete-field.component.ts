@@ -112,11 +112,8 @@ export class FormAutocompleteFieldComponent<
   protected handleFocus(): void {
     const query = this.lastQuery();
     if (!!query && this.cachedOptions().length) {
-      console.log(query);
-      console.log(this.cachedOptions());
       this.showDropdown.set(true);
       this.loadedOptions.set(this.cachedOptions());
-      console.log(this.showDropdown(), this.loadedOptions());
     }
   }
 

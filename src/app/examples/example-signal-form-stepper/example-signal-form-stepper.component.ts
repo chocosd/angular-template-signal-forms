@@ -115,7 +115,6 @@ export class ExampleSignalFormStepperComponent implements OnInit {
   }
 
   private handleSave(value: Basket): void {
-    console.log(this.steppedForm.status());
     console.log(value);
   }
 }

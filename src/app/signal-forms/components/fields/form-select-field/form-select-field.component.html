@@ -2,7 +2,6 @@
   class="form-select-wrapper"
   role="combobox"
   [signalModel]="field()"
-  [form]="form()"
   [attr.aria-expanded]="showDropdown()"
   (click)="toggleDropdown()"
   (keydown.enter)="toggleDropdown()"
@@ -12,5 +11,3 @@
   </div>
   <div class="form-select-arrow">▾</div>
 </div>
-
-<!-- [attr.aria-describedby]="field().ariaDescribedBy" -->

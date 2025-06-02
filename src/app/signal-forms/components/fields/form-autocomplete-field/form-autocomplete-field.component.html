@@ -9,13 +9,8 @@
     role="combobox"
     aria-autocomplete="list"
     [signalModel]="field()"
-    [form]="form()"
-    [attr.aria-expanded]="showDropdown()"
     [value]="field().value()?.label ?? ''"
     (input)="search.set($event.target.value)"
     (focus)="handleFocus()"
   />
 </div>
-
-<!-- (change)="handleBlur()"
-  (blur)="handleBlur()" -->

@@ -6,7 +6,6 @@ export enum FormFieldType {
   COLOR = 'color',
   DATETIME = 'datetime',
   FILE = 'file',
-  MASKED = 'masked',
   MULTISELECT = 'multiselect',
   NUMBER = 'number',
   PASSWORD = 'password',

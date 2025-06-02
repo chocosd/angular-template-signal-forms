@@ -1,6 +1,7 @@
 import {
   ApplicationRef,
   ComponentRef,
+  inject,
   Injectable,
   Injector,
   ViewContainerRef,
@@ -46,10 +47,8 @@ type DropdownConfig<
 export class FormDropdownService {
   private dropdownRef?: ComponentRef<FormDropdownOverlayComponent>;
 
-  constructor(
-    private readonly appRef: ApplicationRef,
-    private readonly injector: Injector,
-  ) {}
+  private readonly appRef = inject(ApplicationRef);
+  private readonly injector = inject(Injector);
 
   public openDropdown<
     TOption extends FormOption<TValue>,

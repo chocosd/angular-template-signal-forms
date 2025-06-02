@@ -1,16 +1,4 @@
 <div class="slider-wrapper">
-  <input
-    type="range"
-    class="slider"
-    [signalModel]="field()"
-    [form]="form()"
-    [min]="field().config?.min ?? 0"
-    [max]="field().config?.max ?? 100"
-    [step]="field().config?.step ?? 1"
-    [value]="field().value()"
-    [attr.aria-valuemin]="field().config?.min ?? 0"
-    [attr.aria-valuemax]="field().config?.max ?? 100"
-    [attr.aria-valuenow]="field().value()"
-  />
+  <input type="range" class="slider" [signalModel]="field()" />
   {{ field().value() }}
 </div>

@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -5,6 +6,7 @@ import {
   effect,
   ElementRef,
   HostBinding,
+  inject,
   Injector,
   input,
   Renderer2,
@@ -20,7 +22,6 @@ import { FormChipListFieldComponent } from '@fields/form-chip-list-field/form-ch
 import { FormColorFieldComponent } from '@fields/form-color-field/form-color-field.component';
 import { FormDatetimeFieldComponent } from '@fields/form-datetime-field/form-datetime-field.component';
 import { FormFileFieldComponent } from '@fields/form-file-field/form-file-field.component';
-import { FormMaskedFieldComponent } from '@fields/form-masked-field/form-masked-field.component';
 import { FormMultiselectFieldComponent } from '@fields/form-multiselect-field/form-multiselect-field.component';
 import { FormNumberFieldComponent } from '@fields/form-number-field/form-number-field.component';
 import { FormPasswordFieldComponent } from '@fields/form-password-field/form-password-field.component';
@@ -35,31 +36,34 @@ import {
   type SignalFormContainer,
   type SignalFormField,
 } from '@models/signal-form.model';
-import { isRequired } from 'app/signal-forms/helpers/is-required';
+import { ValidationService } from '@services/validation.service';
+import { FormFieldSkeletonMapperComponent } from '@ui/skeletons/form-field-skeleton-mapper.component';
+import { isRequired } from '../../../helpers/is-required';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   selector: 'signal-form-input-item',
   imports: [
+    CommonModule,
     FormAutocompleteFieldComponent,
-    FormCheckboxFieldComponent,
-    FormDatetimeFieldComponent,
-    FormFileFieldComponent,
-    FormMultiselectFieldComponent,
-    FormNumberFieldComponent,
-    FormPasswordFieldComponent,
-    FormRadioFieldComponent,
-    FormSelectFieldComponent,
     FormTextFieldComponent,
+    FormPasswordFieldComponent,
     FormTextareaFieldComponent,
-    FormColorFieldComponent,
-    FormMaskedFieldComponent,
-    FormChipListFieldComponent,
-    FormRatingFieldComponent,
-    FormSliderFieldComponent,
-    FormSwitchFieldComponent,
+    FormNumberFieldComponent,
+    FormSelectFieldComponent,
+    FormRadioFieldComponent,
+    FormCheckboxFieldComponent,
     FormCheckboxGroupFieldComponent,
+    FormDatetimeFieldComponent,
+    FormColorFieldComponent,
+    FormSwitchFieldComponent,
+    FormSliderFieldComponent,
+    FormFileFieldComponent,
+    FormRatingFieldComponent,
+    FormMultiselectFieldComponent,
+    FormChipListFieldComponent,
+    FormFieldSkeletonMapperComponent,
   ],
   hostDirectives: [SignalFormHostDirective],
   templateUrl: './signal-form-input-item.component.html',
@@ -72,25 +76,8 @@ export class SignalFormInputItemComponent<TModel> {
 
   protected readonly FormFieldType = FormFieldType;
 
-  protected filteredOptions = computed(() => {
-    const field = this.field();
-    const form = this.form();
-
-    if (!('options' in field)) {
-      return [];
-    }
-
-    const options = (field as any).options();
-    const dynamicOptionsFn = (field as any).dynamicOptions;
-
-    if (typeof dynamicOptionsFn !== 'function') {
-      return options;
-    }
-
-    return dynamicOptionsFn(form, options, field.value());
-  });
-
   private initialized = signal(false);
+  private validationService = inject(ValidationService);
 
   protected name = computed(() => {
     if (typeof this.index() === 'number') {
@@ -113,13 +100,33 @@ export class SignalFormInputItemComponent<TModel> {
     this.initializeComputedValueEffect();
     this.initializeFormOptionsEffect();
     this.watchComputedValueEffect();
-    this.validationEffect();
+    this.setupValidation();
     this.focusEffect();
   }
 
   protected isRequired(): boolean {
     return isRequired({ validators: this.field().validators });
   }
+
+  protected hasError = computed(() => {
+    const field = this.field();
+    return this.validationService.getCombinedError(field);
+  });
+
+  protected isValidating = computed(() => {
+    const field = this.field();
+
+    // Check if field has validating property (not all field types have async validation)
+    if (
+      'validating' in field &&
+      typeof (field as any).validating === 'function'
+    ) {
+      return (field as any).validating();
+    }
+
+    // For fields without async validation, they're never validating
+    return false;
+  });
 
   private initializeFormOptionsEffect(): void {}
 
@@ -150,22 +157,14 @@ export class SignalFormInputItemComponent<TModel> {
     );
   }
 
-  private validationEffect(): void {
+  private setupValidation(): void {
     effect(
       () => {
         const field = this.field();
-        const value = field.value() as TModel[keyof TModel];
+        const form = this.form();
 
-        const validators = field.validators ?? [];
-        for (const validator of validators) {
-          const error = validator(value, this.form());
-          if (error) {
-            field.error.set(error);
-            return;
-          }
-        }
-
-        field.error.set(null);
+        // Set up validation for this field
+        this.validationService.setupFieldValidation(field, form);
       },
       { injector: this.injector },
     );

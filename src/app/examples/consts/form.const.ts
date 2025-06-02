@@ -9,7 +9,12 @@ export const model: Basket = {
       value: 'RUS',
     },
     favouritePokemon: null,
-    favouritePokemonTypes: [],
+    favouritePokemonTypes: [
+      {
+        label: 'Water',
+        value: 'water',
+      },
+    ],
     instructions: '',
     expectedDate: new Date(),
     postTo: [
@@ -33,6 +38,18 @@ export const model: Basket = {
     rating: 3,
     phoneNumber: null,
     features: [],
+    preferences: {
+      theme: 'dark',
+      notifications: {
+        email: true,
+        sms: false,
+        push: true,
+      },
+      privacy: {
+        profileVisible: true,
+        dataSharing: false,
+      },
+    },
   },
   apples: null,
   pears: 80,

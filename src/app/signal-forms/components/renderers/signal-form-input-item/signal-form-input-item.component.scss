@@ -1,1 +1,36 @@
+.form-control {
+  &.is-validating {
+    .form-label {
+      opacity: 0.7;
+    }
 
+    input,
+    textarea,
+    select {
+      border-color: #fbbf24; // amber-400
+      background-color: rgba(251, 191, 36, 0.05);
+    }
+  }
+}
+
+.validation-spinner {
+  display: inline-block;
+  margin-left: 0.5rem;
+  animation: spin 1s linear infinite;
+  color: #fbbf24; // amber-400
+}
+
+.form-validating {
+  color: #fbbf24; // amber-400
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

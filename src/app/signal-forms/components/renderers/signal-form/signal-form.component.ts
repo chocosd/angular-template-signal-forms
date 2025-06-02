@@ -30,10 +30,7 @@ export class SignalFormComponent<TModel> {
   protected readonly disabled = computed(() => {
     const anyTouched = this.form().anyTouched();
     const anyDirty = this.form().anyDirty();
-
     const hasError = this.form().getErrors().length;
-
-    console.log(hasError);
 
     return !(anyTouched && anyDirty) || hasError;
   });

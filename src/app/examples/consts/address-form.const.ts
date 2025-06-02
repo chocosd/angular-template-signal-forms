@@ -1,9 +1,6 @@
 import { inject } from '@angular/core';
 import { FormFieldType } from '@enums/form-field-type.enum';
-import {
-  FormOption,
-  SignalFormFieldBuilderInput,
-} from '@models/signal-form.model';
+import { type SignalFormFieldBuilderInput } from '@models/signal-form.model';
 import { TestApiService } from '@services/test-http.service';
 import { map } from 'rxjs';
 import { Basket } from '../models/example.model';
@@ -138,25 +135,24 @@ export const addressForm = (
       label: 'Favourite Pokemon',
       type: FormFieldType.SELECT,
       options: pokemonList,
-      dynamicOptions: (form, options) => {
-        const selectedTypes = form
-          .getField('favouritePokemonTypes')
-          .value() as FormOption[];
+      computedOptions: {
+        source: (form) => form.getField('favouritePokemonTypes').value(),
+        filterFn: (selectedTypes, options, currentValue) => {
+          if (!Array.isArray(selectedTypes) || selectedTypes.length === 0) {
+            return options;
+          }
 
-        if (!Array.isArray(selectedTypes) || selectedTypes.length === 0) {
-          return options;
-        }
-
-        const selectedTypeValues = selectedTypes.map((type) =>
-          String(type.value).toLowerCase(),
-        );
-
-        return (options as typeof pokemonList).filter((opt) => {
-          const types = opt.value.typings.map((t: string) => t.toLowerCase());
-          return selectedTypeValues.every((selected) =>
-            types.includes(selected),
+          const selectedTypeValues = selectedTypes.map((type) =>
+            String(type.value).toLowerCase(),
           );
-        });
+
+          return (options as typeof pokemonList).filter((opt) => {
+            const types = opt.value.typings.map((t: string) => t.toLowerCase());
+            return selectedTypeValues.every((selected) =>
+              types.includes(selected),
+            );
+          });
+        },
       },
     },
     {

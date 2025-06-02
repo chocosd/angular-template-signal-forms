@@ -40,6 +40,8 @@ export class FieldFactory {
     const baseFieldState: BaseFieldState<TModel, TModel[keyof TModel]> = {
       path: referencePath,
       error: signal<string | null>(null),
+      asyncError: signal<string | null>(null),
+      validating: signal<boolean>(false),
       touched: signal<boolean>(false),
       dirty: signal<boolean>(false),
       focus: signal<boolean>(false),
@@ -88,10 +90,30 @@ export class FieldFactory {
 
     // Handle options for fields that support them
     if (this.hasOptions(field)) {
-      baseField = {
-        ...baseField,
-        options: signal(field.options),
-      } as unknown as SignalFormField<TModel>;
+      if (this.hasComputedOptions(field)) {
+        // Create computed options from computedOptions config
+        const fieldWithComputedOptions = field as any;
+        const computedOptionsSignal = computed(() => {
+          const sourceValue =
+            fieldWithComputedOptions.computedOptions.source(formRef);
+          return fieldWithComputedOptions.computedOptions.filterFn(
+            sourceValue,
+            fieldWithComputedOptions.options,
+            baseField.value(),
+          );
+        });
+
+        baseField = {
+          ...baseField,
+          options: computedOptionsSignal,
+        } as unknown as SignalFormField<TModel>;
+      } else {
+        // Use static options
+        baseField = {
+          ...baseField,
+          options: signal(field.options),
+        } as unknown as SignalFormField<TModel>;
+      }
     }
 
     return baseField;
@@ -135,6 +157,14 @@ export class FieldFactory {
     );
   }
 
+  private static hasComputedOptions<TModel>(
+    field: SignalFormFieldBuilderInput<TModel>,
+  ): boolean {
+    return (
+      'computedOptions' in field && (field as any).computedOptions !== undefined
+    );
+  }
+
   private static buildRepeatableGroup<TModel>(
     field: RepeatableGroupBuilderField<TModel, keyof TModel>,
     rawValue: TModel[keyof TModel],
@@ -146,12 +176,13 @@ export class FieldFactory {
     type TItemType = ItemOf<TModel[keyof TModel]>;
 
     const repeatableForms = signal(
-      items.map((item) =>
+      items.map((item, index) =>
         FormBuilder.createForm<TItemType>({
           model: item,
           fields: field.fields,
           config: field.config ?? { layout: 'flex' },
           parentForm: parentForm as unknown as SignalFormContainer<unknown>,
+          parentPath: `${referencePath}[${index}]`,
         }),
       ),
     );
@@ -167,11 +198,14 @@ export class FieldFactory {
       value: computed(() => repeatableForms().map((f) => f.getValue())),
       repeatableForms,
       addItem: (initial = {} as TItemType) => {
+        const currentForms = repeatableForms();
+        const newIndex = currentForms.length;
         const newForm = FormBuilder.createForm<TItemType>({
           model: initial,
           fields: field.fields,
           config: field.config ?? { layout: 'flex' },
           parentForm: parentForm as unknown as SignalFormContainer<unknown>,
+          parentPath: `${referencePath}[${newIndex}]`,
         });
 
         repeatableForms.update((forms) => [...forms, newForm]);
@@ -202,6 +236,7 @@ export class FieldFactory {
       fields: field.fields,
       config: field.config ?? { layout: 'flex' },
       parentForm: parentForm as unknown as SignalFormContainer<unknown>,
+      parentPath: referencePath,
     });
 
     const nestedField = {
