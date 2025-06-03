@@ -3,8 +3,12 @@ import { type LucideIconData } from 'lucide-angular';
 import { Observable } from 'rxjs';
 import { FormFieldType } from '../enums/form-field-type.enum';
 import { FormStatus } from '../enums/form-status.enum';
-import { MetaValidatorFn } from '../helpers/with-meta';
 import { ConfigTypeForField } from './signal-field-configs.model';
+
+export type FieldWithOptions<TModel> = Extract<
+  SignalFormFieldBuilderInput<TModel>,
+  { options: FormOption[] }
+>;
 
 export interface FormOption<
   TResult = string | number | boolean | object,
@@ -51,6 +55,44 @@ export type ComputedOptions<TModel> = {
   ) => FormOption[];
 };
 
+/**
+ * Styling configuration for field components
+ */
+export interface FieldStylingConfig<TModel> {
+  /** Array of CSS classes to apply to the field wrapper */
+  modifierClass?: string[];
+  /**
+   * Function that returns CSS classes for specific field parts based on form state
+   * Return an object with classes for each part, or a string/array for wrapper-only styling
+   */
+  stylesFn?: (
+    field: SignalFormField<TModel>,
+    form: SignalFormContainer<TModel>,
+  ) =>
+    | string
+    | string[]
+    | {
+        wrapper?: string | string[];
+        label?: string | string[];
+        input?: string | string[];
+        error?: string | string[];
+        hint?: string | string[];
+      };
+  /**
+   * Function that returns inline styles for specific field parts based on form state
+   */
+  inlineStylesFn?: (
+    field: SignalFormField<TModel>,
+    form: SignalFormContainer<TModel>,
+  ) => {
+    wrapper?: { [key: string]: string };
+    label?: { [key: string]: string };
+    input?: { [key: string]: string };
+    error?: { [key: string]: string };
+    hint?: { [key: string]: string };
+  };
+}
+
 type IsPlainObject<T> = T extends object
   ? T extends (...args: any[]) => any
     ? false
@@ -77,6 +119,7 @@ export type BaseFieldConfig<TModel, K extends keyof TModel> = {
   hidden?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
   disabled?: boolean | ((form: SignalFormContainer<TModel>) => boolean);
   parser?: (value: string) => TModel[K];
+  styling?: FieldStylingConfig<TModel>;
 };
 
 export type TextSignalField<TModel, K extends keyof TModel> = BaseFieldConfig<
@@ -354,6 +397,7 @@ export type ErrorMessage<TModel> = {
   path: string;
   field?: SignalFormField<unknown>;
   focusField?: () => void;
+  trigger?: ValidationTrigger;
 };
 
 export type DeepPartial<T> = {
@@ -401,6 +445,7 @@ export interface SignalFormContainer<TModel, TParentModel = unknown> {
   config: SignalFormConfig<TModel>;
   patchValue: (partialModel: DeepPartial<TModel>) => void;
   setValue: (model: TModel) => void;
+  saveButtonDisabled: Signal<boolean>;
 }
 
 export interface SignalSteppedFormContainer<TModel> {
@@ -420,6 +465,7 @@ export interface SignalSteppedFormContainer<TModel> {
   anyTouched: Signal<boolean>;
   status: WritableSignal<FormStatus>;
   config?: SignalSteppedFormConfig<TModel>;
+  saveButtonDisabled: Signal<boolean>;
 }
 
 export type ElementTypeForField<T extends FormFieldType> =
@@ -508,4 +554,46 @@ export interface ArrayFormContainer<TModel> {
   anyTouched: () => boolean;
   anyDirty: () => boolean;
   status: () => FormStatus;
+  saveButtonDisabled: () => boolean;
 }
+
+// ========== Form Engine Types ==========
+export type FieldWithForm<TModel> = SignalFormField<TModel> & {
+  form: SignalFormContainer<TModel[keyof TModel]>;
+};
+
+export type RepeatableField<TModel> = SignalFormField<TModel> & {
+  repeatableForms: WritableSignal<SignalFormContainer<any>[]>;
+};
+
+export type CheckboxGroupField<TModel> = SignalFormField<TModel> & {
+  type: FormFieldType.CHECKBOX_GROUP;
+  valueType?: 'array' | 'map';
+};
+
+// ========== Field Traversal Types ==========
+export interface FieldWithFormTraversal<T> {
+  form: SignalFormContainer<T>;
+}
+
+export interface FieldWithRepeatableForms<T> {
+  repeatableForms: () => SignalFormContainer<T>[];
+}
+
+// ========== Service Types ==========
+export interface RoleAttributes {
+  role?: string;
+  ariaAttributes: Record<string, string | boolean | null>;
+  inputAttributes: Record<string, string | boolean | null>;
+}
+
+export type ExpandedAnimationEvent = AnimationEvent & { toState: string };
+
+export interface ValidatorMeta {
+  required?: boolean;
+  type?: string;
+}
+
+export type MetaValidatorFn<TVal, TModel> = SignalValidatorFn<TVal, TModel> & {
+  readonly __meta?: ValidatorMeta;
+};

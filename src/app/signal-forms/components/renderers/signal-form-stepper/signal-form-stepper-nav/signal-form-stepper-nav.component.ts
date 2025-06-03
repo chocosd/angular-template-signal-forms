@@ -11,8 +11,10 @@ import {
   Signal,
   signal,
 } from '@angular/core';
-import { type SignalFormContainer } from '@models/signal-form.model';
-import { MetaValidatorFn } from 'app/signal-forms/helpers/with-meta';
+import {
+  type MetaValidatorFn,
+  type SignalFormContainer,
+} from '@models/signal-form.model';
 import { LucideAngularModule, SquareCheck } from 'lucide-angular';
 
 export enum StepStatus {

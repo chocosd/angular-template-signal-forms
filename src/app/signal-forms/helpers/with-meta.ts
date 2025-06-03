@@ -1,13 +1,8 @@
-import { type SignalValidatorFn } from '@models/signal-form.model';
-
-export interface ValidatorMeta {
-  required?: boolean;
-  type?: string;
-}
-
-export type MetaValidatorFn<TVal, TModel> = SignalValidatorFn<TVal, TModel> & {
-  readonly __meta?: ValidatorMeta;
-};
+import {
+  type MetaValidatorFn,
+  type SignalValidatorFn,
+  type ValidatorMeta,
+} from '@models/signal-form.model';
 
 export function withMeta<T extends keyof TModel, TModel>(
   fn: SignalValidatorFn<TModel[T], TModel>,

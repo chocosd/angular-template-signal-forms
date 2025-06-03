@@ -1,17 +1,11 @@
-import { computed, WritableSignal } from '@angular/core';
+import { computed } from '@angular/core';
 import { FormStatus } from '@enums/form-status.enum';
 import {
+  type FieldWithForm,
+  type RepeatableField,
   type SignalFormContainer,
   type SignalFormField,
 } from '@models/signal-form.model';
-
-type FieldWithForm<TModel> = SignalFormField<TModel> & {
-  form: SignalFormContainer<TModel[keyof TModel]>;
-};
-
-type RepeatableField<TModel> = SignalFormField<TModel> & {
-  repeatableForms: WritableSignal<SignalFormContainer<any>[]>;
-};
 
 export class FieldUtils {
   static anyTouched<TModel>(fields: SignalFormField<TModel>[]) {

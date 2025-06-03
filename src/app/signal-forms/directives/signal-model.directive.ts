@@ -14,17 +14,15 @@ import {
   signal,
 } from '@angular/core';
 import { FormFieldType } from '@enums/form-field-type.enum';
+import { SelectFieldConfig } from '@models/signal-field-configs.model';
 import {
-  type RadioFieldConfig,
-  type SelectFieldConfig,
-} from '@models/signal-field-configs.model';
-import {
+  FormOption,
   type ElementTypeForField,
-  type FormOption,
   type SignalFormContainer,
   type SignalFormField,
 } from '@models/signal-form.model';
 import { FieldRoleAttributesService } from '@services/field-role-attributes.service';
+import { ValidationService } from '@services/validation.service';
 import { ValueHelper } from '../helpers/value.helper';
 
 /**
@@ -59,6 +57,7 @@ export class SignalModelDirective<
   private readonly renderer = inject(Renderer2);
   private readonly injector = inject(Injector);
   private readonly roleService = inject(FieldRoleAttributesService);
+  private readonly validationService = inject(ValidationService);
 
   private form = computed<SignalFormContainer<TModel> | null>(() =>
     this.signalModel().getForm(),
@@ -238,15 +237,19 @@ export class SignalModelDirective<
   }
 
   /**
-   * Handles blur events by marking the field as touched
+   * Handles blur events by marking the field as touched and triggering blur validation
    */
   @HostListener('blur')
   onBlur(): void {
-    this.signalModel().touched.set(true);
+    const field = this.signalModel();
+    field.touched.set(true);
+
+    // Trigger blur validation through the validation service
+    this.validationService.triggerBlurValidation(field.path);
   }
 
   /**
-   * Handles focus events by setting the focus state
+   * Handles focus events by updating the field focus state
    */
   @HostListener('focus')
   onFocus(): void {
@@ -254,8 +257,7 @@ export class SignalModelDirective<
   }
 
   /**
-   * Handles input events by extracting, parsing and updating the field value
-   * @param event - The input event from the form element
+   * Handles input events and updates the model value with parsed data
    */
   @HostListener('input', ['$event'])
   onInput(event: Event): void {
@@ -291,10 +293,7 @@ export class SignalModelDirective<
           return target.valueAsDate;
         case 'radio':
           if (this.signalModel().type === FormFieldType.RADIO) {
-            const config = this.signalModel().config as RadioFieldConfig<
-              TModel,
-              keyof TModel
-            >;
+            const config = this.signalModel().config as any;
             if (config?.valueType === 'number') {
               return parseFloat(raw);
             }
@@ -308,7 +307,10 @@ export class SignalModelDirective<
       }
     }
 
-    if (target instanceof HTMLSelectElement) {
+    if (
+      target instanceof HTMLSelectElement ||
+      this.signalModel().type === FormFieldType.AUTOCOMPLETE
+    ) {
       const raw = target.value;
       const field = this.signalModel();
 
@@ -342,8 +344,8 @@ export class SignalModelDirective<
   }
 
   /**
-   * Sets the element value using appropriate method based on element type
-   * @param element - The form element to set value on
+   * Sets the value of a form element based on its type
+   * @param element - The form element to update
    * @param value - The value to set
    */
   private setElementValue(
@@ -351,7 +353,7 @@ export class SignalModelDirective<
     value: unknown,
   ): void {
     if (ValueHelper.isCheckboxInput(element)) {
-      this.setCheckboxValue(element, value as boolean);
+      this.setCheckboxValue(element, Boolean(value));
       return;
     }
 
@@ -425,9 +427,8 @@ export class SignalModelDirective<
 
     if (valueString) {
       this.renderer.setAttribute(element, 'aria-valuenow', valueString);
-      return;
+    } else {
+      this.renderer.removeAttribute(element, 'aria-valuenow');
     }
-
-    this.renderer.removeAttribute(element, 'aria-valuenow');
   }
 }

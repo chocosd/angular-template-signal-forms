@@ -2,25 +2,15 @@ import { computed, WritableSignal } from '@angular/core';
 import { FormFieldType } from '@enums/form-field-type.enum';
 import { FormStatus } from '@enums/form-status.enum';
 import {
+  type CheckboxGroupField,
   type DeepPartial,
   type ErrorMessage,
+  type FieldWithForm,
   type InferFieldType,
+  type RepeatableField,
   type SignalFormContainer,
   type SignalFormField,
 } from '@models/signal-form.model';
-
-type FieldWithForm<TModel> = SignalFormField<TModel> & {
-  form: SignalFormContainer<TModel[keyof TModel]>;
-};
-
-type RepeatableField<TModel> = SignalFormField<TModel> & {
-  repeatableForms: WritableSignal<SignalFormContainer<any>[]>;
-};
-
-type CheckboxGroupField<TModel> = SignalFormField<TModel> & {
-  type: FormFieldType.CHECKBOX_GROUP;
-  valueType?: 'array' | 'map';
-};
 
 export class FormEngine {
   static validateForm<TModel>(
@@ -176,6 +166,7 @@ export class FormEngine {
               path: err.path,
               field: err.field,
               focusField: err.focusField,
+              trigger: err.trigger,
             }));
             errors.push(...updatedNestedErrors);
           });
@@ -183,11 +174,17 @@ export class FormEngine {
         }
 
         if (field.error()) {
+          const trigger =
+            field.validationConfig?.trigger ||
+            field.config?.validation?.trigger ||
+            'change';
+
           errors.push({
             name: field.name,
             message: field.error() ?? '',
             path: field.path,
             field: field as SignalFormField<unknown>,
+            trigger,
             focusField: () => {
               if (field.focus) {
                 field.focus.set(true);

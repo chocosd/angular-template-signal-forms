@@ -9,7 +9,12 @@
   >
     @defer (on viewport(formControl)) {
       @if (field().type !== FormFieldType.CHECKBOX) {
-        <label class="form-label" [for]="name()">
+        <label
+          class="form-label"
+          [class]="labelClasses()"
+          [ngStyle]="labelStyles()"
+          [for]="name()"
+        >
           {{ field().label }}
           @if (isRequired()) {
             <span class="required-asterisk">*</span>
@@ -19,63 +24,76 @@
           }
         </label>
       }
-      @switch (field().type) {
-        @case (FormFieldType.TEXT) {
-          <signal-form-text-field [field]="field()" />
+
+      <div
+        class="form-field-wrapper"
+        [class]="inputClasses()"
+        [ngStyle]="inputStyles()"
+      >
+        @switch (field().type) {
+          @case (FormFieldType.TEXT) {
+            <signal-form-text-field [field]="field()" />
+          }
+          @case (FormFieldType.PASSWORD) {
+            <signal-form-password-field [field]="field()" />
+          }
+          @case (FormFieldType.CHECKBOX) {
+            <signal-form-checkbox-field [field]="field()" />
+          }
+          @case (FormFieldType.CHECKBOX_GROUP) {
+            <signal-form-checkbox-group-field [field]="field()" />
+          }
+          @case (FormFieldType.NUMBER) {
+            <signal-form-number-field [field]="field()" />
+          }
+          @case (FormFieldType.AUTOCOMPLETE) {
+            <signal-form-autocomplete-field [field]="field()" />
+          }
+          @case (FormFieldType.TEXTAREA) {
+            <signal-form-textarea-field [field]="field()" />
+          }
+          @case (FormFieldType.SELECT) {
+            <signal-form-select-field [field]="field()" />
+          }
+          @case (FormFieldType.RADIO) {
+            <signal-form-radio-field [field]="field()" />
+          }
+          @case (FormFieldType.DATETIME) {
+            <signal-form-datetime-field [field]="field()" />
+          }
+          @case (FormFieldType.MULTISELECT) {
+            <signal-form-multiselect-field [field]="field()" />
+          }
+          @case (FormFieldType.CHIPLIST) {
+            <signal-form-chip-list-field [field]="field()" />
+          }
+          @case (FormFieldType.FILE) {
+            <signal-form-file-field [field]="field()" />
+          }
+          @case (FormFieldType.COLOR) {
+            <signal-form-color-field [field]="field()" />
+          }
+          @case (FormFieldType.RATING) {
+            <signal-form-rating-field [field]="field()" />
+          }
+          @case (FormFieldType.SLIDER) {
+            <signal-form-slider-field [field]="field()" />
+          }
+          @case (FormFieldType.SWITCH) {
+            <signal-form-switch-field [field]="field()" />
+          }
         }
-        @case (FormFieldType.PASSWORD) {
-          <signal-form-password-field [field]="field()" />
-        }
-        @case (FormFieldType.CHECKBOX) {
-          <signal-form-checkbox-field [field]="field()" />
-        }
-        @case (FormFieldType.CHECKBOX_GROUP) {
-          <signal-form-checkbox-group-field [field]="field()" />
-        }
-        @case (FormFieldType.NUMBER) {
-          <signal-form-number-field [field]="field()" />
-        }
-        @case (FormFieldType.AUTOCOMPLETE) {
-          <signal-form-autocomplete-field [field]="field()" />
-        }
-        @case (FormFieldType.TEXTAREA) {
-          <signal-form-textarea-field [field]="field()" />
-        }
-        @case (FormFieldType.SELECT) {
-          <signal-form-select-field [field]="field()" />
-        }
-        @case (FormFieldType.RADIO) {
-          <signal-form-radio-field [field]="field()" />
-        }
-        @case (FormFieldType.DATETIME) {
-          <signal-form-datetime-field [field]="field()" />
-        }
-        @case (FormFieldType.MULTISELECT) {
-          <signal-form-multiselect-field [field]="field()" />
-        }
-        @case (FormFieldType.CHIPLIST) {
-          <signal-form-chip-list-field [field]="field()" />
-        }
-        @case (FormFieldType.FILE) {
-          <signal-form-file-field [field]="field()" />
-        }
-        @case (FormFieldType.COLOR) {
-          <signal-form-color-field [field]="field()" />
-        }
-        @case (FormFieldType.RATING) {
-          <signal-form-rating-field [field]="field()" />
-        }
-        @case (FormFieldType.SLIDER) {
-          <signal-form-slider-field [field]="field()" />
-        }
-        @case (FormFieldType.SWITCH) {
-          <signal-form-switch-field [field]="field()" />
-        }
-      }
+      </div>
 
       <div class="form-caption">
         @if (hasError()) {
-          <span class="form-error" role="alert" [id]="'error-' + name()">
+          <span
+            class="form-error"
+            [class]="errorClasses()"
+            [ngStyle]="errorStyles()"
+            role="alert"
+            [id]="'error-' + name()"
+          >
             {{ hasError() }}
           </span>
         } @else if (isValidating()) {
@@ -87,7 +105,13 @@
             Validating...
           </span>
         } @else if (field().config?.hint) {
-          <span class="form-hint" role="alert" [id]="'hint-' + name()">
+          <span
+            class="form-hint"
+            [class]="hintClasses()"
+            [ngStyle]="hintStyles()"
+            role="alert"
+            [id]="'hint-' + name()"
+          >
             {{ field().config.hint }}
           </span>
         }

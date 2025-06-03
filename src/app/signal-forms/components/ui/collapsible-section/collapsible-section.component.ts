@@ -8,6 +8,7 @@ import {
   signal,
   TemplateRef,
 } from '@angular/core';
+import { ExpandedAnimationEvent } from '@models/signal-form.model';
 import {
   ChevronDownCircleIcon,
   ChevronUpCircleIcon,
@@ -65,5 +66,3 @@ export class CollapsibleSectionComponent {
     }
   }
 }
-
-export type ExpandedAnimationEvent = AnimationEvent & { toState: string };
