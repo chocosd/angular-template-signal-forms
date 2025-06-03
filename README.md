@@ -1,448 +1,158 @@
-# 🧩 Angular Signal Forms
+# Signal Template Forms
 
-A declarative, fully reactive **signal-based** form builder for Angular.  
-Forget `FormControl`, `FormGroup`, and `ngModel`. This is a **zero-boilerplate**, type-safe alternative powered entirely by **Angular Signals**.
+A powerful, type-safe Angular forms library built with signals, providing reactive form management with excellent developer experience and performance.
 
----
+## Features
 
-## 🚦 Why?
+- 🎯 **Type-safe**: Full TypeScript support with intelligent autocompletion
+- ⚡ **Signal-based**: Reactive forms using Angular signals for optimal performance
+- 🔧 **Rich field types**: Text, number, select, autocomplete, date, file upload, and more
+- ✅ **Validation**: Field-level, cross-field, and async validation support
+- 🎨 **Customizable**: CSS variables for easy theming and styling
+- 📱 **Responsive**: Built-in responsive design patterns
+- 🔄 **Unit conversion**: Advanced number fields with automatic unit conversions
+- 📊 **Word counting**: Text fields with character/word count display
+- 🧙 **Stepped forms**: Multi-step form wizard support
 
-Angular's traditional forms APIs are either:
-
-- ❗ Template-driven: verbose and disconnected from logic.
-- ❗ Reactive forms: imperative, overly verbose, and hard to scale.
-- ✅ This library: **signal-powered**, **typed**, and **fully declarative**.
-
-Built from the ground up to:
-
-- 🧠 Infer types from your model.
-- 💡 Provide strong intellisense and type safety.
-- 🎯 Bind to the DOM directly with signals, no `FormGroup` necessary.
-- 🧼 Keep forms composable and clean.
-
----
-
-## ✨ Features
-
-### Core Functionality
-
-- ✅ Model-driven form creation (`SignalFormBuilder.createForm`)
-- ✅ Type-safe field declarations
-- ✅ Nested fields with recursion
-- ✅ `computedValue()` support
-- ✅ Custom validators
-- ✅ Signal-based value/touched/dirty/error tracking
-- ✅ Built-in save/reset/validation methods
-- ✅ Auto-highlight errors + smooth scroll
-
-### Advanced Field Types
-
-- ✅ **Number Fields** with specialized input types (currency, percentage, unit conversion)
-- ✅ **Unit Conversion** with automatic value conversion between units
-- ✅ **Word Count** for text-based inputs with configurable display formats
-- ✅ **Autocomplete** with `Promise` or `Observable` support
-- ✅ **File uploads** with validation and size limits
-- ✅ **Color picker** with multiple view modes
-- ✅ **Date/time picker** with custom formatting
-
-### Form Features
-
-- ✅ `computedValue()` support for calculated fields
-- ✅ Custom validators with form-wide context
-- ✅ Conditional field visibility and disabled states
-- ✅ Stepped forms (wizard-style navigation)
-- ✅ Repeatable groups for dynamic arrays
-- ✅ Full template control or pre-built components
-
----
-
-## 📦 Installation
+## Installation
 
 ```bash
-npm install signal-forms
+npm install signal-template-forms
 ```
 
-```typescript
-// Core functionality
-import { SignalFormBuilder, FormFieldType } from "signal-forms";
-
-// Pre-built form components
-import { SignalFormComponent } from "signal-forms/renderers";
-
-// Individual field components
-import { SignalFormTextFieldComponent } from "signal-forms/fields";
-```
-
----
-
-## 🧱 Basic Usage
-
-### 1. Define Your Model
+## Quick Start
 
 ```typescript
-interface UserProfile {
-  personal: {
-    name: string;
-    age: number;
-    income: number;
-    weight: number;
-    bio: string;
-  };
-  preferences: {
-    theme: string;
-    notifications: boolean;
-  };
-}
-```
+import { SignalFormBuilder } from "signal-template-forms";
 
-### 2. Build Your Form
-
-```typescript
-import { SignalFormBuilder, FormFieldType, NumberInputType, ConversionUtils } from "signal-forms";
-
+@Component({
+  // ...
+})
 export class MyComponent {
-  form = SignalFormBuilder.createForm<UserProfile>({
-    title: "User Profile",
-    model: {
-      personal: { name: "", age: 0, income: 0, weight: 0, bio: "" },
-      preferences: { theme: "light", notifications: true },
-    },
-    // Manage save logic here instead of using template output
-    onSave: (form) => this.handleSubmit(form.value()),
+  private formBuilder = inject(SignalFormBuilder);
+
+  form = this.formBuilder.createForm({
+    model: { name: "", email: "", age: 0 },
     fields: [
-      {
-        name: "personal",
-        heading: "Personal Information",
-        fields: [
-          {
-            name: "name",
-            label: "Full Name",
-            type: FormFieldType.TEXT,
-            config: { wordCount: true },
-            validators: [(value) => (!value ? "Name is required" : null), (value) => (value.length < 2 ? "Name must be at least 2 characters" : null)],
-          },
-          {
-            name: "age",
-            label: "Age",
-            type: FormFieldType.NUMBER,
-            config: {
-              inputType: NumberInputType.INTEGER,
-              min: 13,
-              max: 120,
-            },
-          },
-          {
-            name: "income",
-            label: "Annual Income",
-            type: FormFieldType.NUMBER,
-            config: {
-              inputType: NumberInputType.CURRENCY,
-              currencyCode: "USD",
-              locale: "en-US",
-            },
-          },
-          {
-            name: "weight",
-            label: "Weight",
-            type: FormFieldType.NUMBER,
-            config: {
-              inputType: NumberInputType.UNIT_CONVERSION,
-              unitConversions: {
-                unitConversions: ConversionUtils.weight,
-                defaultUnit: "kg",
-                unitPosition: "suffix",
-              },
-            },
-          },
-          {
-            name: "bio",
-            label: "Biography",
-            type: FormFieldType.TEXTAREA,
-            config: {
-              wordCount: true,
-              minRows: 3,
-              maxRows: 8,
-            },
-          },
-        ],
-      },
+      { name: "name", label: "Full Name", type: FormFieldType.TEXT },
+      { name: "email", label: "Email", type: FormFieldType.TEXT },
+      { name: "age", label: "Age", type: FormFieldType.NUMBER },
     ],
+    onSave: (value) => console.log("Form saved:", value),
   });
-
-  handleSubmit(data: UserProfile) {
-    console.log("Form submitted:", data);
-  }
 }
 ```
-
-### 3. Render the Form
-
-**Option A: Using Form Builder onSave Callback**
 
 ```html
-<!-- Form handles save internally via onSave callback -->
-<signal-form [form]="form()" />
+<signal-form-container [form]="form">
+  <signal-form-fields />
+  <signal-form-save-button />
+</signal-form-container>
 ```
 
-**Option B: Using Template Output**
+## Form Container API
 
-```html
-<!-- Handle save via template output -->
-<signal-form [form]="form()" (onSave)="handleSubmit($event)" />
-```
+The form container provides these reactive properties and methods:
 
-**Option C: Custom Layout**
+### Properties
 
-```html
-<signal-form-fields [form]="form()" [fields]="form().fields" /> <button (click)="form().save()">Save</button>
-```
+- `status: WritableSignal<FormStatus>` - Current form status (Idle, Submitting, Success, Error)
+- `value: Signal<TModel>` - Current form values (excluding disabled fields)
+- `rawValue: Signal<TModel>` - All form values including disabled fields
+- `anyTouched: Signal<boolean>` - True if any field has been touched
+- `anyDirty: Signal<boolean>` - True if any field has been modified
+- `saveButtonDisabled: Signal<boolean>` - Whether save button should be disabled
+- `fields: SignalFormField<TModel>[]` - Array of all form fields
 
-// Get current values
-form().value() // Complete form model
+### Methods
 
-````
+- `getField<K extends keyof TModel>(key: K)` - Get a specific field instance
+- `getValue(): TModel` - Get current form values
+- `getRawValue(): TModel` - Get all form values including disabled
+- `getErrors(): ErrorMessage<TModel>[]` - Get all validation errors
+- `validateForm(): boolean` - Validate entire form
+- `setValue(model: TModel): void` - Set complete form values
+- `patchValue(partial: DeepPartial<TModel>): void` - Update specific fields
+- `reset(): void` - Reset form to initial state
+- `save(): void` - Save form (runs validation first)
 
----
+## Field Access
 
-## 🔢 Number Field Types
-
-The `NumberFieldConfig` supports different input types for specialized formatting:
-
-### Standard Number
+Fields are signals that can be accessed and modified directly:
 
 ```typescript
-{
-  name: 'quantity',
-  type: FormFieldType.NUMBER,
-  config: {
-    inputType: NumberInputType.STANDARD,
-    min: 0,
-    max: 100,
-    step: 1
+// Get a field
+const nameField = form.getField("name");
+
+// Access field signals
+const currentValue = nameField.value();
+const hasError = nameField.error();
+const isTouched = nameField.touched();
+const isDirty = nameField.dirty();
+const hasFocus = nameField.focus();
+
+// Modify field signals
+nameField.value.set("New Value");
+nameField.disabled.set(true);
+nameField.disabled.update((current) => !current);
+nameField.focus.set(true);
+nameField.error.set("Custom error message");
+
+// Reactive field interactions
+const isSubmitDisabled = computed(() => form.getField("email").error() || !form.getField("terms").value());
+
+// Set field value based on another field
+effect(() => {
+  const country = form.getField("country").value();
+  if (country === "US") {
+    form.getField("currency").value.set("USD");
   }
-}
-````
-
-### Currency
-
-```typescript
-{
-  name: 'price',
-  type: FormFieldType.NUMBER,
-  config: {
-    inputType: NumberInputType.CURRENCY,
-    currencyCode: 'EUR',
-    locale: 'de-DE'  // €1.234,56
-  }
-}
+});
 ```
 
-### Percentage
-
-```typescript
-{
-  name: 'completion',
-  type: FormFieldType.NUMBER,
-  config: {
-    inputType: NumberInputType.PERCENTAGE,
-    locale: 'en-US'  // Shows as 85.5%
-  }
-}
-```
-
-### Unit Conversion
-
-```typescript
-{
-  name: 'distance',
-  type: FormFieldType.NUMBER,
-  config: {
-    inputType: NumberInputType.UNIT_CONVERSION,
-    unitConversions: {
-      unitConversions: ConversionUtils.length,
-      defaultUnit: 'km',
-      unitPosition: 'suffix',
-      precision: 2,  // Round converted values to 2 decimal places
-      parser: (value) => value.toFixed(2) + ' units'
-    }
-  }
-}
-```
-
-### Built-in Conversion Utilities
-
-```typescript
-// Weight conversions (kg, lbs, oz, g)
-ConversionUtils.weight
-
-// Length conversions (m, ft, in, cm, mm)
-ConversionUtils.length
-
-// Temperature conversions (celsius, fahrenheit, kelvin)
-ConversionUtils.temperature
-
-// Custom conversion
-{
-  unitConversions: {
-    mph: {
-      label: 'Miles per Hour',
-      convert: (value, fromUnit) => fromUnit === 'kph' ? value * 0.621371 : value
-    },
-    kph: {
-      label: 'Kilometers per Hour',
-      convert: (value, fromUnit) => fromUnit === 'mph' ? value * 1.60934 : value
-    }
-  }
-}
-```
-
----
-
-## 📝 Word Count Feature
-
-Enable word counting on text-based fields:
-
-```typescript
-{
-  name: 'description',
-  type: FormFieldType.TEXTAREA,
-  config: {
-    wordCount: true  // Enables word count display
-  }
-}
-
-// Text field shows character count
-{
-  name: 'title',
-  type: FormFieldType.TEXT,
-  config: {
-    wordCount: true  // Shows character count for text fields
-  }
-}
-```
-
-The word count component supports different display formats:
-
-- `'words'` - "25 words"
-- `'characters'` - "150 characters"
-- `'both'` - "25 words, 150 characters"
-- `'detailed'` - "25 words | 150 chars | 5 lines"
-
----
-
-## 🎯 Form Container API
-
-The form container provides powerful methods for interaction:
-
-### Form State
-
-```typescript
-const form = SignalFormBuilder.createForm<MyModel>({...});
-
-// Form status
-form().status()        // 'valid' | 'invalid' | 'pending' | 'disabled'
-form().valid()         // boolean
-form().invalid()       // boolean
-form().pending()       // boolean
-form().disabled()      // boolean
-
-// Form state
-form().touched()       // boolean - any field touched
-form().dirty()         // boolean - any field modified
-form().pristine()      // boolean - form unchanged
-form().submitted()     // boolean - form submitted
-
-// Get current values
-form().value()         // Complete form model
-```
-
-### Field Access
-
-```typescript
-// Get specific fields
-const nameField = form().getField("name");
-const addressField = form().getField("address.line1"); // Nested access
-
-// Field properties
-nameField.value(); // Current value
-nameField.touched(); // boolean
-nameField.dirty(); // boolean
-nameField.focus(); // boolean
-nameField.errors(); // string[] | null
-nameField.valid(); // boolean
-nameField.disabled(); // boolean
-```
-
-### Form Actions
-
-```typescript
-// Save/Submit
-form().save(); // Validate and emit onSave
-form().validate(); // Run all validators
-form().markAllTouched(); // Mark all fields as touched
-
-// Reset operations
-form().reset(); // Reset to original values
-form().resetToValue(newModel); // Reset to specific values
-form().markPristine(); // Mark as unchanged
-
-// Field operations
-form().setFieldValue("name", "John"); // Set single field
-form().setFieldDisabled("email", true); // Disable field
-form().setFieldError("phone", "Invalid format"); // Set custom error
-```
-
-### Conditional Logic
-
-```typescript
-{
-  name: 'shippingAddress',
-  fields: [...],
-  hidden: (form) => !form.getField('needsShipping').value(),
-  disabled: (form) => form.getField('sameAsBilling').value()
-}
-```
-
-### Computed Values
-
-```typescript
-{
-  name: 'total',
-  label: 'Total Amount',
-  type: FormFieldType.NUMBER,
-  computedValue: (form) => {
-    const subtotal = form.getField('subtotal').value();
-    const tax = form.getField('tax').value();
-    return subtotal + tax;
-  }
-}
-```
-
----
-
-## 🏗️ Field Types Reference
+## Field Types Reference
 
 ### Text Fields
 
 ```typescript
-// Basic text
-{ name: 'title', type: FormFieldType.TEXT }
+{ name: 'username', label: 'Username', type: FormFieldType.TEXT }
+{ name: 'description', label: 'Description', type: FormFieldType.TEXTAREA }
+{ name: 'password', label: 'Password', type: FormFieldType.PASSWORD }
+```
 
-// Password with toggle
+### Number Fields with Unit Conversion
+
+```typescript
+// Standard number
+{ name: 'quantity', label: 'Quantity', type: FormFieldType.NUMBER }
+
+// Currency formatting
 {
-  name: 'password',
-  type: FormFieldType.PASSWORD,
-  config: { showToggle: true }
+  name: 'price',
+  label: 'Price',
+  type: FormFieldType.NUMBER,
+  config: {
+    inputType: NumberInputType.CURRENCY,
+    currencyCode: 'USD'
+  }
 }
 
-// Textarea with word count
+// Percentage
 {
-  name: 'description',
-  type: FormFieldType.TEXTAREA,
+  name: 'discount',
+  label: 'Discount',
+  type: FormFieldType.NUMBER,
+  config: { inputType: NumberInputType.PERCENTAGE }
+}
+
+// Unit conversion (weight)
+{
+  name: 'weight',
+  label: 'Weight',
+  type: FormFieldType.NUMBER,
   config: {
-    wordCount: true,
-    minRows: 3,
-    maxRows: 10
+    inputType: NumberInputType.UNIT_CONVERSION,
+    unitConversions: ConversionUtils.createWeightConfig('kg', 1)
   }
 }
 ```
@@ -450,9 +160,10 @@ form().setFieldError("phone", "Invalid format"); // Set custom error
 ### Selection Fields
 
 ```typescript
-// Dropdown select
+// Select dropdown
 {
   name: 'country',
+  label: 'Country',
   type: FormFieldType.SELECT,
   options: [
     { label: 'United States', value: 'US' },
@@ -460,127 +171,139 @@ form().setFieldError("phone", "Invalid format"); // Set custom error
   ]
 }
 
-// Multi-select
-{
-  name: 'skills',
-  type: FormFieldType.MULTISELECT,
-  options: skillOptions
-}
-
 // Radio buttons
 {
-  name: 'gender',
+  name: 'size',
+  label: 'Size',
   type: FormFieldType.RADIO,
   options: [
-    { label: 'Male', value: 'M' },
-    { label: 'Female', value: 'F' }
+    { label: 'Small', value: 'S' },
+    { label: 'Medium', value: 'M' },
+    { label: 'Large', value: 'L' }
   ]
 }
 
-// Chip list (tags)
+// Multi-select
 {
-  name: 'tags',
-  type: FormFieldType.CHIPLIST,
-  options: tagOptions
+  name: 'skills',
+  label: 'Skills',
+  type: FormFieldType.MULTISELECT,
+  options: [
+    { label: 'JavaScript', value: 'js' },
+    { label: 'TypeScript', value: 'ts' },
+    { label: 'Angular', value: 'angular' }
+  ]
 }
 ```
 
-### Interactive Fields
+### Autocomplete Fields
 
 ```typescript
-// Switch/Toggle
-{ name: 'enabled', type: FormFieldType.SWITCH }
-
-// Checkbox
-{ name: 'agree', type: FormFieldType.CHECKBOX }
-
-// Slider/Range
-{
-  name: 'volume',
-  type: FormFieldType.SLIDER,
-  config: { min: 0, max: 100, step: 5 }
-}
-
-// Star rating
-{
-  name: 'rating',
-  type: FormFieldType.RATING,
-  config: { min: 1, max: 5, allowHalf: true }
-}
-```
-
-### Special Fields
-
-```typescript
-// File upload
-{
-  name: 'avatar',
-  type: FormFieldType.FILE,
-  config: {
-    accept: ['image/*'],
-    maxSizeMb: 5,
-    multiple: false
-  }
-}
-
-// Color picker
-{
-  name: 'theme',
-  type: FormFieldType.COLOR,
-  config: { view: 'swatch' } // or 'pickerWithInput'
-}
-
-// Date/time
-{
-  name: 'birthDate',
-  type: FormFieldType.DATETIME,
-  config: { format: 'yyyy-MM-dd' }
-}
-
-// Autocomplete with API
+// Static options autocomplete
 {
   name: 'city',
+  label: 'City',
   type: FormFieldType.AUTOCOMPLETE,
-  loadOptions: (searchTerm) =>
-    fetch(`/api/cities?q=${searchTerm}`)
-      .then(res => res.json()),
+  loadOptions: (search: string) => {
+    const cities = [
+      { label: 'New York', value: 'ny' },
+      { label: 'Los Angeles', value: 'la' },
+      { label: 'Chicago', value: 'chi' }
+    ];
+    return of(cities.filter(city =>
+      city.label.toLowerCase().includes(search.toLowerCase())
+    ));
+  },
   config: {
     debounceMs: 300,
     minChars: 2
   }
 }
+
+// Observable-based autocomplete with HTTP service
+{
+  name: 'country',
+  label: 'Country',
+  type: FormFieldType.AUTOCOMPLETE,
+  loadOptions: (search: string) =>
+    this.httpService.searchCountries(search).pipe(
+      map(countries => countries.map(country => ({
+        label: country.name,
+        value: country.code
+      })))
+    ),
+  config: {
+    debounceMs: 200,
+    minChars: 1
+  }
+}
 ```
 
----
+### Boolean Fields
 
-## 🧪 Validation
+```typescript
+{ name: 'agreeToTerms', label: 'I agree to terms', type: FormFieldType.CHECKBOX }
+{ name: 'enableNotifications', label: 'Notifications', type: FormFieldType.SWITCH }
+```
 
-### Field-level Validators
+### Advanced Fields
+
+```typescript
+{ name: 'birthDate', label: 'Birth Date', type: FormFieldType.DATETIME }
+{ name: 'favoriteColor', label: 'Color', type: FormFieldType.COLOR }
+{ name: 'volume', label: 'Volume', type: FormFieldType.SLIDER, config: { min: 0, max: 100 } }
+{ name: 'rating', label: 'Rating', type: FormFieldType.RATING, config: { max: 5 } }
+{ name: 'avatar', label: 'Profile Picture', type: FormFieldType.FILE }
+```
+
+### Word Count Feature
 
 ```typescript
 {
+  name: 'description',
+  label: 'Description',
+  type: FormFieldType.TEXTAREA,
+  config: {
+    wordCount: {
+      enabled: true,
+      maxWords: 150,
+      showCharacters: true
+    }
+  }
+}
+```
+
+## Validation
+
+### Field-Level Validation
+
+```typescript
+import { SignalValidators } from 'signal-template-forms';
+
+{
   name: 'email',
+  label: 'Email',
   type: FormFieldType.TEXT,
   validators: [
-    (value) => !value ? 'Email is required' : null,
-    (value) => {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return !emailRegex.test(value) ? 'Invalid email format' : null;
-    }
+    SignalValidators.required(),
+    SignalValidators.email(),
+    SignalValidators.minLength(5)
   ]
 }
 ```
 
-### Cross-field Validation
+### Cross-Field Validation
 
 ```typescript
 {
   name: 'confirmPassword',
+  label: 'Confirm Password',
   type: FormFieldType.PASSWORD,
   validators: [
+    SignalValidators.required(),
     (value, form) => {
       const password = form.getField('password').value();
-      return value !== password ? 'Passwords must match' : null;
+      return value === password ? null : 'Passwords must match';
     }
   ]
 }
@@ -591,142 +314,152 @@ form().setFieldError("phone", "Invalid format"); // Set custom error
 ```typescript
 {
   name: 'username',
+  label: 'Username',
   type: FormFieldType.TEXT,
   asyncValidators: [
-    async (value) => {
-      const response = await fetch(`/api/check-username/${value}`);
-      const { available } = await response.json();
-      return available ? null : 'Username is already taken';
-    }
+    (value: string) =>
+      this.userService.checkUsername(value).pipe(
+        map(isAvailable => isAvailable ? null : 'Username taken')
+      )
   ]
 }
 ```
 
-### Built-in Validators
+## Stepped Forms (Wizards)
 
 ```typescript
-import { SignalValidators } from "signal-forms";
-
-{
-  validators: [SignalValidators.required(), SignalValidators.email(), SignalValidators.minLength(6), SignalValidators.maxLength(50), SignalValidators.pattern(/^[A-Z]+$/), SignalValidators.min(18), SignalValidators.max(100)];
-}
-```
-
----
-
-## 🪜 Stepped Forms (Wizards)
-
-Create multi-step forms with navigation:
-
-```typescript
-const form = SignalFormBuilder.createSteppedForm<MyModel>({
-  title: "User Registration",
-  model: initialModel,
+const steppedForm = this.formBuilder.createSteppedForm({
+  model: { personal: {}, contact: {}, preferences: {} },
   steps: [
     {
-      name: "personal",
       title: "Personal Information",
       fields: [
-        { name: "firstName", type: FormFieldType.TEXT },
-        { name: "lastName", type: FormFieldType.TEXT },
+        { name: "firstName", label: "First Name", type: FormFieldType.TEXT },
+        { name: "lastName", label: "Last Name", type: FormFieldType.TEXT },
       ],
     },
     {
-      name: "contact",
       title: "Contact Details",
       fields: [
-        { name: "email", type: FormFieldType.TEXT },
-        { name: "phone", type: FormFieldType.TEXT },
+        { name: "email", label: "Email", type: FormFieldType.TEXT },
+        { name: "phone", label: "Phone", type: FormFieldType.TEXT },
       ],
     },
   ],
+  onSave: (value) => this.submitForm(value),
 });
-
-// Step navigation
-form().nextStep();
-form().previousStep();
-form().goToStep(1);
-form().currentStep(); // Current step index
-form().canGoNext(); // Boolean
-form().canGoPrevious(); // Boolean
 ```
 
 ```html
-<signal-form-stepper [form]="form()" (onSave)="handleSubmit($event)" />
+<signal-stepped-form-container [form]="steppedForm">
+  <signal-form-step-indicator />
+  <signal-form-fields />
+  <signal-form-step-navigation />
+</signal-stepped-form-container>
 ```
 
----
+## Form Actions
 
-## 🎨 Styling & Theming
+### Setting Field Values
 
-### CSS Classes
+```typescript
+// Set individual field values
+form.getField("name").value.set("John Doe");
+form.getField("email").value.set("john@example.com");
 
-The library applies consistent CSS classes for easy styling:
+// Set field state
+form.getField("email").disabled.set(true);
+form.getField("name").error.set("Custom error");
+form.getField("description").focus.set(true);
 
-```css
-/* Form containers */
-.signal-form {
-}
-.signal-form-step {
-}
+// Update field values reactively
+form.getField("quantity").value.update((current) => current + 1);
+form.getField("enabled").disabled.update((current) => !current);
+```
 
-/* Field wrappers */
-.form-input-wrapper {
-}
-.form-input {
-}
-.form-label {
-}
-.form-hint {
-}
-.form-error {
-}
+### Form-Level Actions
 
-/* Field states */
-.form-input--invalid {
-}
-.form-input--disabled {
-}
-.form-input--focused {
-}
+```typescript
+// Set complete form values (requires full model)
+form.setValue({
+  name: "John Doe",
+  email: "john@example.com",
+  age: 30,
+});
 
-/* Word count */
-.word-count {
-}
-.word-count-compact {
-}
+// Patch partial form values
+form.patchValue({
+  email: "newemail@example.com",
+  age: 31,
+});
 
-/* Unit conversion */
-.form-select-unit {
-}
-.form-select-prefix {
-}
-.form-select-suffix {
+// Reset form to initial state
+form.reset();
+
+// Validate and save
+if (form.validateForm()) {
+  form.save();
 }
 ```
 
-### Custom Styling
+## Conditional Fields
 
 ```typescript
 {
-  name: 'description',
+  name: 'reason',
+  label: 'Reason for leaving',
   type: FormFieldType.TEXTAREA,
-  styling: {
-    wrapper: 'custom-wrapper',
-    input: 'custom-textarea',
-    label: 'custom-label'
-  }
+  hidden: (form) => form.getField('isStaying').value() === true
+}
+
+{
+  name: 'managerEmail',
+  label: 'Manager Email',
+  type: FormFieldType.TEXT,
+  disabled: (form) => form.getField('hasManager').value() === false
 }
 ```
 
----
+## Styling
 
-## 🤝 Contributing
+The library uses CSS variables for theming:
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+```css
+:root {
+  --signal-form-text: #1f2937;
+  --signal-form-background: #ffffff;
+  --signal-form-border-color: #d1d5db;
+  --signal-form-border-radius-sm: 0.375rem;
+  --signal-form-outline-focus: #3b82f6;
+  --signal-form-error-color: #ef4444;
+  --signal-form-success-color: #10b981;
+}
+```
 
----
+## Form Outputs
 
-## 📄 License
+### Template Output Pattern
 
-MIT © Steven Dix
+```html
+<signal-form-container [form]="form" (onSave)="handleSave($event)">
+  <signal-form-fields />
+  <signal-form-save-button />
+</signal-form-container>
+```
+
+### Callback Pattern
+
+```typescript
+form = this.formBuilder.createForm({
+  model: myModel,
+  fields: myFields,
+  onSave: (value) => {
+    console.log("Form saved with:", value);
+    this.apiService.saveData(value);
+  },
+});
+```
+
+## License
+
+MIT @ Steven Dix
