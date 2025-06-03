@@ -1,5 +1,7 @@
 import { FormFieldType } from '@enums/form-field-type.enum';
+import { NumberInputType } from '@enums/number-input-type.enum';
 import { type SignalFormFieldBuilderInput } from '@models/signal-form.model';
+import { ConversionUtils } from '@models/unit-conversion.model';
 import { type Basket } from '../models/example.model';
 
 export const aboutForm: SignalFormFieldBuilderInput<Basket> = {
@@ -14,6 +16,89 @@ export const aboutForm: SignalFormFieldBuilderInput<Basket> = {
       config: {
         maxSizeMb: 5,
       },
+    },
+    {
+      name: 'personal',
+      heading: 'Personal Details',
+      subheading: 'Tell us about yourself',
+      fields: [
+        {
+          name: 'age',
+          type: FormFieldType.NUMBER,
+          label: 'Age',
+          config: {
+            inputType: NumberInputType.INTEGER,
+            min: 13,
+            max: 120,
+            hint: 'You must be at least 13 years old',
+          },
+          validators: [
+            (value: number) => (!value ? 'Age is required' : null),
+            (value: number) =>
+              value < 13 ? 'You must be at least 13 years old' : null,
+          ],
+        },
+        {
+          name: 'income',
+          type: FormFieldType.NUMBER,
+          label: 'Annual Income',
+          config: {
+            inputType: NumberInputType.CURRENCY,
+            currencyCode: 'USD',
+            locale: 'en-US',
+            placeholder: 'Enter your annual income',
+          },
+        },
+        {
+          name: 'weight',
+          type: FormFieldType.NUMBER,
+          label: 'Weight',
+          config: {
+            inputType: NumberInputType.UNIT_CONVERSION,
+            unitConversions: {
+              unitConversions: ConversionUtils.weight,
+              defaultUnit: 'kg',
+              unitPosition: 'suffix',
+              parser: (value) => value.toFixed(1),
+              precision: 2,
+            },
+            hint: 'Enter your weight - units will auto-convert',
+          },
+        },
+        {
+          name: 'height',
+          type: FormFieldType.NUMBER,
+          label: 'Height',
+          config: {
+            inputType: NumberInputType.UNIT_CONVERSION,
+            unitConversions: {
+              unitConversions: ConversionUtils.length,
+              defaultUnit: 'cm',
+              unitPosition: 'suffix',
+              precision: 2,
+            },
+          },
+        },
+        {
+          name: 'bioDescription',
+          type: FormFieldType.TEXTAREA,
+          label: 'Bio Description',
+          config: {
+            wordCount: true,
+            placeholder: 'Tell us about yourself...',
+            minRows: 4,
+            maxRows: 8,
+          },
+          validators: [
+            (value: string) => {
+              if (!value) return null;
+              if (value.length > 500)
+                return 'Bio must be less than 500 characters';
+              return null;
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'contacts',
@@ -39,6 +124,7 @@ export const aboutForm: SignalFormFieldBuilderInput<Basket> = {
               trigger: 'blur',
               debounceMs: 500,
             },
+            wordCount: true,
           },
           validationConfig: {
             validateAsyncOnInit: false,
@@ -104,6 +190,7 @@ export const aboutForm: SignalFormFieldBuilderInput<Basket> = {
             validation: {
               trigger: 'submit',
             },
+            wordCount: true,
           },
         },
       ],
@@ -211,6 +298,7 @@ export const aboutForm: SignalFormFieldBuilderInput<Basket> = {
       ['rating', 'brightness', '.'],
       ['contacts', 'contacts', 'contacts'],
       ['preferences', 'preferences', 'preferences'],
+      ['personal', 'personal', 'personal'],
     ],
   },
 };

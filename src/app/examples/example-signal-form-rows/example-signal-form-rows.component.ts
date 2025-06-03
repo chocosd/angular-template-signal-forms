@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormBuilder } from '@builder/builder/form-builder';
+import { SignalFormBuilder } from '@builder/builder/form-builder';
 import { FormFieldType } from '@enums/form-field-type.enum';
 import {
   type FormOption,
@@ -59,7 +59,7 @@ export class ExampleSignalFormRowsComponent implements OnInit {
       favouriteFood: null,
     };
 
-    this.fieldsA = FormBuilder.createForm({
+    this.fieldsA = SignalFormBuilder.createForm({
       title: 'section A',
       model: userModelA,
       fields: [
@@ -101,7 +101,7 @@ export class ExampleSignalFormRowsComponent implements OnInit {
       },
     });
 
-    this.fieldsB = FormBuilder.createForm({
+    this.fieldsB = SignalFormBuilder.createForm({
       model: userModelB,
       fields: [
         {

@@ -30,6 +30,13 @@ export const model: Basket = {
   about: {
     profilePicture: null,
     bannerColor: null,
+    personal: {
+      age: 25,
+      income: 100000,
+      weight: 70,
+      height: 180,
+      bioDescription: 'I am a software engineer',
+    },
     contacts: [
       { email: 'hello@testtest.co.uk', phone: 7777777777, name: 'Steven' },
       { email: 'john@testtest.co.uk', phone: 7777077077, name: 'John' },

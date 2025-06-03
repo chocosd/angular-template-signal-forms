@@ -4,7 +4,7 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
-import { FormBuilder } from '@builder/builder/form-builder';
+import { SignalFormBuilder } from '@builder/builder/form-builder';
 import { FormFieldType } from '@enums/form-field-type.enum';
 import {
   type SignalFormContainer,
@@ -31,7 +31,7 @@ export class ExampleSignalFormStepperComponent implements OnInit {
   constructor() {}
 
   public ngOnInit(): void {
-    this.steppedForm = FormBuilder.createSteppedForm({
+    this.steppedForm = SignalFormBuilder.createSteppedForm({
       model,
       steps: [
         {

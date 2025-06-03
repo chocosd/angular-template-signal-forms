@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormBuilder } from '@builder/builder/form-builder';
+import { SignalFormBuilder } from '@builder/builder/form-builder';
 import { FormFieldType } from '@enums/form-field-type.enum';
 import { ArrayFormContainer } from '@models/signal-form.model';
 import { SignalFormFieldsComponent } from '@renderers/signal-form-fields/signal-form-fields.component';
@@ -46,7 +46,7 @@ export class ExampleContactsArrayComponent implements OnInit {
   public readonly RotateCcwIcon = RotateCcw;
 
   public ngOnInit(): void {
-    this.contactForms = FormBuilder.createFormFromArray<Contact>({
+    this.contactForms = SignalFormBuilder.createFormFromArray<Contact>({
       title: 'Contacts Manager',
       model: this.contactData,
       defaultItem: defaultContact,

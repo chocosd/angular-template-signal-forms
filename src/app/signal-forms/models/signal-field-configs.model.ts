@@ -1,6 +1,10 @@
-import { CurrencyType } from '../enums/currency-type.enum';
 import { FormFieldType } from '../enums/form-field-type.enum';
+import { NumberInputType } from '../enums/number-input-type.enum';
 import { type ValidationConfig } from './signal-form.model';
+import {
+  type UnitConversionConfig,
+  type UnitParser,
+} from './unit-conversion.model';
 
 /**
  * this config is extended on every other config type
@@ -9,6 +13,8 @@ export interface BaseFieldConfig<TModel, K extends keyof TModel> {
   placeholder?: string;
   hint?: string;
   validation?: ValidationConfig;
+  /** Enable word count display for text-based inputs */
+  wordCount?: boolean;
 }
 
 export interface TextFieldConfig<TModel, K extends keyof TModel>
@@ -16,13 +22,41 @@ export interface TextFieldConfig<TModel, K extends keyof TModel>
   prefix?: string;
   suffix?: string;
 }
+
 export interface NumberFieldConfig<TModel, K extends keyof TModel>
   extends BaseFieldConfig<TModel, K> {
-  currency?: CurrencyType;
   prefix?: string;
   suffix?: string;
   precision?: number;
+
+  /** Type of number input for specialized formatting */
+  inputType?: NumberInputType;
+
+  /** Custom parser function for number display formatting */
+  parser?: UnitParser;
+
+  /** Locale for Intl.NumberFormat (defaults to 'en-US') */
+  locale?: string;
+
+  /** Currency code when inputType is CURRENCY (e.g., 'USD', 'EUR') */
+  currencyCode?: string;
+
+  /** Number of decimal places for DECIMAL type */
+  decimalPlaces?: number;
+
+  /** Unit conversion configuration for UNIT_CONVERSION type */
+  unitConversions?: UnitConversionConfig;
+
+  /** Minimum value */
+  min?: number;
+
+  /** Maximum value */
+  max?: number;
+
+  /** Step increment for number input */
+  step?: number;
 }
+
 export interface CheckboxFieldConfig<TModel, K extends keyof TModel>
   extends BaseFieldConfig<TModel, K> {}
 export interface CheckboxGroupFieldConfig<TModel, K extends keyof TModel>
@@ -64,9 +98,17 @@ export interface RatingFieldConfig<TModel, K extends keyof TModel>
   allowHalf?: boolean;
 }
 export interface TextAreaFieldConfig<TModel, K extends keyof TModel>
-  extends BaseFieldConfig<TModel, K> {}
+  extends BaseFieldConfig<TModel, K> {
+  /** Maximum number of rows for auto-resize */
+  maxRows?: number;
+  /** Minimum number of rows */
+  minRows?: number;
+}
 export interface PasswordFieldConfig<TModel, K extends keyof TModel>
-  extends BaseFieldConfig<TModel, K> {}
+  extends BaseFieldConfig<TModel, K> {
+  /** Show/hide password toggle */
+  showToggle?: boolean;
+}
 export interface RadioFieldConfig<TModel, K extends keyof TModel>
   extends BaseFieldConfig<TModel, K> {
   valueType?: 'number' | 'boolean' | 'string';
