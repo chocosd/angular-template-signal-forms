@@ -1,27 +1,19 @@
+import { effect, inject, Injectable, Injector } from '@angular/core';
 import {
-  DestroyRef,
-  effect,
-  inject,
-  Injectable,
-  Injector,
-} from '@angular/core';
-import { BehaviorSubject, firstValueFrom, from, timer } from 'rxjs';
+  type SignalFormContainer,
+  type SignalFormField,
+  type ValidationConfig,
+  type ValidationTrigger,
+} from '@models/signal-form.model';
+import { firstValueFrom, from, timer } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import {
-  SignalFormContainer,
-  SignalFormField,
-  ValidationConfig,
-  ValidationTrigger,
-} from '../models/signal-form.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ValidationService {
-  private readonly destroyRef = inject(DestroyRef);
   private readonly injector = inject(Injector);
 
-  // Track which fields are set up for validation
   private readonly validatedFields = new Map<
     string,
     {
@@ -31,9 +23,6 @@ export class ValidationService {
     }
   >();
 
-  // Track trigger subjects separately to avoid type issues
-  private readonly triggerSubjects = new Map<string, BehaviorSubject<any>>();
-
   constructor() {
     this.setupSyncValidationEffect();
     this.setupBlurValidationEffect();
@@ -42,14 +31,13 @@ export class ValidationService {
   private setupSyncValidationEffect(): void {
     effect(
       () => {
-        // Process all registered fields for sync validation and change-based async validation
         this.validatedFields.forEach(({ field, form, config }) => {
           const value = field.value();
 
-          // Always run sync validation immediately
-          this.runSyncValidation(field, value, form);
+          if (config.trigger === 'change') {
+            this.runSyncValidation(field, value, form);
+          }
 
-          // Run async validation for change trigger with debouncing
           if (config.trigger === 'change' && field.asyncValidators?.length) {
             timer(config.debounceMs || 300).subscribe(() => {
               this.runAsyncValidation(field, value, form);
@@ -64,14 +52,13 @@ export class ValidationService {
   private setupBlurValidationEffect(): void {
     effect(
       () => {
-        // Process fields that should validate on blur
         this.validatedFields.forEach(({ field, form, config }) => {
-          if (
-            config.trigger === 'blur' &&
-            field.touched() &&
-            field.asyncValidators?.length
-          ) {
-            this.runAsyncValidation(field, field.value(), form);
+          if (config.trigger === 'blur' && field.touched()) {
+            this.runSyncValidation(field, field.value(), form);
+
+            if (field.asyncValidators?.length) {
+              this.runAsyncValidation(field, field.value(), form);
+            }
           }
         });
       },
@@ -89,15 +76,12 @@ export class ValidationService {
     const fieldPath = field.path;
     const config = this.getValidationConfig(field);
 
-    // Don't re-register if already exists
     if (this.validatedFields.has(fieldPath)) {
       return;
     }
 
-    // Register the field
     this.validatedFields.set(fieldPath, { field, form, config });
 
-    // Initial async validation if configured
     if (config.validateAsyncOnInit && field.asyncValidators?.length) {
       timer(0).subscribe(() => {
         this.runAsyncValidation(field, field.value(), form);
@@ -199,11 +183,11 @@ export class ValidationService {
     const fieldData = this.validatedFields.get(field.path);
 
     if (fieldData) {
-      // Always run sync validation
-      this.runSyncValidation(field, value, fieldData.form);
+      if (trigger === 'submit' || fieldData.config.trigger === 'change') {
+        this.runSyncValidation(field, value, fieldData.form);
+      }
 
-      // Run async validation for submit trigger or if field has async validators
-      if (trigger === 'submit' || field.asyncValidators?.length) {
+      if (trigger === 'submit' && field.asyncValidators?.length) {
         this.runAsyncValidation(field, value, fieldData.form);
       }
     }
@@ -267,5 +251,69 @@ export class ValidationService {
     }
 
     return false;
+  }
+
+  /**
+   * Validate all fields for submit trigger and return if form is valid
+   */
+  validateFormForSubmit<TModel>(
+    fields: SignalFormField<TModel>[],
+    form: SignalFormContainer<TModel>,
+  ): boolean {
+    let valid = true;
+
+    for (const field of fields) {
+      field.touched.set(true);
+
+      if (this.isFieldWithForm(field)) {
+        const nestedValid = field.form.validateForm();
+        valid = valid && nestedValid;
+        continue;
+      }
+
+      if (this.isRepeatableField(field)) {
+        const nestedForms = field.repeatableForms();
+        const allValid = nestedForms.every((form) => form.validateForm());
+        valid = valid && allValid;
+        continue;
+      }
+
+      const fieldData = this.validatedFields.get(field.path);
+      if (fieldData) {
+        this.runSyncValidation(field, field.value(), form);
+
+        if (field.error()) {
+          valid = false;
+        }
+      } else {
+        const validators = field.validators ?? [];
+        for (const validator of validators) {
+          const error = validator(field.value(), form);
+          if (error) {
+            field.error.set(error);
+            valid = false;
+            break;
+          } else {
+            field.error.set(null);
+          }
+        }
+      }
+    }
+
+    return valid;
+  }
+
+  private isFieldWithForm<TModel>(
+    field: SignalFormField<TModel>,
+  ): field is SignalFormField<TModel> & { form: SignalFormContainer<any> } {
+    return 'form' in field && field.form !== undefined;
+  }
+
+  private isRepeatableField<TModel>(
+    field: SignalFormField<TModel>,
+  ): field is SignalFormField<TModel> & {
+    repeatableForms: () => SignalFormContainer<any>[];
+  } {
+    return 'repeatableForms' in field && field.repeatableForms !== undefined;
   }
 }

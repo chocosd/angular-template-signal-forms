@@ -1,0 +1,64 @@
+<div
+  class="file-upload-dropzone"
+  role="button"
+  [signalModel]="field()"
+  [class.dragging]="isDragging()"
+  [class.has-file]="!!field().value()"
+  (drop)="onDrop($event)"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave()"
+  (click)="openFileDialog(fileInput)"
+  (keydown.enter)="openFileDialog(fileInput)"
+  (keydown.space)="openFileDialog(fileInput); $event.preventDefault()"
+>
+  @if (imagePreview()) {
+    <div class="image-preview-container">
+      <img [src]="imagePreview()" alt="Preview" class="image-preview" />
+      <button
+        type="button"
+        class="remove-file-btn"
+        (click)="removeFile(); $event.stopPropagation()"
+        aria-label="Remove file"
+      >
+        ✕
+      </button>
+    </div>
+  } @else if (field().value()) {
+    <div class="uploaded-file">
+      <span class="file-name">{{ fileName() }}</span>
+      <button
+        type="button"
+        class="remove-file-btn"
+        (click)="removeFile(); $event.stopPropagation()"
+        aria-label="Remove file"
+      >
+        ✕
+      </button>
+    </div>
+  } @else {
+    <div class="upload-icon" aria-hidden="true">☁️</div>
+    <div class="upload-text">
+      {{ field().config?.uploadText || "Click or drag a file to upload" }}
+    </div>
+  }
+
+  <input
+    #fileInput
+    class="sr-only"
+    type="file"
+    [accept]="field().config?.accept || '*/*'"
+    (change)="onFileChange($event)"
+  />
+
+  @if (uploadProgress() !== null) {
+    <div
+      class="progress-bar"
+      role="progressbar"
+      [attr.aria-valuenow]="uploadProgress()"
+      aria-valuemin="0"
+      aria-valuemax="100"
+    >
+      <div class="progress" [style.width.%]="uploadProgress()"></div>
+    </div>
+  }
+</div>

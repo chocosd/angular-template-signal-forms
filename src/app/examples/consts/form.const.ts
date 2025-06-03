@@ -24,6 +24,8 @@ export const model: Basket = {
       },
     ],
     priority: 'HIGH',
+    shippingMethod: 'STANDARD',
+    paymentMethod: 'CREDIT_CARD',
   },
   about: {
     profilePicture: null,
@@ -51,7 +53,7 @@ export const model: Basket = {
       },
     },
   },
-  apples: null,
+  apples: 1,
   pears: 80,
   applePrice: 1,
   pearPrice: 2,

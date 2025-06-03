@@ -1,13 +1,18 @@
-import { Signal, WritableSignal } from '@angular/core';
+import { Signal, Type, WritableSignal } from '@angular/core';
+import { type LucideIconData } from 'lucide-angular';
 import { Observable } from 'rxjs';
 import { FormFieldType } from '../enums/form-field-type.enum';
 import { FormStatus } from '../enums/form-status.enum';
 import { MetaValidatorFn } from '../helpers/with-meta';
 import { ConfigTypeForField } from './signal-field-configs.model';
 
-export interface FormOption<TResult = string | number | boolean | object> {
+export interface FormOption<
+  TResult = string | number | boolean | object,
+  TIcon = unknown,
+> {
   label: string;
   value: NonNullable<TResult>;
+  icon?: string | Type<TIcon> | LucideIconData;
 }
 
 export type SignalValidatorFn<T, TModel> = (
@@ -347,6 +352,8 @@ export type ErrorMessage<TModel> = {
   name: keyof TModel;
   message: string;
   path: string;
+  field?: SignalFormField<unknown>;
+  focusField?: () => void;
 };
 
 export type DeepPartial<T> = {
@@ -451,3 +458,54 @@ export type ElementTypeForField<T extends FormFieldType> =
                                   : T extends FormFieldType.AUTOCOMPLETE
                                     ? HTMLInputElement
                                     : never;
+
+// ========== Form Builder Types ==========
+export interface FormBuilderArgs<TModel> {
+  model: TModel;
+  fields: SignalFormFieldBuilderInput<TModel>[];
+  title?: string;
+  config?: SignalFormConfig<TModel>;
+  onSave?: (value: TModel) => void;
+  parentForm?: SignalFormContainer<unknown>;
+  parentPath?: string;
+}
+
+export interface SteppedFormBuilderArgs<TModel> {
+  model: TModel;
+  steps: {
+    fields: SignalFormFieldBuilderInput<TModel>[];
+    config?: SignalFormConfig<TModel>;
+    title?: string;
+    description?: string;
+  }[];
+  onSave?: (value: TModel) => void;
+  config?: SignalSteppedFormConfig<TModel>;
+}
+
+export interface ArrayFormBuilderArgs<TModel> {
+  model: TModel[];
+  fields: SignalFormFieldBuilderInput<TModel>[];
+  title?: string;
+  config?: SignalFormConfig<TModel>;
+  onSave?: (value: TModel[]) => void;
+  onItemAdd?: (item: TModel) => void;
+  onItemRemove?: (index: number) => void;
+  defaultItem?: Partial<TModel>;
+  parentForm?: SignalFormContainer<unknown>;
+  parentPath?: string;
+}
+
+export interface ArrayFormContainer<TModel> {
+  title?: string;
+  forms: () => SignalFormContainer<TModel>[];
+  value: () => TModel[];
+  addItem: (item?: Partial<TModel>) => void;
+  removeItem: (index: number) => void;
+  validateAll: () => boolean;
+  getErrors: () => ErrorMessage<TModel>[];
+  save: () => void;
+  reset: () => void;
+  anyTouched: () => boolean;
+  anyDirty: () => boolean;
+  status: () => FormStatus;
+}

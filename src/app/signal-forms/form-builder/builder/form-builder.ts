@@ -2,40 +2,19 @@
 import { computed, signal } from '@angular/core';
 import { FormStatus } from '@enums/form-status.enum';
 import {
+  type ArrayFormBuilderArgs,
+  type ArrayFormContainer,
   type ErrorMessage,
-  type SignalFormConfig,
+  type FormBuilderArgs,
   type SignalFormContainer,
   type SignalFormField,
-  type SignalFormFieldBuilderInput,
-  type SignalSteppedFormConfig,
   type SignalSteppedFormContainer,
+  type SteppedFormBuilderArgs,
 } from '@models/signal-form.model';
 import { FormEngine } from '../engine/form-engine';
 import { FieldFactory } from '../factory/field-factory';
 import { FieldUtils } from '../utils/field-utils';
 // #endregion
-
-export interface FormBuilderArgs<TModel> {
-  model: TModel;
-  fields: SignalFormFieldBuilderInput<TModel>[];
-  title?: string;
-  config?: SignalFormConfig<TModel>;
-  onSave?: (value: TModel) => void;
-  parentForm?: SignalFormContainer<unknown>;
-  parentPath?: string;
-}
-
-export interface SteppedFormBuilderArgs<TModel> {
-  model: TModel;
-  steps: {
-    fields: SignalFormFieldBuilderInput<TModel>[];
-    config?: SignalFormConfig<TModel>;
-    title?: string;
-    description?: string;
-  }[];
-  onSave?: (value: TModel) => void;
-  config?: SignalSteppedFormConfig<TModel>;
-}
 
 export class FormBuilder {
   static createForm<TModel>(
@@ -177,6 +156,117 @@ export class FormBuilder {
         ...args.config,
         canSkipIncompleteSteps: args.config?.canSkipIncompleteSteps ?? false,
       },
+    };
+  }
+
+  static createFormFromArray<TModel>(
+    args: ArrayFormBuilderArgs<TModel>,
+  ): ArrayFormContainer<TModel> {
+    const formsSignal = signal<SignalFormContainer<TModel>[]>([]);
+    const status = signal<FormStatus>(FormStatus.Idle);
+
+    // Create initial forms from the model array
+    const initialForms = args.model.map((item, index) =>
+      FormBuilder.createForm<TModel>({
+        model: item,
+        fields: args.fields,
+        config: args.config,
+        parentForm: args.parentForm,
+        parentPath: args.parentPath
+          ? `${args.parentPath}[${index}]`
+          : `[${index}]`,
+      }),
+    );
+
+    formsSignal.set(initialForms);
+
+    const addItem = (item?: Partial<TModel>) => {
+      const currentForms = formsSignal();
+      const defaultItemMerged = { ...args.defaultItem, ...item } as TModel;
+      const newIndex = currentForms.length;
+
+      const newForm = FormBuilder.createForm<TModel>({
+        model: defaultItemMerged,
+        fields: args.fields,
+        config: args.config,
+        parentForm: args.parentForm,
+        parentPath: args.parentPath
+          ? `${args.parentPath}[${newIndex}]`
+          : `[${newIndex}]`,
+      });
+
+      formsSignal.update((forms) => [...forms, newForm]);
+      args.onItemAdd?.(defaultItemMerged);
+    };
+
+    const removeItem = (index: number) => {
+      formsSignal.update((forms) => forms.filter((_, i) => i !== index));
+      args.onItemRemove?.(index);
+    };
+
+    const getValue = (): TModel[] => {
+      return formsSignal().map((form) => form.getValue());
+    };
+
+    const validateAll = (): boolean => {
+      return formsSignal().every((form) => form.validateForm());
+    };
+
+    const getErrors = (): ErrorMessage<TModel>[] => {
+      return formsSignal().flatMap((form, index) =>
+        form.getErrors().map((error) => ({
+          ...error,
+          path: `[${index}].${error.path}`,
+        })),
+      );
+    };
+
+    const save = () => {
+      if (validateAll()) {
+        status.set(FormStatus.Success);
+        args.onSave?.(getValue());
+      } else {
+        status.set(FormStatus.Error);
+      }
+    };
+
+    const reset = () => {
+      const resetForms = args.model.map((item, index) =>
+        FormBuilder.createForm<TModel>({
+          model: item,
+          fields: args.fields,
+          config: args.config,
+          parentForm: args.parentForm,
+          parentPath: args.parentPath
+            ? `${args.parentPath}[${index}]`
+            : `[${index}]`,
+        }),
+      );
+      formsSignal.set(resetForms);
+      status.set(FormStatus.Idle);
+    };
+
+    const anyTouched = (): boolean => {
+      return formsSignal().some((form) => form.anyTouched());
+    };
+
+    const anyDirty = (): boolean => {
+      return formsSignal().some((form) => form.anyDirty());
+    };
+
+    return {
+      title: args.title,
+      forms: formsSignal,
+      value: getValue,
+      addItem,
+      removeItem,
+      validateAll,
+      getErrors,
+      save,
+      reset,
+      anyTouched,
+      anyDirty,
+      status: () => status(),
     };
   }
 }

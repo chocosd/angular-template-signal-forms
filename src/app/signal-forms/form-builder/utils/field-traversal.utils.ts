@@ -1,7 +1,7 @@
 import {
-  SignalFormContainer,
-  SignalFormField,
-} from '../../models/signal-form.model';
+  type SignalFormContainer,
+  type SignalFormField,
+} from '@models/signal-form.model';
 
 interface FieldWithForm<T> {
   form: SignalFormContainer<T>;
@@ -16,55 +16,102 @@ export class FieldTraversalUtils {
     form: SignalFormContainer<TModel>,
     path: string,
   ): SignalFormField<TModel> | undefined {
-    const segments = path.split('.');
+    console.log('FieldTraversalUtils: searching for path:', path);
+    const segments = this.parsePath(path);
+    console.log('FieldTraversalUtils: parsed segments:', segments);
     let currentField: SignalFormField<TModel> | undefined;
     let currentForm: SignalFormContainer<TModel> = form;
 
     for (let i = 0; i < segments.length; i++) {
       const segment = segments[i];
+      console.log(`FieldTraversalUtils: processing segment ${i}:`, segment);
 
-      // Check if we're dealing with an array index
-      const isArrayIndex = !isNaN(Number(segment));
+      if (segment.type === 'field') {
+        currentField = currentForm.fields.find(
+          (f) => f.name === segment.name,
+        ) as SignalFormField<TModel> | undefined;
 
-      if (
-        isArrayIndex &&
-        currentField &&
-        this.isRepeatableField(currentField)
-      ) {
-        // Handle repeatable field array index
-        const index = Number(segment);
-        const forms = currentField.repeatableForms();
-        if (Array.isArray(forms) && forms[index]) {
-          currentForm = forms[index];
-          continue;
+        console.log(
+          `FieldTraversalUtils: found field for '${segment.name}':`,
+          currentField?.name,
+          currentField?.path,
+        );
+
+        if (!currentField) {
+          console.log(
+            'FieldTraversalUtils: field not found, returning undefined',
+          );
+          return undefined;
         }
-      }
 
-      // Try to find the field in the current form
-      currentField = currentForm.fields.find((f) => f.name === segment) as
-        | SignalFormField<TModel>
-        | undefined;
-
-      if (!currentField) {
-        return undefined;
-      }
-
-      // If this isn't the last segment and we have a nested form, update currentForm
-      if (i < segments.length - 1) {
-        if (this.isFieldWithForm(currentField)) {
-          // Handle nested form
-          currentForm = currentField.form;
-        } else if (this.isRepeatableField(currentField)) {
-          // Wait for next iteration to handle array index
-          continue;
+        if (i < segments.length - 1) {
+          if (this.isFieldWithForm(currentField)) {
+            currentForm = currentField.form;
+            console.log('FieldTraversalUtils: moved to nested form');
+          } else if (this.isRepeatableField(currentField)) {
+            console.log(
+              'FieldTraversalUtils: found repeatable field, continuing',
+            );
+            continue;
+          } else {
+            console.log('FieldTraversalUtils: cannot traverse further');
+            return undefined;
+          }
+        }
+      } else if (segment.type === 'index') {
+        if (currentField && this.isRepeatableField(currentField)) {
+          const forms = currentField.repeatableForms();
+          console.log(
+            `FieldTraversalUtils: accessing index ${segment.index} from ${forms.length} forms`,
+          );
+          if (Array.isArray(forms) && forms[segment.index]) {
+            currentForm = forms[segment.index];
+            console.log(
+              'FieldTraversalUtils: moved to form at index',
+              segment.index,
+            );
+          } else {
+            console.log('FieldTraversalUtils: index out of bounds');
+            return undefined;
+          }
         } else {
-          // Can't traverse further
+          console.log(
+            'FieldTraversalUtils: trying to access index but not on repeatable field',
+          );
           return undefined;
         }
       }
     }
 
+    console.log(
+      'FieldTraversalUtils: returning field:',
+      currentField?.name,
+      currentField?.path,
+    );
     return currentField;
+  }
+
+  private static parsePath(
+    path: string,
+  ): Array<{ type: 'field'; name: string } | { type: 'index'; index: number }> {
+    const segments: Array<
+      { type: 'field'; name: string } | { type: 'index'; index: number }
+    > = [];
+    const parts = path.split(/[\.\[\]]+/).filter(Boolean);
+
+    let i = 0;
+    while (i < parts.length) {
+      const part = parts[i];
+
+      if (!isNaN(Number(part))) {
+        segments.push({ type: 'index', index: Number(part) });
+      } else {
+        segments.push({ type: 'field', name: part });
+      }
+      i++;
+    }
+
+    return segments;
   }
 
   private static isFieldWithForm<T>(

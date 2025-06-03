@@ -4,6 +4,7 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
+import { ExampleContactsArrayComponent } from './examples/example-contacts-array/example-contacts-array.component';
 import { ExampleSignalFormRowsComponent } from './examples/example-signal-form-rows/example-signal-form-rows.component';
 import { ExampleSignalFormStepperComponent } from './examples/example-signal-form-stepper/example-signal-form-stepper.component';
 import { ExampleSignalFormComponent } from './examples/example-signal-form/example-signal-form.component';
@@ -15,6 +16,7 @@ import { ExampleSignalFormComponent } from './examples/example-signal-form/examp
     ExampleSignalFormComponent,
     ExampleSignalFormRowsComponent,
     ExampleSignalFormStepperComponent,
+    ExampleContactsArrayComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -35,9 +37,15 @@ export class AppComponent implements OnInit {
       action: () => this.showFormRows(),
       label: 'show form rows',
     },
+    {
+      action: () => this.showContactsArray(),
+      label: 'show contacts array',
+    },
   ];
 
-  protected view = signal<'form' | 'stepper' | 'form-rows' | null>('form');
+  protected view = signal<
+    'form' | 'stepper' | 'form-rows' | 'contacts-array' | null
+  >('form');
 
   protected showForm(): void {
     this.view.set('form');
@@ -49,6 +57,10 @@ export class AppComponent implements OnInit {
 
   protected showFormRows(): void {
     this.view.set('form-rows');
+  }
+
+  protected showContactsArray(): void {
+    this.view.set('contacts-array');
   }
 
   public ngOnInit(): void {}

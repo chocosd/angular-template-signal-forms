@@ -319,16 +319,20 @@ describe('FormEngine', () => {
       const errors = getErrorsFn();
 
       expect(errors).toHaveLength(2);
-      expect(errors[0]).toEqual({
-        name: 'name',
-        message: 'Name is required',
-        path: 'name',
-      });
-      expect(errors[1]).toEqual({
-        name: 'email',
-        message: 'Invalid email',
-        path: 'email',
-      });
+      expect(errors[0]).toEqual(
+        expect.objectContaining({
+          name: 'name',
+          message: 'Name is required',
+          path: 'name',
+        }),
+      );
+      expect(errors[1]).toEqual(
+        expect.objectContaining({
+          name: 'email',
+          message: 'Invalid email',
+          path: 'email',
+        }),
+      );
     });
 
     it('should collect errors from nested forms with updated paths', () => {

@@ -1,16 +1,16 @@
-import { computed } from '@angular/core';
-import { FormStatus } from '../../enums/form-status.enum';
+import { computed, WritableSignal } from '@angular/core';
+import { FormStatus } from '@enums/form-status.enum';
 import {
-  SignalFormContainer,
-  SignalFormField,
-} from '../../models/signal-form.model';
+  type SignalFormContainer,
+  type SignalFormField,
+} from '@models/signal-form.model';
 
 type FieldWithForm<TModel> = SignalFormField<TModel> & {
   form: SignalFormContainer<TModel[keyof TModel]>;
 };
 
 type RepeatableField<TModel> = SignalFormField<TModel> & {
-  repeatableForms: SignalFormContainer<any>[];
+  repeatableForms: WritableSignal<SignalFormContainer<any>[]>;
 };
 
 export class FieldUtils {
@@ -26,7 +26,7 @@ export class FieldUtils {
             return true;
           }
 
-          return field.repeatableForms.some((form) => form.anyTouched());
+          return field.repeatableForms().some((form) => form.anyTouched());
         }
 
         return field.touched();
@@ -56,7 +56,7 @@ export class FieldUtils {
             return true;
           }
 
-          return field.repeatableForms.some((form) => form.anyDirty());
+          return field.repeatableForms().some((form) => form.anyDirty());
         }
 
         return field.dirty();
@@ -73,6 +73,6 @@ export class FieldUtils {
   private static isRepeatableField<TModel>(
     field: SignalFormField<TModel>,
   ): field is RepeatableField<TModel> {
-    return 'repeatableForms' in field && Array.isArray(field.repeatableForms);
+    return 'repeatableForms' in field && field.repeatableForms !== undefined;
   }
 }

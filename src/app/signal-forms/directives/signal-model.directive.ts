@@ -13,19 +13,19 @@ import {
   input,
   signal,
 } from '@angular/core';
+import { FormFieldType } from '@enums/form-field-type.enum';
 import {
   type RadioFieldConfig,
   type SelectFieldConfig,
 } from '@models/signal-field-configs.model';
-import { FormFieldType } from '../enums/form-field-type.enum';
-import { ValueHelper } from '../helpers/value.helper';
 import {
-  SignalFormContainer,
   type ElementTypeForField,
   type FormOption,
+  type SignalFormContainer,
   type SignalFormField,
-} from '../models/signal-form.model';
-import { FieldRoleAttributesService } from '../services/field-role-attributes.service';
+} from '@models/signal-form.model';
+import { FieldRoleAttributesService } from '@services/field-role-attributes.service';
+import { ValueHelper } from '../helpers/value.helper';
 
 /**
  * Signal-based form field directive that handles two-way data binding, validation,
@@ -79,7 +79,36 @@ export class SignalModelDirective<
    */
   @HostBinding('attr.id')
   public get id(): string {
-    return String(this.signalModel().name);
+    const baseName = String(this.signalModel().name);
+
+    // For radio buttons, we need unique IDs within the group
+    if (this.elementRef.nativeElement.type === 'radio') {
+      return this.generateUniqueRadioId(baseName);
+    }
+
+    return baseName;
+  }
+
+  /**
+   * Generates a unique ID for radio buttons by checking existing IDs in the DOM
+   */
+  private generateUniqueRadioId(baseName: string): string {
+    // Check if any other radio with the same name already exists
+    const existingRadios = document.querySelectorAll(
+      `input[name="${baseName}"]`,
+    );
+    const existingIds = Array.from(existingRadios).map((radio) => radio.id);
+
+    // Generate ID with index
+    let index = 0;
+    let candidateId = `${baseName}_${index}`;
+
+    while (existingIds.includes(candidateId)) {
+      index++;
+      candidateId = `${baseName}_${index}`;
+    }
+
+    return candidateId;
   }
 
   /**

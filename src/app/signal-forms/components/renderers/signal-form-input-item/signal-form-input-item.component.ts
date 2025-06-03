@@ -15,23 +15,23 @@ import {
 } from '@angular/core';
 import { SignalFormHostDirective } from '@base/host-directive/signal-form-host.directive';
 import { FormFieldType } from '@enums/form-field-type.enum';
-import { FormAutocompleteFieldComponent } from '@fields/form-autocomplete-field/form-autocomplete-field.component';
-import { FormCheckboxFieldComponent } from '@fields/form-checkbox-field/form-checkbox-field.component';
-import { FormCheckboxGroupFieldComponent } from '@fields/form-checkbox-group-field/form-checkbox-group-field.component';
-import { FormChipListFieldComponent } from '@fields/form-chip-list-field/form-chip-list-field.component';
-import { FormColorFieldComponent } from '@fields/form-color-field/form-color-field.component';
-import { FormDatetimeFieldComponent } from '@fields/form-datetime-field/form-datetime-field.component';
-import { FormFileFieldComponent } from '@fields/form-file-field/form-file-field.component';
-import { FormMultiselectFieldComponent } from '@fields/form-multiselect-field/form-multiselect-field.component';
-import { FormNumberFieldComponent } from '@fields/form-number-field/form-number-field.component';
-import { FormPasswordFieldComponent } from '@fields/form-password-field/form-password-field.component';
-import { FormRadioFieldComponent } from '@fields/form-radio-field/form-radio-field.component';
-import { FormRatingFieldComponent } from '@fields/form-rating-field/form-rating-field.component';
-import { FormSelectFieldComponent } from '@fields/form-select-field/form-select-field.component';
-import { FormSliderFieldComponent } from '@fields/form-slider-field/form-slider-field.component';
-import { FormSwitchFieldComponent } from '@fields/form-switch-field/form-switch-field.component';
-import { FormTextFieldComponent } from '@fields/form-text-field/form-text-field.component';
-import { FormTextareaFieldComponent } from '@fields/form-textarea-field/form-textarea-field.component';
+import { SignalFormAutocompleteFieldComponent } from '@fields/signal-form-autocomplete-field/signal-form-autocomplete-field.component';
+import { SignalFormCheckboxFieldComponent } from '@fields/signal-form-checkbox-field/signal-form-checkbox-field.component';
+import { SignalFormCheckboxGroupFieldComponent } from '@fields/signal-form-checkbox-group-field/signal-form-checkbox-group-field.component';
+import { SignalFormChipListFieldComponent } from '@fields/signal-form-chip-list-field/signal-form-chip-list-field.component';
+import { SignalFormColorFieldComponent } from '@fields/signal-form-color-field/signal-form-color-field.component';
+import { SignalFormDatetimeFieldComponent } from '@fields/signal-form-datetime-field/signal-form-datetime-field.component';
+import { SignalFormFileFieldComponent } from '@fields/signal-form-file-field/signal-form-file-field.component';
+import { SignalFormMultiselectFieldComponent } from '@fields/signal-form-multiselect-field/signal-form-multiselect-field.component';
+import { SignalFormNumberFieldComponent } from '@fields/signal-form-number-field/signal-form-number-field.component';
+import { SignalFormPasswordFieldComponent } from '@fields/signal-form-password-field/signal-form-password-field.component';
+import { SignalFormRadioFieldComponent } from '@fields/signal-form-radio-field/signal-form-radio-field.component';
+import { SignalFormRatingFieldComponent } from '@fields/signal-form-rating-field/signal-form-rating-field.component';
+import { SignalFormSelectFieldComponent } from '@fields/signal-form-select-field/signal-form-select-field.component';
+import { SignalFormSliderFieldComponent } from '@fields/signal-form-slider-field/signal-form-slider-field.component';
+import { SignalFormSwitchFieldComponent } from '@fields/signal-form-switch-field/signal-form-switch-field.component';
+import { SignalFormTextFieldComponent } from '@fields/signal-form-text-field/signal-form-text-field.component';
+import { SignalFormTextareaFieldComponent } from '@fields/signal-form-textarea-field/signal-form-textarea-field.component';
 import {
   type SignalFormContainer,
   type SignalFormField,
@@ -46,23 +46,23 @@ import { isRequired } from '../../../helpers/is-required';
   selector: 'signal-form-input-item',
   imports: [
     CommonModule,
-    FormAutocompleteFieldComponent,
-    FormTextFieldComponent,
-    FormPasswordFieldComponent,
-    FormTextareaFieldComponent,
-    FormNumberFieldComponent,
-    FormSelectFieldComponent,
-    FormRadioFieldComponent,
-    FormCheckboxFieldComponent,
-    FormCheckboxGroupFieldComponent,
-    FormDatetimeFieldComponent,
-    FormColorFieldComponent,
-    FormSwitchFieldComponent,
-    FormSliderFieldComponent,
-    FormFileFieldComponent,
-    FormRatingFieldComponent,
-    FormMultiselectFieldComponent,
-    FormChipListFieldComponent,
+    SignalFormAutocompleteFieldComponent,
+    SignalFormTextFieldComponent,
+    SignalFormPasswordFieldComponent,
+    SignalFormTextareaFieldComponent,
+    SignalFormNumberFieldComponent,
+    SignalFormSelectFieldComponent,
+    SignalFormRadioFieldComponent,
+    SignalFormCheckboxFieldComponent,
+    SignalFormCheckboxGroupFieldComponent,
+    SignalFormDatetimeFieldComponent,
+    SignalFormColorFieldComponent,
+    SignalFormSwitchFieldComponent,
+    SignalFormSliderFieldComponent,
+    SignalFormFileFieldComponent,
+    SignalFormRatingFieldComponent,
+    SignalFormMultiselectFieldComponent,
+    SignalFormChipListFieldComponent,
     FormFieldSkeletonMapperComponent,
   ],
   hostDirectives: [SignalFormHostDirective],
@@ -182,7 +182,7 @@ export class SignalFormInputItemComponent<TModel> {
         const el = this.host.nativeElement;
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
         const input = el.querySelector('input');
-        input.focus?.();
+        input?.focus?.();
 
         this.renderer.addClass(el, 'form-error-highlight');
 

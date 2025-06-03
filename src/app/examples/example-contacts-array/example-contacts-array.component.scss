@@ -1,0 +1,138 @@
+.contacts-manager {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: "Roboto", sans-serif;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 2rem;
+
+  h1 {
+    color: var(--signal-form-text);
+    margin-bottom: 0.5rem;
+    font-size: 2rem;
+    font-weight: 400;
+  }
+
+  .description {
+    color: var(--signal-form-muted);
+    font-size: 1rem;
+    margin: 0;
+  }
+}
+
+.contacts-actions,
+.global-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.contacts-list {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.contact-form-card {
+  background: var(--signal-form-bg);
+  border: 1px solid var(--signal-form-border-color);
+  border-radius: var(--signal-form-border-radius-sm);
+  box-shadow: var(--signal-form-shadow);
+  overflow: hidden;
+  transition: var(--signal-form-transition);
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.card-header {
+  background: #f8f9fa;
+  border-bottom: 1px solid var(--signal-form-border-color);
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--signal-form-text);
+  }
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+.card-footer {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-top: 1px solid var(--signal-form-border-color);
+}
+
+.form-status {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: var(--signal-form-border-radius-sm);
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--signal-form-muted);
+  border: 1px solid var(--signal-form-border-color);
+
+  p {
+    margin: 0;
+  }
+
+  strong {
+    color: var(--signal-form-text);
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: var(--signal-form-muted);
+  font-size: 1rem;
+}
+
+// Enhanced form-button styles for better alignment
+.form-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  lucide-icon {
+    display: flex;
+    align-items: center;
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .contacts-manager {
+    padding: 1rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .contacts-actions,
+  .global-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .card-header {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+}
