@@ -1,4 +1,4 @@
-import { effect, inject, Injectable, Injector } from '@angular/core';
+import { effect, inject, Injectable, Injector, signal } from '@angular/core';
 import {
   type SignalFormContainer,
   type SignalFormField,
@@ -23,9 +23,26 @@ export class ValidationService {
     }
   >();
 
+  // Blur refresh signal to track blur events
+  private readonly blurRefresh = signal<string | null>(null);
+
   constructor() {
     this.setupSyncValidationEffect();
     this.setupBlurValidationEffect();
+  }
+
+  /**
+   * Trigger blur validation for a specific field
+   * This creates a refresh signal that triggers validation
+   */
+  public triggerBlurValidation(fieldPath: string): void {
+    this.blurRefresh.set(fieldPath);
+    // Reset after a short delay to allow for multiple triggers
+    setTimeout(() => {
+      if (this.blurRefresh() === fieldPath) {
+        this.blurRefresh.set(null);
+      }
+    }, 50);
   }
 
   private setupSyncValidationEffect(): void {
@@ -52,15 +69,30 @@ export class ValidationService {
   private setupBlurValidationEffect(): void {
     effect(
       () => {
-        this.validatedFields.forEach(({ field, form, config }) => {
-          if (config.trigger === 'blur' && field.touched()) {
-            this.runSyncValidation(field, field.value(), form);
+        const blurredFieldPath = this.blurRefresh();
 
-            if (field.asyncValidators?.length) {
-              this.runAsyncValidation(field, field.value(), form);
-            }
+        if (!blurredFieldPath) {
+          return;
+        }
+
+        const fieldData = this.validatedFields.get(blurredFieldPath);
+        if (!fieldData) {
+          return;
+        }
+
+        const { field, form, config } = fieldData;
+
+        if (config.trigger === 'blur') {
+          // Mark as touched since blur occurred
+          field.touched.set(true);
+
+          // Run validation
+          this.runSyncValidation(field, field.value(), form);
+
+          if (field.asyncValidators?.length) {
+            this.runAsyncValidation(field, field.value(), form);
           }
-        });
+        }
       },
       { injector: this.injector },
     );

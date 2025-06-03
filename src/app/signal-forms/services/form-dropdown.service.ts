@@ -4,44 +4,10 @@ import {
   inject,
   Injectable,
   Injector,
-  ViewContainerRef,
 } from '@angular/core';
+import { type DropdownConfig } from '@models/dropdown.model';
 import { type FormOption } from '@models/signal-form.model';
 import { FormDropdownOverlayComponent } from '@ui/form-dropdown-overlay/form-dropdown-overlay.component';
-
-type BaseDropdownConfig<
-  TOption extends FormOption<TValue>,
-  TValue = TOption['value'],
-> = {
-  options: TOption[];
-  reference: HTMLElement;
-  ariaListboxId: string;
-  viewContainerRef: ViewContainerRef;
-  onClose?: () => void;
-};
-
-type SingleSelectConfig<
-  TOption extends FormOption<TValue>,
-  TValue = TOption['value'],
-> = BaseDropdownConfig<TOption, TValue> & {
-  multiselect: false;
-  initialSelection?: TOption | null;
-  onSelect: (option: TOption) => void;
-};
-
-type MultiSelectConfig<
-  TOption extends FormOption<TValue>,
-  TValue = TOption['value'],
-> = BaseDropdownConfig<TOption, TValue> & {
-  multiselect: true;
-  initialSelection?: TOption[] | null;
-  onSelect: (options: TOption[]) => void;
-};
-
-type DropdownConfig<
-  TOption extends FormOption<TValue>,
-  TValue = TOption['value'],
-> = SingleSelectConfig<TOption, TValue> | MultiSelectConfig<TOption, TValue>;
 
 @Injectable({ providedIn: 'root' })
 export class FormDropdownService {
@@ -89,8 +55,8 @@ export class FormDropdownService {
       const rect = config.reference.getBoundingClientRect();
 
       instance.setPosition({
-        top: rect.bottom + window.scrollY,
-        left: rect.left + window.scrollX,
+        top: rect.height,
+        left: 0,
         width: rect.width,
       });
     });

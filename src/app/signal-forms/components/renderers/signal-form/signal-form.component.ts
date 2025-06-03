@@ -6,7 +6,7 @@ import {
   input,
   output,
 } from '@angular/core';
-import { ErrorMessage, SignalFormContainer } from '@models/signal-form.model';
+import { SignalFormContainer } from '@models/signal-form.model';
 import { HasUnsavedChanges } from '../../../services/unsaved-changes.guard';
 import { SignalFormErrorSummaryComponent } from '../form-field-error-summary/signal-form-error-summary.component';
 import { SignalFormFieldsComponent } from '../signal-form-fields/signal-form-fields.component';
@@ -25,12 +25,7 @@ export class SignalFormComponent<TModel> implements HasUnsavedChanges {
 
   public formSubmit = output<SignalFormContainer<TModel>>();
 
-  protected disabled = computed(() => {
-    const errors = this.form().getErrors();
-    const hasErrors = errors.length > 0;
-    const allErrorsAreSubmitOnly = this.areAllErrorsSubmitOnly();
-    return hasErrors && !allErrorsAreSubmitOnly;
-  });
+  protected disabled = computed(() => this.form().saveButtonDisabled());
 
   public hasUnsavedChanges(): boolean {
     return this.form().anyDirty();
@@ -49,17 +44,5 @@ export class SignalFormComponent<TModel> implements HasUnsavedChanges {
     if (isValid) {
       this.formSubmit.emit(this.form());
     }
-  }
-
-  private areAllErrorsSubmitOnly(): boolean {
-    const errors = this.form().getErrors();
-    if (errors.length === 0) return true;
-
-    return errors.every((error: ErrorMessage<TModel>) => {
-      if (error.field) {
-        return error.field.validationConfig?.trigger === 'submit';
-      }
-      return false;
-    });
   }
 }

@@ -1,36 +1,151 @@
-.form-control {
-  &.is-validating {
-    .form-label {
-      opacity: 0.7;
+// Scoped to signal-form-input-item to prevent global pollution while allowing custom styling
+signal-form-input-item {
+  // CSS Custom Properties for user customization
+  --field-border-color: var(--signal-form-border-color, #d1d5db);
+  --field-border-radius: var(--signal-form-border-radius-sm, 4px);
+  --field-padding: var(--signal-form-field-padding, 0.5rem 0.75rem);
+  --field-font-size: var(--signal-form-font-size-base, 1rem);
+  --field-background: var(--signal-form-bg, #ffffff);
+  --field-focus-color: var(--signal-form-outline-focus, #3b82f6);
+  --field-error-color: var(--signal-form-error-color, #ef4444);
+  --field-success-color: var(--signal-form-success-color, #10b981);
+
+  .form-control {
+    &.is-validating {
+      .form-label {
+        opacity: 0.7;
+      }
+
+      input,
+      textarea,
+      select {
+        border-color: #fbbf24; // amber-400
+        background-color: rgba(251, 191, 36, 0.05);
+      }
     }
 
-    input,
-    textarea,
-    select {
-      border-color: #fbbf24; // amber-400
-      background-color: rgba(251, 191, 36, 0.05);
+    // User modifier classes can override these
+    &.premium-field {
+      border: 2px solid var(--premium-color, #8b5cf6);
+      background: var(
+        --premium-bg,
+        linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)
+      );
+      border-radius: var(--premium-radius, 8px);
+    }
+
+    &.compact-field {
+      .form-field-wrapper {
+        gap: 0.25rem;
+      }
+
+      .form-label {
+        font-size: 0.875rem;
+        margin-bottom: 0.25rem;
+      }
+    }
+
+    &.highlighted-field {
+      box-shadow: 0 0 0 3px var(--highlight-color, rgba(59, 130, 246, 0.1));
+      border-color: var(--highlight-border, #3b82f6);
     }
   }
-}
 
-.validation-spinner {
-  display: inline-block;
-  margin-left: 0.5rem;
-  animation: spin 1s linear infinite;
-  color: #fbbf24; // amber-400
-}
+  .form-field-wrapper {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
 
-.form-validating {
-  color: #fbbf24; // amber-400
-  font-size: 0.875rem;
-  font-style: italic;
-}
+    &.compact {
+      gap: 0.5rem;
+    }
 
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
+    &.spaced {
+      gap: 1rem;
+    }
+
+    &.fullwidth {
+      width: 100%;
+    }
+
+    & > * {
+      flex: 1;
+    }
+
+    &.custom-input-wrapper {
+      background: var(--input-wrapper-bg);
+      border: var(--input-wrapper-border);
+      border-radius: var(--input-wrapper-radius);
+      padding: var(--input-wrapper-padding);
+    }
+
+    &:has(> form-dropdown-overlay) {
+      position: relative;
+    }
   }
-  to {
-    transform: rotate(360deg);
+
+  .form-label {
+    &.label-prominent {
+      font-weight: 600;
+      color: var(--label-prominent-color, #1f2937);
+      font-size: var(--label-prominent-size, 1.125rem);
+    }
+
+    &.label-subtle {
+      font-weight: 400;
+      color: var(--label-subtle-color, #6b7280);
+      font-size: var(--label-subtle-size, 0.875rem);
+    }
+  }
+
+  .form-error {
+    &.error-prominent {
+      font-weight: 600;
+      color: var(--error-prominent-color, #dc2626);
+      padding: 0.25rem 0.5rem;
+      background: var(--error-prominent-bg, rgba(239, 68, 68, 0.1));
+      border-radius: var(--field-border-radius);
+    }
+
+    &.error-subtle {
+      font-weight: 400;
+      color: var(--error-subtle-color, #ef4444);
+      font-size: var(--error-subtle-size, 0.875rem);
+    }
+  }
+
+  .form-hint {
+    &.hint-prominent {
+      font-weight: 500;
+      color: var(--hint-prominent-color, #374151);
+    }
+
+    &.hint-subtle {
+      font-weight: 400;
+      color: var(--hint-subtle-color, #9ca3af);
+      font-size: var(--hint-subtle-size, 0.875rem);
+    }
+  }
+
+  .validation-spinner {
+    display: inline-block;
+    margin-left: 0.5rem;
+    animation: spin 1s linear infinite;
+    color: #fbbf24; // amber-400
+  }
+
+  .form-validating {
+    color: #fbbf24; // amber-400
+    font-size: 0.875rem;
+    font-style: italic;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
   }
 }

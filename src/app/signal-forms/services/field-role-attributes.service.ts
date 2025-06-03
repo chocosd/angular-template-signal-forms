@@ -1,12 +1,9 @@
 import { Injectable } from '@angular/core';
-import { type SignalFormField } from '@models/signal-form.model';
+import {
+  RoleAttributes,
+  type SignalFormField,
+} from '@models/signal-form.model';
 import { FormFieldType } from '../enums/form-field-type.enum';
-
-export interface RoleAttributes {
-  role?: string;
-  ariaAttributes: Record<string, string | boolean | null>;
-  inputAttributes: Record<string, string | boolean | null>;
-}
 
 @Injectable({
   providedIn: 'root',

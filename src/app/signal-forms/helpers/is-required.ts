@@ -1,5 +1,7 @@
-import { type SignalValidator } from '@models/signal-form.model';
-import { type MetaValidatorFn } from './with-meta';
+import {
+  MetaValidatorFn,
+  type SignalValidator,
+} from '@models/signal-form.model';
 
 export function isRequired<TVal, TModel>(field: {
   validators?: SignalValidator<TModel, keyof TModel>[];

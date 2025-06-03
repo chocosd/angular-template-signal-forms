@@ -9,8 +9,10 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { type RuntimeFields } from '@models/signal-field-types.model';
-import { type SignalFormContainer } from '@models/signal-form.model';
-import { MetaValidatorFn } from 'app/signal-forms/helpers/with-meta';
+import {
+  MetaValidatorFn,
+  type SignalFormContainer,
+} from '@models/signal-form.model';
 // #endregion
 
 /**

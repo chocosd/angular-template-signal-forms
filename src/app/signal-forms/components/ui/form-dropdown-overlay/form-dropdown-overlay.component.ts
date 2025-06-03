@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   effect,
@@ -22,7 +23,7 @@ import { fromEvent, tap } from 'rxjs';
   imports: [LucideAngularModule],
   templateUrl: './form-dropdown-overlay.component.html',
   styleUrl: './form-dropdown-overlay.component.scss',
-  // changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormDropdownOverlayComponent implements OnInit {
   public options = input.required<FormOption[]>();
@@ -116,15 +117,16 @@ export class FormDropdownOverlayComponent implements OnInit {
   }: {
     top: number;
     left: number;
-    width: number;
+    width: number | string;
   }): void {
     const el = this.elementRef.nativeElement;
+    const widthPx = typeof width === 'string' ? width : `${width}px`;
 
     Object.entries({
       position: 'absolute',
       top: `${top}px`,
       left: `${left}px`,
-      width: `${width}px`,
+      width: widthPx,
       zIndex: 1000,
     }).forEach(([key, val]) => this.renderer.setStyle(el, key, val));
   }

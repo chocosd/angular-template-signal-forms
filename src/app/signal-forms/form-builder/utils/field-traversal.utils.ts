@@ -1,15 +1,9 @@
 import {
+  type FieldWithFormTraversal,
+  type FieldWithRepeatableForms,
   type SignalFormContainer,
   type SignalFormField,
 } from '@models/signal-form.model';
-
-interface FieldWithForm<T> {
-  form: SignalFormContainer<T>;
-}
-
-interface FieldWithRepeatableForms<T> {
-  repeatableForms: () => SignalFormContainer<T>[];
-}
 
 export class FieldTraversalUtils {
   static findFieldByPath<TModel>(
@@ -31,63 +25,34 @@ export class FieldTraversalUtils {
           (f) => f.name === segment.name,
         ) as SignalFormField<TModel> | undefined;
 
-        console.log(
-          `FieldTraversalUtils: found field for '${segment.name}':`,
-          currentField?.name,
-          currentField?.path,
-        );
-
         if (!currentField) {
-          console.log(
-            'FieldTraversalUtils: field not found, returning undefined',
-          );
           return undefined;
         }
 
         if (i < segments.length - 1) {
           if (this.isFieldWithForm(currentField)) {
             currentForm = currentField.form;
-            console.log('FieldTraversalUtils: moved to nested form');
           } else if (this.isRepeatableField(currentField)) {
-            console.log(
-              'FieldTraversalUtils: found repeatable field, continuing',
-            );
             continue;
           } else {
-            console.log('FieldTraversalUtils: cannot traverse further');
             return undefined;
           }
         }
       } else if (segment.type === 'index') {
         if (currentField && this.isRepeatableField(currentField)) {
           const forms = currentField.repeatableForms();
-          console.log(
-            `FieldTraversalUtils: accessing index ${segment.index} from ${forms.length} forms`,
-          );
+
           if (Array.isArray(forms) && forms[segment.index]) {
             currentForm = forms[segment.index];
-            console.log(
-              'FieldTraversalUtils: moved to form at index',
-              segment.index,
-            );
           } else {
-            console.log('FieldTraversalUtils: index out of bounds');
             return undefined;
           }
         } else {
-          console.log(
-            'FieldTraversalUtils: trying to access index but not on repeatable field',
-          );
           return undefined;
         }
       }
     }
 
-    console.log(
-      'FieldTraversalUtils: returning field:',
-      currentField?.name,
-      currentField?.path,
-    );
     return currentField;
   }
 
@@ -116,7 +81,7 @@ export class FieldTraversalUtils {
 
   private static isFieldWithForm<T>(
     field: SignalFormField<T>,
-  ): field is SignalFormField<T> & FieldWithForm<T> {
+  ): field is SignalFormField<T> & FieldWithFormTraversal<T> {
     return 'form' in field && this.isSignalFormContainer(field.form);
   }
 
