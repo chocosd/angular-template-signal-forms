@@ -1,3 +1,51 @@
 <div class="form-input-wrapper">
-  <input type="number" class="form-input" [signalModel]="field()" />
+  <!-- Unit dropdown (prefix position) -->
+  @if (hasUnitConversion() && unitPosition() === "prefix") {
+    <select
+      class="form-select form-select-unit form-select-prefix"
+      [value]="currentUnit()"
+      (change)="onUnitChange($any($event.target).value)"
+    >
+      @for (unit of availableUnits(); track unit.key) {
+        <option [value]="unit.key">{{ unit.label }}</option>
+      }
+    </select>
+  }
+
+  <!-- Number input with conditional formatting -->
+  @if (showFormattedValue()) {
+    <!-- Show formatted value when not focused -->
+    <div
+      class="form-input form-input-formatted"
+      tabindex="0"
+      (focus)="onFocusFormattedDisplay()"
+      (click)="onFocusFormattedDisplay()"
+    >
+      {{ formattedValue() }}
+    </div>
+  } @else {
+    <!-- Show raw input when focused or no formatting needed -->
+    <input
+      type="number"
+      class="form-input"
+      [signalModel]="field()"
+      [step]="inputStep()"
+      [min]="inputMin()"
+      [max]="inputMax()"
+      (blur)="onBlurRawInput()"
+    />
+  }
+
+  <!-- Unit dropdown (suffix position) -->
+  @if (hasUnitConversion() && unitPosition() === "suffix") {
+    <select
+      class="form-select form-select-unit form-select-suffix"
+      [value]="currentUnit()"
+      (change)="onUnitChange($any($event.target).value)"
+    >
+      @for (unit of availableUnits(); track unit.key) {
+        <option [value]="unit.key">{{ unit.label }}</option>
+      }
+    </select>
+  }
 </div>

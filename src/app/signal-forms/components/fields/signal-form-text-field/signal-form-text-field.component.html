@@ -1,3 +1,11 @@
 <div class="form-input-wrapper">
   <input type="text" class="form-input" [signalModel]="field()" />
 </div>
+
+@if (field().config?.wordCount) {
+  <signal-form-word-count
+    [text]="field().value()"
+    format="characters"
+    [compact]="true"
+  />
+}

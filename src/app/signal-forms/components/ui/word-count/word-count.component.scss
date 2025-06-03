@@ -1,0 +1,21 @@
+.word-count {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 0.25rem;
+
+  .word-count-text {
+    font-size: 0.75rem;
+    color: #6b7280;
+    font-weight: 400;
+    user-select: none;
+  }
+
+  &.word-count-compact {
+    margin-top: 0.125rem;
+
+    .word-count-text {
+      font-size: 0.6875rem;
+    }
+  }
+}

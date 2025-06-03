@@ -11,12 +11,13 @@ import {
   type SignalFormContainer,
   type SignalFormField,
 } from '@models/signal-form.model';
+import { ValidationService } from '@services/validation.service';
 
 export class FormEngine {
   static validateForm<TModel>(
     fields: SignalFormField<TModel>[],
     form: SignalFormContainer<TModel>,
-    validationService?: any,
+    validationService?: ValidationService,
   ) {
     return (): boolean => {
       if (

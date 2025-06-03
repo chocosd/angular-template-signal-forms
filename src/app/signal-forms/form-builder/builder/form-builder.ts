@@ -17,7 +17,7 @@ import { FieldUtils } from '../utils/field-utils';
 // #endregion
 
 /**
- * FormBuilder - Main factory class for creating Signal Forms
+ * SignalFormBuilder - Main factory class for creating Signal Forms
  *
  * Provides static methods to create different types of forms:
  * - Single forms with standard fields
@@ -33,7 +33,7 @@ import { FieldUtils } from '../utils/field-utils';
  *
  * @example
  * ```typescript
- * const userForm = FormBuilder.createForm({
+ * const userForm = SignalFormBuilder.createForm({
  *   model: { name: '', email: '' },
  *   fields: [
  *     { name: 'name', type: FormFieldType.TEXT, label: 'Name' },
@@ -43,7 +43,7 @@ import { FieldUtils } from '../utils/field-utils';
  * });
  * ```
  */
-export class FormBuilder {
+export class SignalFormBuilder {
   /**
    * Creates a standard single-page form with specified fields
    *
@@ -64,7 +64,7 @@ export class FormBuilder {
    *
    * @example
    * ```typescript
-   * const contactForm = FormBuilder.createForm({
+   * const contactForm = SignalFormBuilder.createForm({
    *   model: { name: '', email: '', phone: '' },
    *   fields: [
    *     { name: 'name', type: FormFieldType.TEXT, label: 'Full Name' },
@@ -166,7 +166,7 @@ export class FormBuilder {
    *
    * @example
    * ```typescript
-   * const wizardForm = FormBuilder.createSteppedForm({
+   * const wizardForm = SignalFormBuilder.createSteppedForm({
    *   model: { personal: {}, contact: {}, preferences: {} },
    *   steps: [
    *     {
@@ -194,7 +194,7 @@ export class FormBuilder {
 
     // Create individual form containers for each step
     const steps: SignalFormContainer<TModel>[] = args.steps.map((step) =>
-      FormBuilder.createForm({
+      SignalFormBuilder.createForm({
         model: args.model,
         fields: step.fields,
         config: step.config,
@@ -332,7 +332,7 @@ export class FormBuilder {
    *
    * @example
    * ```typescript
-   * const contactsForm = FormBuilder.createFormFromArray({
+   * const contactsForm = SignalFormBuilder.createFormFromArray({
    *   model: [{ name: '', email: '' }],
    *   fields: [
    *     { name: 'name', type: FormFieldType.TEXT, label: 'Name' },
@@ -352,7 +352,7 @@ export class FormBuilder {
 
     // Create initial forms from the model array
     const initialForms = args.model.map((item, index) =>
-      FormBuilder.createForm<TModel>({
+      SignalFormBuilder.createForm<TModel>({
         model: item,
         fields: args.fields,
         config: args.config,
@@ -374,7 +374,7 @@ export class FormBuilder {
       const defaultItemMerged = { ...args.defaultItem, ...item } as TModel;
       const newIndex = currentForms.length;
 
-      const newForm = FormBuilder.createForm<TModel>({
+      const newForm = SignalFormBuilder.createForm<TModel>({
         model: defaultItemMerged,
         fields: args.fields,
         config: args.config,
@@ -446,7 +446,7 @@ export class FormBuilder {
      */
     const reset = () => {
       const resetForms = args.model.map((item, index) =>
-        FormBuilder.createForm<TModel>({
+        SignalFormBuilder.createForm<TModel>({
           model: item,
           fields: args.fields,
           config: args.config,

@@ -3,3 +3,11 @@
     field().value()
   }}</textarea>
 </div>
+
+@if (field().config?.wordCount) {
+  <signal-form-word-count
+    [text]="field().value()"
+    format="both"
+    [compact]="false"
+  />
+}

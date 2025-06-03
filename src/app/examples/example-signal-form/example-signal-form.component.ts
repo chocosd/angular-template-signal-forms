@@ -4,7 +4,7 @@ import {
   inject,
   OnInit,
 } from '@angular/core';
-import { FormBuilder } from '@builder/builder/form-builder';
+import { SignalFormBuilder } from '@builder/builder/form-builder';
 import { FormFieldType } from '@enums/form-field-type.enum';
 import { type SignalFormContainer } from '@models/signal-form.model';
 import { SignalFormComponent } from '@renderers/signal-form/signal-form.component';
@@ -32,7 +32,7 @@ export class ExampleSignalFormComponent implements OnInit {
   constructor() {}
 
   public ngOnInit(): void {
-    this.form = FormBuilder.createForm<Basket>({
+    this.form = SignalFormBuilder.createForm<Basket>({
       title: 'Test Form',
       model,
       fields: [

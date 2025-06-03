@@ -25,6 +25,13 @@ export type Basket = {
     rating: number;
     phoneNumber: number | null;
     features: string[];
+    personal: {
+      age: number;
+      income: number;
+      weight: number;
+      height: number;
+      bioDescription: string;
+    };
     preferences: {
       theme: string;
       notifications: {

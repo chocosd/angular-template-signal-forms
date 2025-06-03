@@ -12,7 +12,7 @@ import {
   type SignalFormField,
   type SignalFormFieldBuilderInput,
 } from '@models/signal-form.model';
-import { FormBuilder } from '../builder/form-builder';
+import { SignalFormBuilder } from '../builder/form-builder';
 
 /**
  * FieldFactory - Factory class for building Signal Form fields
@@ -279,7 +279,7 @@ export class FieldFactory {
     // Create individual forms for each array item
     const repeatableForms = signal(
       items.map((item, index) =>
-        FormBuilder.createForm<TItemType>({
+        SignalFormBuilder.createForm<TItemType>({
           model: item,
           fields: field.fields,
           config: field.config ?? { layout: 'flex' },
@@ -302,7 +302,7 @@ export class FieldFactory {
       addItem: (initial = {} as TItemType) => {
         const currentForms = repeatableForms();
         const newIndex = currentForms.length;
-        const newForm = FormBuilder.createForm<TItemType>({
+        const newForm = SignalFormBuilder.createForm<TItemType>({
           model: initial,
           fields: field.fields,
           config: field.config ?? { layout: 'flex' },
@@ -350,7 +350,7 @@ export class FieldFactory {
     type TNestedType = TModel[keyof TModel];
 
     // Create embedded form for the nested object
-    const nestedForm = FormBuilder.createForm<TNestedType>({
+    const nestedForm = SignalFormBuilder.createForm<TNestedType>({
       model: rawValue,
       fields: field.fields,
       config: field.config ?? { layout: 'flex' },
