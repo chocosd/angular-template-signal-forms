@@ -67,7 +67,7 @@ export class SignalFormErrorSummaryComponent<TModel> {
     this.focusCurrent();
   }
 
-  private focusCurrent(): void {
+  protected focusCurrent(): void {
     const err = this.currentError();
 
     if (!err) {
@@ -105,6 +105,11 @@ export class SignalFormErrorSummaryComponent<TModel> {
     err: ErrorMessage<TModel>,
     form: SignalFormContainer<TModel> = this.form() as SignalFormContainer<TModel>,
   ): void {
+    if (err.focusField) {
+      err.focusField();
+      return;
+    }
+
     const field = FieldTraversalUtils.findFieldByPath(form, err.path);
     if (field?.focus) {
       field.focus.set(true);

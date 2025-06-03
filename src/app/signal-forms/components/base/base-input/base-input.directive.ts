@@ -111,12 +111,11 @@ export abstract class BaseInputDirective<
 
   /**
    * Initializes the directive by setting up reactive effects for
-   * computed values, validation, and value watching
+   * computed values and value watching
    */
   constructor() {
     this.initializeComputedValueEffect();
     this.watchComputedValueEffect();
-    this.validationEffect();
   }
 
   /**
@@ -152,33 +151,6 @@ export abstract class BaseInputDirective<
 
         const newValue = field.computedValue(this.form());
         this.setValue(newValue, false);
-      },
-      { injector: this.injector },
-    );
-  }
-
-  /**
-   * Sets up an effect to handle field validation. Runs all validators
-   * whenever the field value changes and updates the error state.
-   *
-   * @private
-   */
-  private validationEffect(): void {
-    effect(
-      () => {
-        const field = this.field();
-        const value = field.value();
-
-        const validators = field.validators ?? [];
-        for (const validator of validators) {
-          const error = validator(value as TModel[K], this.form());
-          if (error) {
-            field.error.set(error);
-            return;
-          }
-        }
-
-        field.error.set(null);
       },
       { injector: this.injector },
     );

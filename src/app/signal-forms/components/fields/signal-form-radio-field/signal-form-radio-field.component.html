@@ -1,0 +1,42 @@
+<fieldset
+  class="form-radio-group"
+  role="radiogroup"
+  [attr.name]="field().name"
+  [attr.aria-invalid]="field().error() ? 'true' : 'false'"
+  [class.card-style]="hasIcons()"
+>
+  <legend class="sr-only">{{ field().label }}</legend>
+
+  @for (option of field().options(); track option.value) {
+    <label class="form-radio-option" [class.card-option]="hasIcons()">
+      <input
+        type="radio"
+        [signalModel]="field()"
+        [value]="valueToString(option.value)"
+        [checked]="isOptionSelected(option.value)"
+        [attr.name]="field().name"
+        class="radio-input"
+      />
+
+      @if (hasIcons()) {
+        <div class="card-content">
+          <div class="radio-indicator"></div>
+          @if (option.icon) {
+            <div class="option-icon">
+              @if (isLucideIcon(option.icon)) {
+                <lucide-icon [img]="option.icon" size="32" />
+              } @else if (isStringIcon(option.icon)) {
+                {{ option.icon }}
+              } @else if (isComponentIcon(option.icon)) {
+                <ng-container *ngComponentOutlet="option.icon"></ng-container>
+              }
+            </div>
+          }
+          <span class="option-label">{{ option.label }}</span>
+        </div>
+      } @else {
+        {{ option.label }}
+      }
+    </label>
+  }
+</fieldset>

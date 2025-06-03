@@ -11,6 +11,8 @@ export type Basket = {
     expectedDate: Date;
     postTo: FormOption[];
     priority: string;
+    shippingMethod: string;
+    paymentMethod: string;
     favouritePokemon: FormOption | null;
     favouritePokemonTypes: FormOption[];
   };

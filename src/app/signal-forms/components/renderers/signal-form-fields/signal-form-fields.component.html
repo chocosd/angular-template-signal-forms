@@ -1,4 +1,4 @@
-@if (isRoot() && form().config?.view === "collapsable") {
+@if (isRoot() && !signalFormParent() && form().config?.view === "collapsable") {
   <collapsible-section class="collapsable-fields">
     <ng-container summary>
       {{ form().title }}

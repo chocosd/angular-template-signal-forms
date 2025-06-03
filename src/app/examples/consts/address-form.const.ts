@@ -2,6 +2,7 @@ import { inject } from '@angular/core';
 import { FormFieldType } from '@enums/form-field-type.enum';
 import { type SignalFormFieldBuilderInput } from '@models/signal-form.model';
 import { TestApiService } from '@services/test-http.service';
+import { Banknote, CreditCard, Smartphone, Wallet } from 'lucide-angular';
 import { map } from 'rxjs';
 import { Basket } from '../models/example.model';
 import { pokemonList } from './pokemon-list.const';
@@ -159,9 +160,6 @@ export const addressForm = (
       name: 'instructions',
       label: 'Delivery instructions',
       type: FormFieldType.TEXTAREA,
-      config: {
-        placeholder: 'any delivery instructions we should know about?',
-      },
     },
     {
       name: 'expectedDate',
@@ -195,14 +193,71 @@ export const addressForm = (
         {
           label: 'High',
           value: 'HIGH',
+          icon: '🔥',
         },
         {
           label: 'Medium',
           value: 'MEDIUM',
+          icon: '⚡',
         },
         {
           label: 'Low',
           value: 'LOW',
+          icon: '🐌',
+        },
+      ],
+    },
+    {
+      name: 'shippingMethod',
+      label: 'Shipping Method',
+      type: FormFieldType.RADIO,
+      options: [
+        {
+          label: 'Express',
+          value: 'EXPRESS',
+          icon: '🚀',
+        },
+        {
+          label: 'Standard',
+          value: 'STANDARD',
+          icon: '📦',
+        },
+        {
+          label: 'Economy',
+          value: 'ECONOMY',
+          icon: '🚚',
+        },
+        {
+          label: 'Pickup',
+          value: 'PICKUP',
+          icon: '🏪',
+        },
+      ],
+    },
+    {
+      name: 'paymentMethod',
+      label: 'Payment Method',
+      type: FormFieldType.RADIO,
+      options: [
+        {
+          label: 'Credit Card',
+          value: 'CREDIT_CARD',
+          icon: CreditCard,
+        },
+        {
+          label: 'Mobile Pay',
+          value: 'MOBILE_PAY',
+          icon: Smartphone,
+        },
+        {
+          label: 'Digital Wallet',
+          value: 'DIGITAL_WALLET',
+          icon: Wallet,
+        },
+        {
+          label: 'Cash',
+          value: 'CASH',
+          icon: Banknote,
         },
       ],
     },

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
+import { type SignalFormField } from '@models/signal-form.model';
 import { FormFieldType } from '../enums/form-field-type.enum';
-import { SignalFormField } from '../models/signal-form.model';
 
 export interface RoleAttributes {
   role?: string;
@@ -47,9 +47,62 @@ export class FieldRoleAttributesService {
       },
       inputAttributes: {
         disabled: field.isDisabled() ? true : null,
-        placeholder: field.config?.placeholder ?? null,
+        placeholder: this.getPlaceholder(field),
       },
     };
+  }
+
+  /**
+   * Generates intelligent default placeholders based on field type and name
+   */
+  private getPlaceholder<TModel extends object, K extends keyof TModel>(
+    field: SignalFormField<TModel, K>,
+  ): string | null {
+    // If user provided a custom placeholder, use it
+    if (field.config?.placeholder) {
+      return field.config.placeholder;
+    }
+
+    // Generate smart defaults based on field type
+    const fieldName = String(field.name);
+    const label = field.label || fieldName;
+
+    switch (field.type) {
+      case FormFieldType.TEXT:
+      case FormFieldType.PASSWORD:
+      case FormFieldType.TEXTAREA:
+      case FormFieldType.NUMBER:
+        return `Type ${label.toLowerCase()} here`;
+
+      case FormFieldType.SELECT:
+      case FormFieldType.AUTOCOMPLETE:
+        return `Select a ${label.toLowerCase()}`;
+
+      case FormFieldType.MULTISELECT:
+      case FormFieldType.CHIPLIST:
+        return `Select ${label.toLowerCase()}`;
+
+      case FormFieldType.DATETIME:
+        return `Select ${label.toLowerCase()}`;
+
+      case FormFieldType.FILE:
+        return `Choose ${label.toLowerCase()} file`;
+
+      case FormFieldType.COLOR:
+        return `Pick a color for ${label.toLowerCase()}`;
+
+      // These field types don't typically use placeholders
+      case FormFieldType.CHECKBOX:
+      case FormFieldType.CHECKBOX_GROUP:
+      case FormFieldType.RADIO:
+      case FormFieldType.SWITCH:
+      case FormFieldType.SLIDER:
+      case FormFieldType.RATING:
+        return null;
+
+      default:
+        return `Enter ${label.toLowerCase()}`;
+    }
   }
 
   private getRoleSpecificAttributes<

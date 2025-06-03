@@ -124,50 +124,6 @@ export class ExampleSignalFormComponent implements OnInit {
   }
 
   protected save(e: Basket): void {
-    console.log('=== FORM FIELD PATHS DEBUG ===');
-
-    // Log top-level field paths
-    console.log('Top level form fields:');
-    this.form.fields.forEach((field) => {
-      console.log(`  ${field.name}: ${field.path}`);
-    });
-
-    // Log address form fields (1 level nested)
-    console.log('\nAddress form fields (1 level nested):');
-    const addressForm = this.form.getField('address').form;
-    addressForm.fields.forEach((field) => {
-      console.log(`  ${field.name}: ${field.path}`);
-    });
-
-    // Log about form fields (1 level nested)
-    console.log('\nAbout form fields (1 level nested):');
-    const aboutForm = this.form.getField('about').form;
-    aboutForm.fields.forEach((field) => {
-      console.log(`  ${field.name}: ${field.path}`);
-    });
-
-    // Log preferences form fields (2 levels nested - about > preferences)
-    console.log('\nPreferences form fields (2 levels nested):');
-    const preferencesForm = aboutForm.getField('preferences').form;
-    preferencesForm.fields.forEach((field) => {
-      console.log(`  ${field.name}: ${field.path}`);
-    });
-
-    // Log notifications form fields (3 levels nested - about > preferences > notifications)
-    console.log('\nNotifications form fields (3 levels nested):');
-    const notificationsForm = preferencesForm.getField('notifications').form;
-    notificationsForm.fields.forEach((field) => {
-      console.log(`  ${field.name}: ${field.path}`);
-    });
-
-    // Log privacy form fields (3 levels nested - about > preferences > privacy)
-    console.log('\nPrivacy form fields (3 levels nested):');
-    const privacyForm = preferencesForm.getField('privacy').form;
-    privacyForm.fields.forEach((field) => {
-      console.log(`  ${field.name}: ${field.path}`);
-    });
-
-    console.log('\n=== END DEBUG ===');
     console.log('save data', e);
   }
 

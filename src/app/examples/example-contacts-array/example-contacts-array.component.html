@@ -1,0 +1,91 @@
+<div class="contacts-manager">
+  <header class="page-header">
+    <h1>{{ contactForms.title }}</h1>
+    <p class="description">
+      Manage your contact list with dynamic form arrays. Add, edit, and remove
+      contacts as needed.
+    </p>
+  </header>
+
+  <div class="contacts-actions">
+    <button type="button" class="form-button" (click)="addNewContact()">
+      <lucide-icon [img]="PlusIcon" size="16" />
+      Add New Contact
+    </button>
+
+    <button
+      type="button"
+      class="form-button secondary"
+      (click)="validateAllContacts()"
+    >
+      <lucide-icon [img]="CheckCircleIcon" size="16" />
+      Validate All
+    </button>
+
+    <button
+      type="button"
+      class="form-button secondary"
+      (click)="getCurrentValues()"
+    >
+      <lucide-icon [img]="ClipboardListIcon" size="16" />
+      Get Values
+    </button>
+  </div>
+
+  <div class="contacts-list">
+    @for (form of contactForms.forms(); track $index) {
+      <div class="contact-form-card">
+        <div class="card-header">
+          <h3>Contact #{{ $index + 1 }}</h3>
+          <button
+            type="button"
+            class="form-button clear rounded"
+            (click)="removeContact($index)"
+            [disabled]="contactForms.forms().length <= 1"
+          >
+            <lucide-icon [img]="Trash2Icon" size="14" />
+          </button>
+        </div>
+
+        <div class="card-body">
+          <signal-form-fields [fields]="form.fields" [form]="form" />
+        </div>
+
+        <div class="card-footer">
+          <signal-form-save-button [form]="form" />
+        </div>
+      </div>
+    } @empty {
+      <div class="empty-state">
+        <p>No contacts available. Click "Add New Contact" to get started.</p>
+      </div>
+    }
+  </div>
+
+  <div class="global-actions">
+    <button type="button" class="form-button" (click)="contactForms.save()">
+      <lucide-icon [img]="SaveIcon" size="16" />
+      Save All Contacts
+    </button>
+
+    <button
+      type="button"
+      class="form-button secondary"
+      (click)="contactForms.reset()"
+    >
+      <lucide-icon [img]="RotateCcwIcon" size="16" />
+      Reset All
+    </button>
+  </div>
+
+  <div class="form-status">
+    <p>
+      <strong>Total Contacts:</strong> {{ contactForms.forms().length }} |
+      <strong>Status:</strong> {{ contactForms.status() }} |
+      <strong>Has Changes:</strong>
+      {{ contactForms.anyDirty() ? "Yes" : "No" }} |
+      <strong>Any Touched:</strong>
+      {{ contactForms.anyTouched() ? "Yes" : "No" }}
+    </p>
+  </div>
+</div>

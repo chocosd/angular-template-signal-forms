@@ -73,12 +73,12 @@ describe('FieldUtils', () => {
       } as unknown as SignalFormContainer<TestModel['items'][0]>;
 
       const repeatableForm2 = {
-        anyTouched: signal(true), // One of the repeatable forms is touched
+        anyTouched: signal(true),
       } as unknown as SignalFormContainer<TestModel['items'][0]>;
 
       const repeatableField = {
         ...createMockField('items', false),
-        repeatableForms: [repeatableForm1, repeatableForm2],
+        repeatableForms: signal([repeatableForm1, repeatableForm2]),
       };
 
       const fields = [repeatableField];
@@ -93,8 +93,8 @@ describe('FieldUtils', () => {
       } as unknown as SignalFormContainer<TestModel['items'][0]>;
 
       const repeatableField = {
-        ...createMockField('items', true), // The repeatable field itself is touched
-        repeatableForms: [repeatableForm],
+        ...createMockField('items', true),
+        repeatableForms: signal([repeatableForm]),
       };
 
       const fields = [repeatableField];
@@ -115,7 +115,6 @@ describe('FieldUtils', () => {
 
       expect(anyTouchedComputed()).toBe(false);
 
-      // Change the field to touched
       touchedSignal.set(true);
       expect(anyTouchedComputed()).toBe(true);
     });
@@ -136,7 +135,7 @@ describe('FieldUtils', () => {
     it('should return true when at least one field is dirty', () => {
       const fields: SignalFormField<TestModel>[] = [
         createMockField('name', false, false),
-        createMockField('email', false, true), // This field is dirty
+        createMockField('email', false, true),
       ];
 
       const anyDirtyComputed = FieldUtils.anyDirty(fields);
@@ -166,12 +165,12 @@ describe('FieldUtils', () => {
       } as unknown as SignalFormContainer<TestModel['items'][0]>;
 
       const repeatableForm2 = {
-        anyDirty: signal(true), // One of the repeatable forms is dirty
+        anyDirty: signal(true),
       } as unknown as SignalFormContainer<TestModel['items'][0]>;
 
       const repeatableField = {
         ...createMockField('items', false, false),
-        repeatableForms: [repeatableForm1, repeatableForm2],
+        repeatableForms: signal([repeatableForm1, repeatableForm2]),
       };
 
       const fields = [repeatableField];
@@ -186,8 +185,8 @@ describe('FieldUtils', () => {
       } as unknown as SignalFormContainer<TestModel['items'][0]>;
 
       const repeatableField = {
-        ...createMockField('items', false, true), // The repeatable field itself is dirty
-        repeatableForms: [repeatableForm],
+        ...createMockField('items', false, true),
+        repeatableForms: signal([repeatableForm]),
       };
 
       const fields = [repeatableField];
@@ -208,7 +207,6 @@ describe('FieldUtils', () => {
 
       expect(anyDirtyComputed()).toBe(false);
 
-      // Change the field to dirty
       dirtySignal.set(true);
       expect(anyDirtyComputed()).toBe(true);
     });
@@ -266,23 +264,18 @@ describe('FieldUtils', () => {
 
       const hasSavedComputed = FieldUtils.hasSaved(mockForm);
 
-      // Initially should be false (touched = true)
       expect(hasSavedComputed()).toBe(false);
 
-      // Make not touched
       touchedSignal.set(false);
       expect(hasSavedComputed()).toBe(true);
 
-      // Make dirty
       dirtySignal.set(true);
       expect(hasSavedComputed()).toBe(false);
 
-      // Make not dirty but change status
       dirtySignal.set(false);
       statusSignal.set(FormStatus.Idle);
       expect(hasSavedComputed()).toBe(false);
 
-      // Reset to success
       statusSignal.set(FormStatus.Success);
       expect(hasSavedComputed()).toBe(true);
     });
@@ -292,7 +285,7 @@ describe('FieldUtils', () => {
     it('should handle nested form fields separately', () => {
       const nestedForm = {
         anyTouched: signal(false),
-        anyDirty: signal(true), // Nested form is dirty
+        anyDirty: signal(true),
       } as unknown as SignalFormContainer<TestModel['nested']>;
 
       const fieldWithForm = {
@@ -305,19 +298,19 @@ describe('FieldUtils', () => {
       const anyTouchedComputed = FieldUtils.anyTouched(fields);
       const anyDirtyComputed = FieldUtils.anyDirty(fields);
 
-      expect(anyTouchedComputed()).toBe(false); // Field itself not touched
-      expect(anyDirtyComputed()).toBe(true); // From nested form
+      expect(anyTouchedComputed()).toBe(false);
+      expect(anyDirtyComputed()).toBe(true);
     });
 
     it('should handle repeatable form fields separately', () => {
       const repeatableForm = {
-        anyTouched: signal(true), // Repeatable form is touched
+        anyTouched: signal(true),
         anyDirty: signal(false),
       } as unknown as SignalFormContainer<TestModel['items'][0]>;
 
       const repeatableField = {
         ...createMockField('items', false, false),
-        repeatableForms: [repeatableForm],
+        repeatableForms: signal([repeatableForm]),
       };
 
       const fields = [repeatableField];
@@ -325,8 +318,8 @@ describe('FieldUtils', () => {
       const anyTouchedComputed = FieldUtils.anyTouched(fields);
       const anyDirtyComputed = FieldUtils.anyDirty(fields);
 
-      expect(anyTouchedComputed()).toBe(true); // From repeatable form
-      expect(anyDirtyComputed()).toBe(false); // Field and nested forms not dirty
+      expect(anyTouchedComputed()).toBe(true);
+      expect(anyDirtyComputed()).toBe(false);
     });
 
     it('should handle empty fields array', () => {
@@ -342,7 +335,7 @@ describe('FieldUtils', () => {
     it('should handle fields with empty repeatable forms array', () => {
       const repeatableField = {
         ...createMockField('items', false, false),
-        repeatableForms: [],
+        repeatableForms: signal([]),
       };
 
       const fields = [repeatableField];
@@ -356,7 +349,6 @@ describe('FieldUtils', () => {
   });
 });
 
-// Helper function to create mock fields
 function createMockField<TModel>(
   name: keyof TModel,
   touched: boolean,

@@ -24,25 +24,55 @@ export const aboutForm: SignalFormFieldBuilderInput<Basket> = {
           name: 'email',
           type: FormFieldType.TEXT,
           label: 'Email',
+          validators: [
+            (value: string) => (!value ? 'Email is required' : null),
+            (value: string) => {
+              if (!value) return null;
+              const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+              return !emailRegex.test(value)
+                ? 'Please enter a valid email address'
+                : null;
+            },
+          ],
           config: {
-            placeholder: 'Enter your email',
             validation: {
-              trigger: 'blur', // Only validate on blur, not on every keystroke
+              trigger: 'blur',
               debounceMs: 500,
             },
           },
           validationConfig: {
-            validateAsyncOnInit: false, // Don't validate immediately on load
+            validateAsyncOnInit: false,
           },
         },
         {
           name: 'phone',
           type: FormFieldType.TEXT,
           label: 'Phone',
+          validators: [
+            (value: number) => (!value ? 'Phone number is required' : null),
+            (value: number) => {
+              if (!value) return null;
+              const valueStr = value.toString();
+              const digitsOnly = valueStr.replace(/\D/g, '');
+              if (digitsOnly.length !== 11) {
+                return 'Phone number must be exactly 11 digits long';
+              }
+              return null;
+            },
+            (value: number) => {
+              if (!value) return null;
+              const valueStr = value.toString();
+              const digitsOnly = valueStr.replace(/\D/g, '');
+              if (!digitsOnly.startsWith('0')) {
+                return 'UK phone numbers should start with 0';
+              }
+              return null;
+            },
+          ],
           config: {
             validation: {
               trigger: 'change',
-              debounceMs: 800, // Wait 800ms after user stops typing
+              debounceMs: 300,
             },
           },
         },
@@ -50,9 +80,29 @@ export const aboutForm: SignalFormFieldBuilderInput<Basket> = {
           name: 'name',
           type: FormFieldType.TEXT,
           label: 'Name',
+          validators: [
+            (value: string) => (!value ? 'Name is required' : null),
+            (value: string) => {
+              if (!value) return null;
+              if (value.length < 2) {
+                return 'Name must be at least 2 characters long';
+              }
+              if (value.length > 50) {
+                return 'Name must be less than 50 characters';
+              }
+              return null;
+            },
+            (value: string) => {
+              if (!value) return null;
+              const nameRegex = /^[a-zA-Z\s\-']+$/;
+              return !nameRegex.test(value)
+                ? 'Name can only contain letters, spaces, hyphens, and apostrophes'
+                : null;
+            },
+          ],
           config: {
             validation: {
-              trigger: 'submit', // Only validate when form is submitted
+              trigger: 'submit',
             },
           },
         },

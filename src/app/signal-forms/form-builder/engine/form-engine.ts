@@ -1,14 +1,13 @@
-// form-engine.ts
 import { computed, WritableSignal } from '@angular/core';
-import { FormFieldType } from '../../enums/form-field-type.enum';
-import { FormStatus } from '../../enums/form-status.enum';
+import { FormFieldType } from '@enums/form-field-type.enum';
+import { FormStatus } from '@enums/form-status.enum';
 import {
-  DeepPartial,
-  ErrorMessage,
-  InferFieldType,
-  SignalFormContainer,
-  SignalFormField,
-} from '../../models/signal-form.model';
+  type DeepPartial,
+  type ErrorMessage,
+  type InferFieldType,
+  type SignalFormContainer,
+  type SignalFormField,
+} from '@models/signal-form.model';
 
 type FieldWithForm<TModel> = SignalFormField<TModel> & {
   form: SignalFormContainer<TModel[keyof TModel]>;
@@ -27,8 +26,37 @@ export class FormEngine {
   static validateForm<TModel>(
     fields: SignalFormField<TModel>[],
     form: SignalFormContainer<TModel>,
+    validationService?: any,
   ) {
     return (): boolean => {
+      if (
+        validationService &&
+        typeof validationService.validateFormForSubmit === 'function'
+      ) {
+        let valid = true;
+
+        for (const field of fields) {
+          if (this.isFieldWithForm(field)) {
+            const nestedValid = field.form.validateForm();
+            valid = valid && nestedValid;
+            continue;
+          }
+
+          if (this.isRepeatableField(field)) {
+            const nestedForms = field.repeatableForms();
+            const allValid = nestedForms.every((form) => form.validateForm());
+            valid = valid && allValid;
+            continue;
+          }
+        }
+
+        const fieldsValid = validationService.validateFormForSubmit(
+          fields,
+          form,
+        );
+        return valid && fieldsValid;
+      }
+
       let valid = true;
 
       for (const field of fields) {
@@ -138,11 +166,33 @@ export class FormEngine {
           continue;
         }
 
+        if (this.isRepeatableField(field)) {
+          const nestedForms = field.repeatableForms();
+          nestedForms.forEach((form) => {
+            const nestedErrors = form.getErrors();
+            const updatedNestedErrors = nestedErrors.map((err) => ({
+              name: err.name as keyof TModel,
+              message: err.message,
+              path: err.path,
+              field: err.field,
+              focusField: err.focusField,
+            }));
+            errors.push(...updatedNestedErrors);
+          });
+          continue;
+        }
+
         if (field.error()) {
           errors.push({
             name: field.name,
             message: field.error() ?? '',
             path: field.path,
+            field: field as SignalFormField<unknown>,
+            focusField: () => {
+              if (field.focus) {
+                field.focus.set(true);
+              }
+            },
           });
         }
       }
