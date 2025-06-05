@@ -1,4 +1,4 @@
-import { type FormOption } from '@models/signal-form.model';
+import { FormOption } from 'signal-template-forms';
 
 export const pokemonList: FormOption<{ name: string; typings: string[] }>[] = [
   {

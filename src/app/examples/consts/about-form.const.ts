@@ -1,7 +1,9 @@
-import { FormFieldType } from '@enums/form-field-type.enum';
-import { NumberInputType } from '@enums/number-input-type.enum';
-import { type SignalFormFieldBuilderInput } from '@models/signal-form.model';
-import { ConversionUtils } from '@models/unit-conversion.model';
+import {
+  ConversionUtils,
+  FormFieldType,
+  NumberInputType,
+  type SignalFormFieldBuilderInput,
+} from 'signal-template-forms';
 import { type Basket } from '../models/example.model';
 
 export const aboutForm: SignalFormFieldBuilderInput<Basket> = {
@@ -10,9 +12,9 @@ export const aboutForm: SignalFormFieldBuilderInput<Basket> = {
   name: 'about',
   fields: [
     {
-      label: 'Profile Picture',
       name: 'profilePicture',
       type: FormFieldType.FILE,
+      label: 'Profile Picture',
       config: {
         maxSizeMb: 5,
       },
@@ -91,7 +93,9 @@ export const aboutForm: SignalFormFieldBuilderInput<Basket> = {
           },
           validators: [
             (value: string) => {
-              if (!value) return null;
+              if (!value) {
+                return null;
+              }
               if (value.length > 500)
                 return 'Bio must be less than 500 characters';
               return null;
@@ -112,7 +116,9 @@ export const aboutForm: SignalFormFieldBuilderInput<Basket> = {
           validators: [
             (value: string) => (!value ? 'Email is required' : null),
             (value: string) => {
-              if (!value) return null;
+              if (!value) {
+                return null;
+              }
               const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
               return !emailRegex.test(value)
                 ? 'Please enter a valid email address'
@@ -137,7 +143,9 @@ export const aboutForm: SignalFormFieldBuilderInput<Basket> = {
           validators: [
             (value: number) => (!value ? 'Phone number is required' : null),
             (value: number) => {
-              if (!value) return null;
+              if (!value) {
+                return null;
+              }
               const valueStr = value.toString();
               const digitsOnly = valueStr.replace(/\D/g, '');
               if (digitsOnly.length !== 11) {
@@ -146,7 +154,9 @@ export const aboutForm: SignalFormFieldBuilderInput<Basket> = {
               return null;
             },
             (value: number) => {
-              if (!value) return null;
+              if (!value) {
+                return null;
+              }
               const valueStr = value.toString();
               const digitsOnly = valueStr.replace(/\D/g, '');
               if (!digitsOnly.startsWith('0')) {
@@ -169,7 +179,9 @@ export const aboutForm: SignalFormFieldBuilderInput<Basket> = {
           validators: [
             (value: string) => (!value ? 'Name is required' : null),
             (value: string) => {
-              if (!value) return null;
+              if (!value) {
+                return null;
+              }
               if (value.length < 2) {
                 return 'Name must be at least 2 characters long';
               }
@@ -179,7 +191,9 @@ export const aboutForm: SignalFormFieldBuilderInput<Basket> = {
               return null;
             },
             (value: string) => {
-              if (!value) return null;
+              if (!value) {
+                return null;
+              }
               const nameRegex = /^[a-zA-Z\s\-']+$/;
               return !nameRegex.test(value)
                 ? 'Name can only contain letters, spaces, hyphens, and apostrophes'

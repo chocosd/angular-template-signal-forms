@@ -1,0 +1,191 @@
+// Traditional radio button styling
+.form-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  .form-radio-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border: 1px solid var(--signal-form-border-color);
+    border-radius: var(--signal-form-border-radius-sm);
+    background: var(--signal-form-input-bg);
+    cursor: pointer;
+    transition: var(--signal-form-transition);
+    font-size: 0.875rem;
+    color: var(--signal-form-input-text);
+
+    &:hover {
+      border-color: var(--signal-form-outline-focus);
+      background: var(--signal-form-input-hover-bg);
+    }
+
+    .radio-input {
+      margin: 0;
+      width: 1rem;
+      height: 1rem;
+      accent-color: var(--signal-form-button-primary-bg);
+    }
+  }
+
+  // Card-style layout when icons are present
+  &.card-style {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+
+    .form-radio-option.card-option {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem 1rem;
+      min-height: 120px;
+      border: 1px solid var(--signal-form-border-color);
+      border-radius: 12px;
+      background: var(--signal-form-input-bg);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: var(--signal-form-shadow);
+
+      &:hover {
+        border-color: var(--signal-form-outline-focus);
+        background: var(--signal-form-input-hover-bg);
+        transform: translateY(-1px);
+        box-shadow: var(--signal-form-shadow-lg);
+      }
+
+      // Hide the actual radio input but keep it focusable
+      .radio-input {
+        position: absolute;
+        opacity: 0;
+        width: 1px;
+        height: 1px;
+        top: 0;
+        left: 0;
+      }
+
+      // Selected state styling
+      &:has(.radio-input:checked) {
+        border-color: var(--signal-form-button-primary-bg);
+        background: var(--signal-forms-primary-50);
+
+        .card-content {
+          color: var(--signal-form-button-primary-bg);
+
+          .radio-indicator {
+            background: var(--signal-form-button-primary-bg);
+            border-color: var(--signal-form-button-primary-bg);
+
+            &::after {
+              opacity: 1;
+              transform: scale(1);
+            }
+          }
+
+          .option-icon {
+            transform: scale(1.05);
+          }
+        }
+      }
+
+      // Focus state for accessibility
+      &:has(.radio-input:focus) {
+        outline: 2px solid var(--signal-form-outline-focus);
+        outline-offset: 2px;
+      }
+
+      .card-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+        text-align: center;
+        width: 100%;
+        transition: var(--signal-form-transition);
+        position: relative;
+
+        .radio-indicator {
+          position: absolute;
+          top: -0.5rem;
+          left: -0.5rem;
+          width: 1.25rem;
+          height: 1.25rem;
+          border: 2px solid var(--signal-form-border-color);
+          border-radius: 50%;
+          background: var(--signal-form-input-bg);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: var(--signal-form-transition);
+          box-shadow: var(--signal-form-shadow);
+
+          &::after {
+            content: "✓";
+            color: var(--signal-forms-neutral-0);
+            font-size: 0.75rem;
+            font-weight: bold;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.2s ease;
+          }
+        }
+
+        .option-icon {
+          font-size: 2.5rem;
+          line-height: 1;
+          opacity: 0.85;
+          transition: all 0.3s ease;
+          margin-bottom: 0.25rem;
+        }
+
+        .option-label {
+          font-size: 0.875rem;
+          font-weight: 600;
+          line-height: 1.3;
+          color: inherit;
+          transition: var(--signal-form-transition);
+        }
+      }
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .form-radio-group.card-style {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.75rem;
+
+    .form-radio-option.card-option {
+      min-height: 110px;
+      padding: 1.25rem 0.75rem;
+
+      .card-content {
+        gap: 0.5rem;
+
+        .option-icon {
+          font-size: 2rem;
+        }
+
+        .option-label {
+          font-size: 0.8rem;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .form-radio-group.card-style {
+    grid-template-columns: 1fr 1fr;
+
+    .form-radio-option.card-option {
+      min-height: 100px;
+      padding: 1rem 0.5rem;
+    }
+  }
+}

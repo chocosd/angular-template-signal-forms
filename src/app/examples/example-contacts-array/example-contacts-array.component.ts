@@ -1,10 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { SignalFormBuilder } from '@builder/builder/form-builder';
-import { FormFieldType } from '@enums/form-field-type.enum';
-import { ArrayFormContainer } from '@models/signal-form.model';
-import { SignalFormFieldsComponent } from '@renderers/signal-form-fields/signal-form-fields.component';
-import { SignalFormSaveButtonComponent } from '@renderers/signal-form-save-button/signal-form-save-button.component';
 import {
   CheckCircle,
   ClipboardList,
@@ -14,6 +9,13 @@ import {
   Save,
   Trash2,
 } from 'lucide-angular';
+import {
+  ArrayFormContainer,
+  FormFieldType,
+  SignalFormBuilder,
+  SignalFormFieldsComponent,
+  SignalFormSaveButtonComponent,
+} from 'signal-template-forms';
 import {
   defaultContact,
   defaultContactList,

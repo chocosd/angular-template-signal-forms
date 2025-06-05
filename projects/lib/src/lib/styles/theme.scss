@@ -1,0 +1,294 @@
+@use "./colors" as *;
+
+:root,
+.signal-form-theme {
+  /* Generate the complete color palette */
+  @include generate-signal-forms-colors();
+
+  /* Layout */
+  --signal-form-padding: 1rem;
+  --signal-form-width: 600px;
+  --signal-form-border-radius: 4px;
+  --signal-form-max-width: 600px;
+  --signal-form-min-height: calc(100vh - var(--sticky-footer-height, 120px));
+  --signal-form-max-height: calc(100vh - var(--sticky-footer-height, 120px));
+  --sticky-footer-height: 120px;
+
+  /* Typography - Enhanced title styling */
+  --signal-form-title-font-size: 1.75rem;
+  --signal-form-title-font-weight: 700;
+  --signal-form-title-margin: 0;
+  --signal-form-title-padding: 1rem;
+  --signal-form-title-color: var(--signal-forms-neutral-900);
+
+  /* Container spacing */
+  --signal-form-content-gap: 1rem;
+  --signal-form-fields-gap: 1rem;
+  --signal-form-bottom-gap: 0.75rem;
+
+  /* Colors - Updated to use signal-forms color tokens */
+  --signal-form-bg: var(--signal-forms-neutral-50);
+  --signal-form-text: var(--signal-forms-neutral-700);
+  --signal-form-muted: var(--signal-forms-neutral-400);
+  --signal-form-label-color: var(--signal-forms-neutral-600);
+  --signal-form-hint-color: var(--signal-forms-neutral-500);
+  --signal-form-error-color: var(--signal-forms-danger-700);
+  --signal-form-error-bg: var(--signal-forms-danger-500);
+  --signal-form-error-text: var(--signal-forms-neutral-50);
+  --signal-form-outline-error: var(--signal-forms-danger-500);
+  --signal-form-outline-focus: var(--signal-forms-primary-500);
+  --signal-form-outline-focus-shadow: var(--signal-forms-primary-200);
+  --signal-form-disabled-bg: var(--signal-forms-neutral-100);
+  --signal-form-border-top-color: var(--signal-forms-neutral-200);
+  --signal-form-section-border: var(--signal-forms-neutral-200);
+  --signal-form-heading-color: var(--signal-forms-neutral-800);
+  --signal-form-subheading-color: var(--signal-forms-neutral-500);
+
+  /* Input specific backgrounds and text - slightly lighter than form background */
+  --signal-form-input-bg: color-mix(in srgb, var(--signal-form-bg) 95%, white);
+  --signal-form-input-text: var(--signal-form-text);
+  --signal-form-input-hover-bg: color-mix(
+    in srgb,
+    var(--signal-form-input-bg) 90%,
+    var(--signal-form-mix-color)
+  );
+  --signal-form-select-bg: var(--signal-form-input-bg);
+  --signal-form-textarea-bg: var(--signal-form-input-bg);
+
+  /* Placeholder styling */
+  --signal-form-placeholder-color: color-mix(
+    in srgb,
+    var(--signal-form-input-text) 70%,
+    transparent
+  );
+
+  /* Borders */
+  --signal-form-border-color: var(--signal-forms-neutral-300);
+  --signal-form-border-radius-sm: 6px;
+  --signal-form-border-radius-md: 0.5rem;
+
+  /* Shadow */
+  --signal-form-shadow: 0 1px 2px 0 rgba(18, 18, 23, 0.05);
+  --signal-form-shadow-lg: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --signal-form-shadow-top: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+
+  /* Font Sizes */
+  --signal-form-font-size-base: 1rem;
+  --signal-form-font-size-sm: 0.75rem;
+  --signal-form-font-size-xs: 12px;
+
+  /* Button - Updated to use signal-forms color tokens */
+  --signal-form-button-padding: 0.6rem 1.2rem;
+  --signal-form-button-padding-full: 0.75rem 1.5rem;
+  --signal-form-button-radius: 4px;
+  --signal-form-button-primary-bg: var(--signal-forms-primary-500);
+  --signal-form-button-primary-bg-hover: var(--signal-forms-primary-600);
+  --signal-form-button-secondary-bg: var(--signal-forms-neutral-100);
+  --signal-form-button-text: var(--signal-forms-neutral-50);
+  --signal-form-button-disabled-bg: var(--signal-forms-neutral-400);
+  --signal-form-button-font-weight: 600;
+
+  /* Transitions */
+  --signal-form-transition: all 0.2s ease-in-out;
+  --signal-form-transition-bg: background-color 0.2s;
+
+  /* Font sizes */
+  --signal-form-heading-font-size: 18px;
+  --signal-form-heading-line-height: 20px;
+  --signal-form-subheading-font-size: 14px;
+
+  /* Error summary - Updated to use signal-forms color tokens */
+  --signal-form-error-summary-padding: 0.5rem 1rem;
+  --signal-form-error-summary-gap: 1rem;
+  --signal-form-error-summary-margin-bottom: 1rem;
+  --signal-form-error-summary-font-weight: 600;
+
+  /* Form group spacing */
+  --signal-form-group-gap: 1rem;
+  --signal-form-group-gap-lg: 1.25rem;
+  --signal-form-group-gap-xl: 2rem;
+  --signal-form-nested-padding: 8px 0;
+  --signal-form-nested-margin-bottom: 12px;
+  --signal-form-nested-title-gap: 4px;
+  --signal-form-nested-title-width: 250px;
+
+  /* Field wrapper spacing */
+  --signal-form-field-wrapper-gap-compact: 0.5rem;
+  --signal-form-field-wrapper-gap-spaced: 1rem;
+  --signal-form-field-wrapper-gap-minimal: 0.25rem;
+
+  /* Field padding and sizing */
+  --signal-form-field-padding: 0.5rem 0.75rem;
+
+  /* Common component spacing and sizing variables */
+  --signal-form-gap-xs: 0.25rem;
+  --signal-form-gap-sm: 0.5rem;
+  --signal-form-gap-md: 0.75rem;
+  --signal-form-gap-lg: 1rem;
+  --signal-form-gap-xl: 1.25rem;
+
+  --signal-form-padding-xs: 0.25rem;
+  --signal-form-padding-sm: 0.5rem;
+  --signal-form-padding-md: 0.75rem;
+  --signal-form-padding-lg: 1rem;
+  --signal-form-padding-xl: 1.5rem;
+
+  /* Component height variables */
+  --signal-form-input-height: 2.5rem;
+  --signal-form-button-height: 2.5rem;
+  --signal-form-chip-height: 2rem;
+  --signal-form-dropdown-min-height: 120px;
+
+  /* Font weight variables */
+  --signal-form-font-weight-normal: 400;
+  --signal-form-font-weight-medium: 500;
+  --signal-form-font-weight-semibold: 600;
+  --signal-form-font-weight-bold: 700;
+
+  /* Border radius variables */
+  --signal-form-radius-xs: 4px;
+  --signal-form-radius-sm: 6px;
+  --signal-form-radius-md: 8px;
+  --signal-form-radius-lg: 12px;
+  --signal-form-radius-full: 50%;
+
+  /* Validation states - Updated to use signal-forms color tokens */
+  --signal-form-validating-color: var(--signal-forms-warning-500);
+  --signal-form-validating-bg: var(--signal-forms-warning-50);
+  --signal-form-validating-opacity: 0.7;
+  --signal-form-validating-font-size: 0.875rem;
+  --signal-form-success-color: var(--signal-forms-success-500);
+
+  /* Field variants - premium - Updated to use signal-forms color tokens */
+  --signal-form-premium-color: var(--signal-forms-accent-500);
+  --signal-form-premium-bg: linear-gradient(
+    135deg,
+    var(--signal-forms-neutral-100) 0%,
+    var(--signal-forms-neutral-200) 100%
+  );
+  --signal-form-premium-radius: 8px;
+  --signal-form-premium-border-width: 2px;
+
+  /* Field variants - highlight - Updated to use signal-forms color tokens */
+  --signal-form-highlight-color: var(--signal-forms-primary-100);
+  --signal-form-highlight-border: var(--signal-forms-primary-500);
+  --signal-form-highlight-shadow: 0 0 0 3px var(--signal-form-highlight-color);
+
+  /* Label variants - Updated to use signal-forms color tokens */
+  --signal-form-label-prominent-color: var(--signal-forms-neutral-800);
+  --signal-form-label-prominent-size: 1.125rem;
+  --signal-form-label-prominent-weight: 600;
+  --signal-form-label-subtle-color: var(--signal-forms-neutral-500);
+  --signal-form-label-subtle-size: 0.875rem;
+  --signal-form-label-subtle-weight: 400;
+
+  /* Error variants - Updated to use signal-forms color tokens */
+  --signal-form-error-prominent-color: var(--signal-forms-danger-600);
+  --signal-form-error-prominent-bg: var(--signal-forms-danger-50);
+  --signal-form-error-prominent-weight: 600;
+  --signal-form-error-prominent-padding: 0.25rem 0.5rem;
+  --signal-form-error-subtle-color: var(--signal-forms-danger-500);
+  --signal-form-error-subtle-size: 0.875rem;
+  --signal-form-error-subtle-weight: 400;
+
+  /* Hint variants - Updated to use signal-forms color tokens */
+  --signal-form-hint-prominent-color: var(--signal-forms-neutral-700);
+  --signal-form-hint-prominent-weight: 500;
+  --signal-form-hint-subtle-color: var(--signal-forms-neutral-400);
+  --signal-form-hint-subtle-size: 0.875rem;
+  --signal-form-hint-subtle-weight: 400;
+
+  /* Validation spinner */
+  --signal-form-spinner-margin: 0.5rem;
+
+  /* Stepper navigation - Updated to use signal-forms color tokens */
+  --signal-form-stepper-margin-bottom: 1rem;
+  --signal-form-stepper-gap: 0.25rem;
+  --signal-form-stepper-step-size: 32px;
+  --signal-form-stepper-step-border-width: 2px;
+  --signal-form-stepper-step-border-radius: 50%;
+  --signal-form-stepper-step-font-weight: bold;
+  --signal-form-stepper-line-width: 24px;
+  --signal-form-stepper-line-height: 2px;
+  --signal-form-stepper-line-gap: 4px;
+
+  /* Stepper colors - Updated to use signal-forms color tokens */
+  --signal-form-stepper-default-border: var(--signal-forms-neutral-300);
+  --signal-form-stepper-default-bg: var(--signal-forms-neutral-50);
+  --signal-form-stepper-active-border: var(--signal-forms-primary-600);
+  --signal-form-stepper-completed-bg: var(--signal-forms-success-500);
+  --signal-form-stepper-completed-text: var(--signal-forms-neutral-50);
+  --signal-form-stepper-completed-border: var(--signal-forms-success-500);
+  --signal-form-stepper-error-border: var(--signal-forms-danger-500);
+  --signal-form-stepper-error-text: var(--signal-forms-danger-500);
+  --signal-form-stepper-line-default: var(--signal-forms-neutral-200);
+  --signal-form-stepper-line-complete: var(--signal-forms-success-500);
+  --signal-form-stepper-line-error: var(--signal-forms-danger-500);
+
+  /* Stepper transitions */
+  --signal-form-stepper-transition: all 0.2s ease;
+
+  /* Dropdown colors for better dark mode */
+  --signal-form-dropdown-hover: var(--signal-form-input-hover-bg);
+  --signal-form-dropdown-selected: var(--signal-forms-primary-200);
+  --signal-form-dropdown-selected-hover: var(--signal-forms-primary-300);
+
+  /* Theme-aware mix color for hover states */
+  --signal-form-mix-color: black;
+
+  /* Apply dark mode color scheme for class-based theming */
+  @include apply-dark-mode();
+
+  /* Dark mode specific overrides for better contrast */
+  &.dark-themed-forms,
+  .dark-themed-forms & {
+    /* Make error text more striking in dark mode - use danger-400 for better visibility */
+    --signal-form-error-color: var(--signal-forms-danger-400);
+
+    /* Input backgrounds should be lighter than form background in dark mode */
+    --signal-form-input-bg: color-mix(
+      in srgb,
+      var(--signal-form-bg) 95%,
+      white
+    );
+
+    /* Theme-aware mix color becomes white in dark mode */
+    --signal-form-mix-color: white;
+
+    /* Redefine hover background with new mix color */
+    --signal-form-input-hover-bg: color-mix(
+      in srgb,
+      var(--signal-form-input-bg) 90%,
+      var(--signal-form-mix-color)
+    );
+
+    /* Update dropdown colors for dark mode */
+    --signal-form-dropdown-hover: var(--signal-form-input-hover-bg);
+    --signal-form-dropdown-selected: var(--signal-forms-primary-700);
+    --signal-form-dropdown-selected-hover: var(--signal-forms-primary-500);
+  }
+
+  /* System preference dark mode - only when dark-themed forms exist */
+  @media (prefers-color-scheme: dark) {
+    &:has(.dark-themed-forms) {
+      @include apply-system-dark-mode();
+
+      /* Apply same dark mode overrides for system preference */
+      --signal-form-error-color: var(--signal-forms-danger-400);
+      --signal-form-input-bg: color-mix(
+        in srgb,
+        var(--signal-form-bg) 95%,
+        white
+      );
+      --signal-form-mix-color: white;
+      --signal-form-input-hover-bg: color-mix(
+        in srgb,
+        var(--signal-form-input-bg) 90%,
+        var(--signal-form-mix-color)
+      );
+      --signal-form-dropdown-hover: var(--signal-form-input-hover-bg);
+      --signal-form-dropdown-selected: var(--signal-forms-primary-700);
+      --signal-form-dropdown-selected-hover: var(--signal-forms-primary-500);
+    }
+  }
+}

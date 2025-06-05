@@ -1,0 +1,43 @@
+.form-button {
+  &.saving {
+    background-color: var(--signal-form-button-primary-bg);
+    cursor: wait;
+    position: relative;
+
+    &::after {
+      content: "";
+      position: absolute;
+      left: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 12px;
+      height: 12px;
+      border: 2px solid transparent;
+      border-top: 2px solid currentColor;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+  }
+
+  &.success {
+    background-color: var(--signal-form-success-color);
+    color: var(--signal-forms-neutral-50);
+
+    &:hover {
+      background-color: var(--signal-form-success-color);
+    }
+  }
+
+  &.saved {
+    opacity: 0.8;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: translateY(-50%) rotate(0deg);
+  }
+  100% {
+    transform: translateY(-50%) rotate(360deg);
+  }
+}

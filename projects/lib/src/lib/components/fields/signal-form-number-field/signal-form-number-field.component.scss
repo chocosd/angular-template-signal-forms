@@ -1,0 +1,9 @@
+.unit-display {
+  padding: 0 0.75rem;
+  font-size: var(--signal-form-font-size-sm);
+  color: var(--signal-form-muted);
+  background-color: var(--signal-forms-neutral-100);
+  border-left: 1px solid var(--signal-form-border-color);
+  display: flex;
+  align-items: center;
+}

@@ -1,0 +1,40 @@
+{
+  "name": "signal-template-forms",
+  "version": "1.11.0",
+  "description": "A powerful, type-safe Angular forms library built with signals, providing reactive form management with excellent developer experience and performance.",
+  "author": "Steven Dix",
+  "keywords": [
+    "angular",
+    "forms",
+    "signals",
+    "reactive-forms",
+    "typescript",
+    "validation",
+    "form-builder",
+    "angular-signals"
+  ],
+  "homepage": "https://github.com/chocosd/angular-signal-template-forms",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chocosd/angular-signal-template-forms.git"
+  },
+  "bugs": {
+    "url": "https://github.com/chocosd/angular-signal-template-forms/issues"
+  },
+  "exports": {
+    "./styles": {
+      "sass": "./styles/_index.scss"
+    }
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "@angular/common": "^19.2.0",
+    "@angular/core": "^19.2.0",
+    "rxjs": "~7.8.0",
+    "lucide-angular": "^0.507.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "sideEffects": false
+}

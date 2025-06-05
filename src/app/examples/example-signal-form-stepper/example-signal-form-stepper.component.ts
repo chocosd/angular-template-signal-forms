@@ -4,15 +4,15 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
-import { SignalFormBuilder } from '@builder/builder/form-builder';
-import { FormFieldType } from '@enums/form-field-type.enum';
 import {
-  type SignalFormContainer,
-  type SignalSteppedFormContainer,
-} from '@models/signal-form.model';
-import { SignalFormStepperComponent } from '@renderers/signal-form-stepper/signal-form-stepper.component';
-import { SignalValidators } from '@validators/signal-validators';
-import { withOptionalSignalValidation } from '@validators/validator-fns';
+  FormFieldType,
+  SignalFormBuilder,
+  SignalFormContainer,
+  SignalFormStepperComponent,
+  SignalSteppedFormContainer,
+  SignalValidators,
+  withSignalValidation,
+} from 'signal-template-forms';
 import { model } from '../consts/form.const';
 import { type Basket } from '../models/example.model';
 
@@ -42,7 +42,7 @@ export class ExampleSignalFormStepperComponent implements OnInit {
               label: 'apple price',
               validators: [
                 SignalValidators.required(),
-                withOptionalSignalValidation(
+                withSignalValidation(
                   () => this.steppedForm.getField('pearPrice')?.value,
                   (
                     applePrice: number,

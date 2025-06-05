@@ -4,17 +4,18 @@ import {
   inject,
   OnInit,
 } from '@angular/core';
-import { SignalFormBuilder } from '@builder/builder/form-builder';
-import { FormFieldType } from '@enums/form-field-type.enum';
-import { type SignalFormContainer } from '@models/signal-form.model';
-import { SignalFormComponent } from '@renderers/signal-form/signal-form.component';
-import { TestApiService } from '@services/test-http.service';
-import { SignalValidators } from '@validators/signal-validators';
-import { OnlyPositiveValidator } from '@validators/validator-fns';
+import {
+  FormFieldType,
+  SignalFormBuilder,
+  SignalFormComponent,
+  SignalFormContainer,
+  SignalValidators,
+} from 'signal-template-forms';
 import { aboutForm } from '../consts/about-form.const';
 import { addressForm } from '../consts/address-form.const';
 import { model } from '../consts/form.const';
 import { type Basket } from '../models/example.model';
+import { TestApiService } from '../test-http.service';
 
 @Component({
   selector: 'example-signal-form',
@@ -50,7 +51,7 @@ export class ExampleSignalFormComponent implements OnInit {
           name: 'applePrice',
           label: 'Price per apple',
           type: FormFieldType.NUMBER,
-          validators: [OnlyPositiveValidator('applePrice')],
+          validators: [(x) => (x < 0 ? 'pearTotal only positive' : null)],
         },
         {
           name: 'appleTotal',
@@ -63,7 +64,7 @@ export class ExampleSignalFormComponent implements OnInit {
 
             return (apples ?? 0) * price;
           },
-          validators: [OnlyPositiveValidator('appleTotal')],
+          validators: [(x) => (x < 0 ? 'pearTotal only positive' : null)],
         },
         {
           name: 'pears',
@@ -74,7 +75,7 @@ export class ExampleSignalFormComponent implements OnInit {
           name: 'pearPrice',
           label: 'Price per pear',
           type: FormFieldType.NUMBER,
-          validators: [OnlyPositiveValidator('pearPrice')],
+          validators: [(x) => (x < 0 ? 'pearTotal only positive' : null)],
         },
         {
           name: 'pearTotal',
@@ -85,7 +86,7 @@ export class ExampleSignalFormComponent implements OnInit {
             const price = form.getField('pearPrice').value();
             return pears * price;
           },
-          validators: [OnlyPositiveValidator('pearTotal')],
+          validators: [(x) => (x < 0 ? 'pearTotal only positive' : null)],
         },
         {
           name: 'isOrganic',
@@ -109,6 +110,8 @@ export class ExampleSignalFormComponent implements OnInit {
       ],
       onSave: (value) => this.save(value),
       config: {
+        allowDarkMode: true,
+
         view: 'collapsable',
         layout: 'grid-area',
         gridArea: [
@@ -125,6 +128,7 @@ export class ExampleSignalFormComponent implements OnInit {
 
   protected save(e: Basket): void {
     console.log('save data', e);
+    console.log('form', this.form);
   }
 
   protected updateForm(): void {

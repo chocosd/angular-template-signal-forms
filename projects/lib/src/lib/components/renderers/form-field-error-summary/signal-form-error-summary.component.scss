@@ -1,0 +1,26 @@
+.form-error-summary {
+  background-color: var(--signal-form-error-bg);
+  color: var(--signal-form-error-text);
+  padding: var(--signal-form-error-summary-padding);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--signal-form-error-summary-gap);
+  border-radius: var(--signal-form-border-radius);
+  font-weight: var(--signal-form-error-summary-font-weight);
+  max-width: 100%;
+  margin-bottom: var(--signal-form-error-summary-margin-bottom);
+
+  &-message {
+    cursor: pointer;
+  }
+
+  & button {
+    appearance: none !important;
+    border: none;
+    background: transparent;
+    color: var(--signal-form-error-text);
+    outline: none;
+    cursor: pointer;
+  }
+}

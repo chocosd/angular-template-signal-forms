@@ -1,0 +1,17 @@
+.form-checkbox {
+  &-label {
+    font-size: var(--signal-form-font-size-xs);
+    color: var(--signal-form-input-text);
+  }
+
+  &-wrapper {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .checkbox {
+    accent-color: var(--signal-form-outline-focus);
+  }
+}

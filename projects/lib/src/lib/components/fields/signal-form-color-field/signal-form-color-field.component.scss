@@ -1,0 +1,60 @@
+.color-field-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.color-swatch {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  input[type="color"] {
+    opacity: 0;
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    cursor: pointer;
+  }
+
+  .swatch-display {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--signal-form-border-color);
+    box-shadow: var(--signal-form-shadow);
+    cursor: pointer;
+  }
+}
+
+.color-picker-full {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .color-input {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: none;
+    background: none;
+  }
+
+  .hex-input {
+    flex: 1;
+    padding: var(--signal-form-field-padding);
+    border-radius: var(--signal-form-border-radius-sm);
+    border: 1px solid var(--signal-form-border-color);
+    background-color: var(--signal-form-input-bg);
+    color: var(--signal-form-input-text);
+    font-family: monospace;
+    transition: var(--signal-form-transition);
+
+    &:focus {
+      border-color: var(--signal-form-outline-focus);
+      box-shadow: 0 0 0 2px var(--signal-form-outline-focus-shadow);
+    }
+  }
+}

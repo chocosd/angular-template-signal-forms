@@ -1,10 +1,12 @@
 import { inject } from '@angular/core';
-import { FormFieldType } from '@enums/form-field-type.enum';
-import { type SignalFormFieldBuilderInput } from '@models/signal-form.model';
-import { TestApiService } from '@services/test-http.service';
 import { Banknote, CreditCard, Smartphone, Wallet } from 'lucide-angular';
 import { map } from 'rxjs';
+import {
+  FormFieldType,
+  SignalFormFieldBuilderInput,
+} from 'signal-template-forms';
 import { Basket } from '../models/example.model';
+import { TestApiService } from '../test-http.service';
 import { pokemonList } from './pokemon-list.const';
 
 export const addressForm = (

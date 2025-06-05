@@ -1,4 +1,4 @@
-import { type FormOption } from '@models/signal-form.model';
+import { type FormOption } from 'signal-template-forms';
 
 export type Basket = {
   apples: number | null;

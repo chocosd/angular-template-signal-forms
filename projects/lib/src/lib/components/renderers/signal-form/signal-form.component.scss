@@ -1,0 +1,80 @@
+.signal-form-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: var(--signal-form-min-height);
+  max-height: var(--signal-form-max-height);
+  height: 100%;
+  width: 100%;
+  max-width: var(--signal-form-max-width);
+  background: var(--signal-form-bg);
+  border-radius: var(--signal-form-border-radius-md);
+  box-shadow: var(--signal-form-shadow-lg);
+  overflow: hidden;
+
+  &.full-page {
+    height: var(--signal-form-min-height);
+  }
+}
+
+.signal-form-title {
+  font-size: var(--signal-form-title-font-size);
+  font-weight: var(--signal-form-title-font-weight);
+  margin: var(--signal-form-title-margin);
+  padding: var(--signal-form-title-padding);
+  color: var(--signal-form-title-color);
+}
+
+.signal-form-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.form-fields-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--signal-form-padding);
+  display: flex;
+  flex-direction: column;
+  gap: var(--signal-form-fields-gap);
+  content-visibility: auto;
+  contain-intrinsic-size: 0 500px;
+}
+
+.form-bottom-sticky {
+  --sticky-footer-height: var(--sticky-footer-height);
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+  min-height: var(--sticky-footer-height);
+  background: var(--signal-form-bg);
+  border-top: 1px solid var(--signal-form-border-top-color);
+  padding: var(--signal-form-padding);
+  box-shadow: var(--signal-form-shadow-top);
+  display: flex;
+  flex-direction: column;
+  gap: var(--signal-form-bottom-gap);
+}
+
+.form-button {
+  width: 100%;
+  padding: var(--signal-form-button-padding-full);
+  background: var(--signal-form-button-primary-bg);
+  color: var(--signal-form-button-text);
+  border: none;
+  border-radius: var(--signal-form-border-radius-md);
+  font-weight: var(--signal-form-button-font-weight);
+  cursor: pointer;
+  transition: var(--signal-form-transition-bg);
+}
+
+.form-button:hover:not(:disabled) {
+  background: var(--signal-form-button-primary-bg-hover);
+}
+
+.form-button:disabled {
+  background: var(--signal-form-button-disabled-bg);
+  cursor: not-allowed;
+}
