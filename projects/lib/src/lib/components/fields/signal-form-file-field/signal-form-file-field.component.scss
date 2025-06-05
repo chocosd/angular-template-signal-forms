@@ -1,0 +1,107 @@
+.file-upload-dropzone {
+  border: 2px dashed var(--signal-form-border-color);
+  border-radius: var(--signal-form-border-radius-md);
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: var(--signal-form-transition);
+  background: var(--signal-form-input-bg);
+  color: var(--signal-form-input-text);
+  position: relative;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  &:hover {
+    border-color: var(--signal-form-outline-focus);
+    background: var(--signal-form-input-hover-bg);
+  }
+
+  &.dragging {
+    border-color: var(--signal-form-outline-focus);
+    background: var(--signal-forms-primary-50);
+  }
+
+  &.has-file {
+    border-color: var(--signal-forms-success-500);
+    background: var(--signal-forms-success-50);
+  }
+}
+
+.image-preview-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.image-preview {
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: var(--signal-form-border-radius-md);
+  box-shadow: var(--signal-form-shadow-lg);
+  object-fit: cover;
+}
+
+.uploaded-file {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--signal-form-input-bg);
+  border-radius: var(--signal-form-border-radius-sm);
+  box-shadow: var(--signal-form-shadow);
+}
+
+.file-name {
+  font-weight: 500;
+  color: var(--signal-form-input-text);
+}
+
+.remove-file-btn {
+  background: var(--signal-forms-danger-500);
+  color: var(--signal-forms-neutral-0);
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+  transition: var(--signal-form-transition);
+
+  &:hover {
+    background: var(--signal-forms-danger-600);
+  }
+}
+
+.upload-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.upload-text {
+  color: var(--signal-form-muted);
+  font-size: 0.875rem;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--signal-forms-neutral-200);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 1rem;
+}
+
+.progress {
+  height: 100%;
+  background: var(--signal-form-outline-focus);
+  transition: width 0.3s ease;
+}

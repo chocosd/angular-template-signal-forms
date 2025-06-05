@@ -1,0 +1,134 @@
+.chip-option-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--signal-form-gap-sm);
+  padding: var(--signal-form-padding-md);
+  border: 1px solid var(--signal-form-border-color);
+  border-radius: var(--signal-form-border-radius-sm);
+  background: var(--signal-form-bg);
+  box-shadow: var(--signal-form-shadow);
+  transition: var(--signal-form-transition);
+
+  .chip-option {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--signal-form-padding-sm) var(--signal-form-padding-lg);
+    border-radius: var(--signal-form-border-radius-sm);
+    border: 1px solid var(--signal-form-border-color);
+    background: var(--signal-form-bg);
+    color: var(--signal-form-text);
+    cursor: pointer;
+    font-size: var(--signal-form-font-size-sm);
+    font-weight: var(--signal-form-font-weight-medium);
+    transition: var(--signal-form-transition);
+    user-select: none;
+
+    &:hover {
+      border-color: var(--signal-form-outline-focus);
+      background: var(--signal-form-input-hover-bg);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--signal-form-outline-focus);
+      box-shadow: 0 0 0 2px var(--signal-form-outline-focus-shadow);
+    }
+
+    &.selected {
+      background: var(--signal-form-button-primary-bg);
+      color: var(--signal-form-button-text);
+      border-color: var(--signal-form-button-primary-bg);
+
+      &:hover {
+        background: var(--signal-form-button-primary-bg-hover);
+        border-color: var(--signal-form-button-primary-bg-hover);
+      }
+    }
+  }
+}
+
+.selected-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--signal-form-gap-xs);
+  flex: 1;
+  min-width: 0;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--signal-form-gap-xs);
+  padding: var(--signal-form-padding-xs) var(--signal-form-padding-sm);
+  background: var(--signal-form-button-primary-bg);
+  color: var(--signal-form-button-text);
+  border-radius: var(--signal-form-border-radius-sm);
+  font-size: var(--signal-form-font-size-sm);
+  font-weight: var(--signal-form-font-weight-medium);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: var(--signal-form-transition);
+
+  .chip-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    padding: 0;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: var(--signal-form-radius-full);
+    color: var(--signal-form-button-text);
+    cursor: pointer;
+    font-size: var(--signal-form-font-size-xs);
+    transition: var(--signal-form-transition);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+
+    &:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.4);
+    }
+  }
+}
+
+.dropdown-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--signal-form-gap-sm);
+  padding: var(--signal-form-padding-sm) var(--signal-form-padding-md);
+  border: 1px solid var(--signal-form-border-color);
+  border-radius: var(--signal-form-border-radius-sm);
+  background: var(--signal-form-bg);
+  color: var(--signal-form-text);
+  cursor: pointer;
+  font-size: var(--signal-form-font-size-sm);
+  min-width: 120px;
+  transition: var(--signal-form-transition);
+
+  &:hover {
+    border-color: var(--signal-form-outline-focus);
+    background: var(--signal-form-input-hover-bg);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--signal-form-outline-focus);
+    box-shadow: 0 0 0 2px var(--signal-form-outline-focus-shadow);
+  }
+
+  .dropdown-arrow {
+    opacity: 0.5;
+    transition: transform 0.2s;
+  }
+
+  &[aria-expanded="true"] .dropdown-arrow {
+    transform: rotate(180deg);
+  }
+}

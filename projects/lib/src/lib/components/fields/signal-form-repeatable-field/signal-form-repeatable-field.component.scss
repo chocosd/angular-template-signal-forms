@@ -1,0 +1,47 @@
+.repeatable-form-group {
+  padding-bottom: 1rem;
+  border-top: 1px solid #e2efef;
+  border-bottom: 1px solid #e2efef;
+
+  &:has(+ .repeatable-form-group) {
+    border-bottom: none;
+  }
+}
+
+.form-group-heading {
+  margin: 0;
+  text-transform: capitalize;
+  color: var(--signal-form-heading-color);
+  font-size: var(--signal-form-heading-font-size);
+  line-height: var(--signal-form-heading-line-height);
+}
+
+.repeatable-forms-row-container {
+  display: flex;
+  gap: 8px;
+}
+
+.repeatable-forms-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.repeatable-forms-actions-container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+
+  & .row-action {
+    color: var(--signal-form-text);
+    cursor: pointer;
+    margin-top: 16px;
+
+    &:hover {
+      color: var(--signal-form-primary-700);
+    }
+  }
+}

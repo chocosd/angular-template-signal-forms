@@ -1,0 +1,25 @@
+.rating-stars {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+
+  .star {
+    color: var(--signal-forms-neutral-300);
+    appearance: none;
+    border: none;
+    outline: none;
+    padding: 0 !important;
+    width: fit-content;
+    background: transparent;
+    transition: var(--signal-form-transition);
+
+    &.filled {
+      color: var(--signal-forms-warning-500);
+    }
+
+    &:hover {
+      color: var(--signal-forms-warning-400);
+    }
+  }
+}

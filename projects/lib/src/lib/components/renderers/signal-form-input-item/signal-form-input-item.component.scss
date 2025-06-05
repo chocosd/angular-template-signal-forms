@@ -1,0 +1,139 @@
+// Scoped to signal-form-input-item to prevent global pollution while allowing custom styling
+signal-form-input-item {
+  .form-control {
+    &.is-validating {
+      .form-label {
+        opacity: var(--signal-form-validating-opacity);
+      }
+
+      input,
+      textarea,
+      select {
+        border-color: var(--signal-form-validating-color);
+        background-color: var(--signal-form-validating-bg);
+      }
+    }
+
+    // User modifier classes can override these
+    &.premium-field {
+      border: var(--signal-form-premium-border-width) solid
+        var(--signal-form-premium-color);
+      background: var(--signal-form-premium-bg);
+      border-radius: var(--signal-form-premium-radius);
+    }
+
+    &.compact-field {
+      .form-field-wrapper {
+        gap: var(--signal-form-field-wrapper-gap-minimal);
+      }
+
+      .form-label {
+        font-size: var(--signal-form-label-subtle-size);
+        margin-bottom: var(--signal-form-field-wrapper-gap-minimal);
+      }
+    }
+
+    &.highlighted-field {
+      box-shadow: var(--signal-form-highlight-shadow);
+      border-color: var(--signal-form-highlight-border);
+    }
+  }
+
+  .form-field-wrapper {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+
+    &.compact {
+      gap: var(--signal-form-field-wrapper-gap-compact);
+    }
+
+    &.spaced {
+      gap: var(--signal-form-field-wrapper-gap-spaced);
+    }
+
+    &.fullwidth {
+      width: 100%;
+    }
+
+    & > * {
+      flex: 1;
+    }
+
+    &.custom-input-wrapper {
+      background: var(--input-wrapper-bg);
+      border: var(--input-wrapper-border);
+      border-radius: var(--input-wrapper-radius);
+      padding: var(--input-wrapper-padding);
+    }
+
+    &:has(> form-dropdown-overlay) {
+      position: relative;
+    }
+  }
+
+  .form-label {
+    &.label-prominent {
+      font-weight: var(--signal-form-label-prominent-weight);
+      color: var(--signal-form-label-prominent-color);
+      font-size: var(--signal-form-label-prominent-size);
+    }
+
+    &.label-subtle {
+      font-weight: var(--signal-form-label-subtle-weight);
+      color: var(--signal-form-label-subtle-color);
+      font-size: var(--signal-form-label-subtle-size);
+    }
+  }
+
+  .form-error {
+    &.error-prominent {
+      font-weight: var(--signal-form-error-prominent-weight);
+      color: var(--signal-form-error-prominent-color);
+      padding: var(--signal-form-error-prominent-padding);
+      background: var(--signal-form-error-prominent-bg);
+      border-radius: var(--signal-form-border-radius-sm);
+    }
+
+    &.error-subtle {
+      font-weight: var(--signal-form-error-subtle-weight);
+      color: var(--signal-form-error-subtle-color);
+      font-size: var(--signal-form-error-subtle-size);
+    }
+  }
+
+  .form-hint {
+    &.hint-prominent {
+      font-weight: var(--signal-form-hint-prominent-weight);
+      color: var(--signal-form-hint-prominent-color);
+    }
+
+    &.hint-subtle {
+      font-weight: var(--signal-form-hint-subtle-weight);
+      color: var(--signal-form-hint-subtle-color);
+      font-size: var(--signal-form-hint-subtle-size);
+    }
+  }
+
+  .validation-spinner {
+    display: inline-block;
+    margin-left: var(--signal-form-spinner-margin);
+    animation: spin 1s linear infinite;
+    color: var(--signal-form-validating-color);
+  }
+
+  .form-validating {
+    color: var(--signal-form-validating-color);
+    font-size: var(--signal-form-validating-font-size);
+    font-style: italic;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}

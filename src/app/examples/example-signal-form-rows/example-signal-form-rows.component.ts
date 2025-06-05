@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { SignalFormBuilder } from '@builder/builder/form-builder';
-import { FormFieldType } from '@enums/form-field-type.enum';
 import {
-  type FormOption,
-  type SignalFormContainer,
-} from '@models/signal-form.model';
-import { SignalFormFieldsComponent } from '@renderers/signal-form-fields/signal-form-fields.component';
-import { SignalFormSaveButtonComponent } from '@renderers/signal-form-save-button/signal-form-save-button.component';
+  FormFieldType,
+  FormOption,
+  SignalFormBuilder,
+  SignalFormContainer,
+  SignalFormFieldsComponent,
+  SignalFormSaveButtonComponent,
+} from 'signal-template-forms';
 
 export interface User {
   username: string | null;

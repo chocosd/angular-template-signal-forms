@@ -1,0 +1,107 @@
+:host {
+  &.form-group-row {
+    flex-direction: row;
+
+    & > signal-form-input-item {
+      flex: 1 1;
+    }
+  }
+
+  &.grid {
+    display: grid;
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.nested-form {
+  &-section {
+    border-top: 1px solid var(--signal-form-section-border);
+    border-bottom: 1px solid var(--signal-form-section-border);
+    display: grid;
+    width: 100%;
+    padding: var(--signal-form-nested-padding);
+    content-visibility: auto;
+    contain-intrinsic-size: 0 200px;
+
+    &:has(+ .nested-form-section) {
+      border-bottom: none;
+    }
+  }
+
+  &-title {
+    display: flex;
+    flex-direction: column;
+    gap: var(--signal-form-nested-title-gap);
+    margin-bottom: var(--signal-form-nested-margin-bottom);
+  }
+
+  &-heading {
+    margin: 0;
+    text-transform: capitalize;
+    color: var(--signal-form-heading-color);
+    font-size: var(--signal-form-heading-font-size);
+    line-height: var(--signal-form-heading-line-height);
+  }
+
+  &-subheading {
+    margin: 0;
+    font-weight: 400;
+    color: var(--signal-form-subheading-color);
+    font-size: var(--signal-form-subheading-font-size);
+    text-transform: capitalize;
+  }
+
+  &-fields {
+    display: flex;
+    width: 100%;
+
+    & > signal-form-fields {
+      width: 100%;
+    }
+  }
+}
+
+.form-group-stacked {
+  .nested-form-title {
+    margin-bottom: var(--signal-form-group-gap);
+  }
+
+  .nested-form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--signal-form-group-gap-lg);
+  }
+  content-visibility: auto;
+  contain-intrinsic-size: 0 100px;
+}
+
+.form-group-row {
+  display: flex;
+  gap: var(--signal-form-group-gap-xl);
+
+  .nested-form-section {
+    .nested-form-title {
+      flex: 0 0 var(--signal-form-nested-title-width);
+    }
+
+    &:has(> .nested-form-fields .form-group-stacked) .nested-form-title {
+      flex: 1 1 50%;
+    }
+  }
+
+  .nested-form-fields {
+    display: flex;
+    flex-wrap: wrap;
+    flex: 1;
+    gap: var(--signal-form-group-gap) var(--signal-form-group-gap-xl);
+  }
+  content-visibility: auto;
+  contain-intrinsic-size: 0 100px;
+}
+
+.collapsable-fields {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 300px;
+  width: 100%;
+}

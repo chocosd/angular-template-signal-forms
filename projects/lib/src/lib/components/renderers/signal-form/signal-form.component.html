@@ -1,0 +1,22 @@
+<div class="signal-form-wrapper">
+  <h2 class="signal-form-title">{{ form().title }}</h2>
+  <form
+    (submit)="submitForm(); $event.preventDefault()"
+    class="signal-form-content"
+  >
+    <div class="form-fields-container">
+      <signal-form-fields
+        [fields]="form().fields"
+        [form]="form()"
+        [signalFormParent]="true"
+      />
+    </div>
+
+    <div class="form-bottom-sticky">
+      <signal-form-error-summary [form]="form()" />
+      <button type="submit" [disabled]="disabled()" [class]="buttonClass()">
+        {{ buttonText() }}
+      </button>
+    </div>
+  </form>
+</div>

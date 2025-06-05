@@ -1,0 +1,213 @@
+// Signal Forms Color System
+// Generates comprehensive color palettes with tints, shades, and dark mode support
+
+// Color scale definitions - Extended to include pure white/black
+$color-scales: (0, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950, 1000);
+$tint-scales: (
+  50: 5%,
+  100: 10%,
+  200: 20%,
+  300: 30%,
+  400: 40%,
+);
+$shade-scales: (
+  600: 80%,
+  700: 70%,
+  800: 60%,
+  900: 50%,
+  950: 40%,
+);
+$dark-tint-scales: (
+  50: 40%,
+  100: 50%,
+  200: 60%,
+  300: 70%,
+  400: 80%,
+);
+$dark-shade-scales: (
+  600: 20%,
+  700: 30%,
+  800: 40%,
+  900: 50%,
+  950: 60%,
+);
+
+// Color definitions
+$light-colors: (
+  "primary": #3b82f6,
+  "accent": #8b5cf6,
+  "success": #10b981,
+  "warning": #f59e0b,
+  "info": #0ea5e9,
+  "danger": #ef4444,
+);
+
+$dark-colors: (
+  "primary": #60a5fa,
+  "accent": #a78bfa,
+  "success": #34d399,
+  "warning": #fbbf24,
+  "info": #38bdf8,
+  "danger": #f87171,
+);
+
+$neutral-light: (
+  0: #ffffff,
+  50: #f8fafc,
+  100: #f1f5f9,
+  200: #e2e8f0,
+  300: #cbd5e1,
+  400: #94a3b8,
+  500: #64748b,
+  600: #475569,
+  700: #334155,
+  800: #1e293b,
+  900: #0f172a,
+  950: #020617,
+  1000: #000000,
+);
+
+$neutral-dark: (
+  0: #000000,
+  50: #020617,
+  100: #0f172a,
+  200: #1e293b,
+  300: #334155,
+  400: #475569,
+  500: #64748b,
+  600: #94a3b8,
+  700: #cbd5e1,
+  800: #e2e8f0,
+  900: #f1f5f9,
+  950: #f8fafc,
+  1000: #ffffff,
+);
+
+// Mixin to generate color scale for a single color
+@mixin generate-color-scale($name, $base-color) {
+  // Base color (customizable entry point)
+  --signal-forms-#{$name}: #{$base-color};
+
+  // Base scale references the customizable base color
+  --signal-forms-#{$name}-500: var(--signal-forms-#{$name});
+
+  // Generate tints (derive from base color variable)
+  @each $scale, $percentage in $tint-scales {
+    --signal-forms-#{$name}-#{$scale}: color-mix(
+      in srgb,
+      var(--signal-forms-#{$name}) #{$percentage},
+      white
+    );
+  }
+
+  // Generate shades (derive from base color variable)
+  @each $scale, $percentage in $shade-scales {
+    --signal-forms-#{$name}-#{$scale}: color-mix(
+      in srgb,
+      var(--signal-forms-#{$name}) #{$percentage},
+      black
+    );
+  }
+}
+
+// Mixin to generate dark color scale for a single color
+@mixin generate-dark-color-scale($name, $base-color) {
+  // Base dark color (customizable entry point)
+  --dark-signal-forms-#{$name}: #{$base-color};
+
+  // Base scale references the customizable dark base color
+  --dark-signal-forms-#{$name}-500: var(--dark-signal-forms-#{$name});
+
+  // Generate dark tints (derive from dark base color variable)
+  @each $scale, $percentage in $dark-tint-scales {
+    --dark-signal-forms-#{$name}-#{$scale}: color-mix(
+      in srgb,
+      var(--dark-signal-forms-#{$name}) #{$percentage},
+      black
+    );
+  }
+
+  // Generate dark shades (derive from dark base color variable)
+  @each $scale, $percentage in $dark-shade-scales {
+    --dark-signal-forms-#{$name}-#{$scale}: color-mix(
+      in srgb,
+      var(--dark-signal-forms-#{$name}) #{$percentage},
+      white
+    );
+  }
+}
+
+// Mixin to generate the complete color palette
+@mixin generate-signal-forms-colors() {
+  // Generate light mode colors
+  @each $name, $color in $light-colors {
+    @include generate-color-scale($name, $color);
+  }
+
+  // Generate dark mode colors
+  @each $name, $color in $dark-colors {
+    @include generate-dark-color-scale($name, $color);
+  }
+
+  // Generate neutral colors
+  --signal-forms-neutral: map-get($neutral-light, 500);
+  @each $scale, $color in $neutral-light {
+    --signal-forms-neutral-#{$scale}: #{$color};
+  }
+
+  // Generate dark neutral colors
+  --dark-signal-forms-neutral: map-get($neutral-dark, 500);
+  @each $scale, $color in $neutral-dark {
+    --dark-signal-forms-neutral-#{$scale}: #{$color};
+  }
+}
+
+// Mixin to apply dark mode color scheme
+@mixin apply-dark-mode() {
+  // Class-based dark mode theming
+  &.dark-themed-forms,
+  .dark-themed-forms & {
+    // Map color names and scales
+    @each $name, $color in $light-colors {
+      --signal-forms-#{$name}: var(--dark-signal-forms-#{$name});
+
+      @each $scale in $color-scales {
+        --signal-forms-#{$name}-#{$scale}: var(
+          --dark-signal-forms-#{$name}-#{$scale}
+        );
+      }
+    }
+
+    // Map neutral colors
+    --signal-forms-neutral: var(--dark-signal-forms-neutral);
+    @each $scale in $color-scales {
+      --signal-forms-neutral-#{$scale}: var(
+        --dark-signal-forms-neutral-#{$scale}
+      );
+    }
+  }
+}
+
+// Separate mixin for system preference dark mode (to be applied at html level)
+@mixin apply-system-dark-mode() {
+  @media (prefers-color-scheme: dark) {
+    // Map color names and scales
+    @each $name, $color in $light-colors {
+      --signal-forms-#{$name}: var(--dark-signal-forms-#{$name});
+
+      @each $scale in $color-scales {
+        --signal-forms-#{$name}-#{$scale}: var(
+          --dark-signal-forms-#{$name}-#{$scale}
+        );
+      }
+    }
+
+    // Map neutral colors
+    --signal-forms-neutral: var(--dark-signal-forms-neutral);
+    @each $scale in $color-scales {
+      --signal-forms-neutral-#{$scale}: var(
+        --dark-signal-forms-neutral-#{$scale}
+      );
+    }
+  }
+}

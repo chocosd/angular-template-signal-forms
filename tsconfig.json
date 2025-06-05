@@ -19,16 +19,7 @@
     "module": "ES2022",
     "baseUrl": "./src",
     "paths": {
-      "@models/*": ["app/signal-forms/models/*"],
-      "@services/*": ["app/signal-forms/services/*"],
-      "@validators/*": ["app/signal-forms/validators/*"],
-      "@enums/*": ["app/signal-forms/enums/*"],
-      "@directives/*": ["app/signal-forms/directives/*"],
-      "@renderers/*": ["app/signal-forms/components/renderers/*"],
-      "@builder/*": ["app/signal-forms/form-builder/*"],
-      "@fields/*": ["app/signal-forms/components/fields/*"],
-      "@base/*": ["app/signal-forms/components/base/*"],
-      "@ui/*": ["app/signal-forms/components/ui/*"]
+      "lib": ["./dist/lib"]
     }
   },
   "angularCompilerOptions": {

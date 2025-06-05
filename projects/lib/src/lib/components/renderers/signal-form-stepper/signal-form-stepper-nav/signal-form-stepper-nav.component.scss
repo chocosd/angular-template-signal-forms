@@ -1,0 +1,76 @@
+.stepper-nav-ui {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--signal-form-stepper-margin-bottom);
+
+  .stepper-track {
+    display: flex;
+    align-items: center;
+    gap: var(--signal-form-stepper-gap);
+
+    .stepper-node {
+      display: flex;
+      align-items: center;
+      gap: var(--signal-form-stepper-gap);
+
+      .step-circle {
+        width: var(--signal-form-stepper-step-size);
+        height: var(--signal-form-stepper-step-size);
+        border-radius: var(--signal-form-stepper-step-border-radius);
+        border: var(--signal-form-stepper-step-border-width) solid
+          var(--signal-form-stepper-default-border);
+        background-color: var(--signal-form-stepper-default-bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: var(--signal-form-stepper-step-font-weight);
+        transition: var(--signal-form-stepper-transition);
+        cursor: pointer;
+
+        &.active {
+          border-color: var(--signal-form-stepper-active-border) !important;
+        }
+
+        &.completed {
+          background-color: var(--signal-form-stepper-completed-bg);
+          color: var(--signal-form-stepper-completed-text);
+          border-color: var(--signal-form-stepper-completed-border);
+        }
+
+        &.error {
+          border-color: var(--signal-form-stepper-error-border);
+          color: var(--signal-form-stepper-error-text);
+        }
+      }
+
+      .step-line {
+        width: var(--signal-form-stepper-line-width);
+        height: var(--signal-form-stepper-line-height);
+        background: var(--signal-form-stepper-line-default);
+
+        &-container {
+          display: flex;
+          gap: var(--signal-form-stepper-line-gap);
+        }
+
+        &.complete {
+          background: var(--signal-form-stepper-line-complete);
+        }
+
+        &.error {
+          background: var(--signal-form-stepper-line-error);
+        }
+      }
+
+      .finish-form {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        &.completed-form {
+          color: var(--signal-form-stepper-completed-bg);
+        }
+      }
+    }
+  }
+}
