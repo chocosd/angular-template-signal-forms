@@ -35,8 +35,6 @@ import { SignalFormBuilder } from "signal-template-forms";
   // ...
 })
 export class MyComponent {
-  private formBuilder = inject(SignalFormBuilder);
-
   form = SignalFormBuilder.createForm({
     model: { name: "", email: "", age: 0 },
     fields: [
@@ -50,10 +48,7 @@ export class MyComponent {
 ```
 
 ```html
-<signal-form-container [form]="form">
-  <signal-form-fields />
-  <signal-form-save-button />
-</signal-form-container>
+<signal-form [form]="form" />
 ```
 
 ## Form Container API
@@ -216,7 +211,7 @@ effect(() => {
       { label: 'Los Angeles', value: 'la' },
       { label: 'Chicago', value: 'chi' }
     ];
-    return of(cities.filter(city =>
+    return of(cities.filter((city) =>
       city.label.toLowerCase().includes(search.toLowerCase())
     ));
   },
@@ -233,7 +228,7 @@ effect(() => {
   type: FormFieldType.AUTOCOMPLETE,
   loadOptions: (search: string) =>
     this.httpService.searchCountries(search).pipe(
-      map(countries => countries.map(country => ({
+      map((countries) => countries.map(country => ({
         label: country.name,
         value: country.code
       })))
@@ -255,11 +250,18 @@ effect(() => {
 ### Advanced Fields
 
 ```typescript
-{ name: 'birthDate', label: 'Birth Date', type: FormFieldType.DATETIME }
-{ name: 'favoriteColor', label: 'Color', type: FormFieldType.COLOR }
+{ name: 'birthDate', label: 'Birth Date', type: FormFieldType.DATETIME, config: {
+  format: 'YYYY-MM-DD'
+} }
+{ name: 'favoriteColor', label: 'Color', type: FormFieldType.COLOR, config: { view: 'pickerWithInput' } }
 { name: 'volume', label: 'Volume', type: FormFieldType.SLIDER, config: { min: 0, max: 100 } }
 { name: 'rating', label: 'Rating', type: FormFieldType.RATING, config: { max: 5 } }
-{ name: 'avatar', label: 'Profile Picture', type: FormFieldType.FILE }
+{ name: 'avatar', label: 'Profile Picture', type: FormFieldType.FILE, { config: {
+  accept: ['jpg', 'png'],
+  maxSizeMb: 10,
+  multiple: false,
+  uploadText: 'upload your jpegs or pngs here'
+}} }
 ```
 
 ### Word Count Feature
@@ -325,7 +327,7 @@ import { SignalValidators } from 'signal-template-forms';
   asyncValidators: [
     (value: string) =>
       this.userService.checkUsername(value).pipe(
-        map(isAvailable => isAvailable ? null : 'Username taken')
+        map((isAvailable) => isAvailable ? null : 'Username taken')
       )
   ]
 }
@@ -357,11 +359,7 @@ const steppedForm = SignalFormBuilder.createSteppedForm({
 ```
 
 ```html
-<signal-stepped-form-container [form]="steppedForm">
-  <signal-form-step-indicator />
-  <signal-form-fields />
-  <signal-form-step-navigation />
-</signal-stepped-form-container>
+<signal-form-stepper [form]="steppedForm" (afterSaveCompletes)="handleAfterSaveHasFinished()" />
 ```
 
 ## Form Actions
@@ -649,10 +647,7 @@ The grid container automatically gets:
 ### Template Output Pattern
 
 ```html
-<signal-form-container [form]="form" (onSave)="handleSave($event)">
-  <signal-form-fields />
-  <signal-form-save-button />
-</signal-form-container>
+<signal-form [form]="form" (onSave)="handleSave($event)" />
 ```
 
 ### Callback Pattern
